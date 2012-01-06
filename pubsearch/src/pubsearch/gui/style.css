@@ -1,0 +1,24 @@
+/* 
+    Document   : style
+    Created on : 2012.01.03., 21:43:43
+    Author     : Zsolt
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.root {
+    display: block;
+    -fx-background-color: #333344;
+}
+
+.bold-text {
+    -fx-font-weight: bold;
+}
+
+.italic-text {
+    -fx-font-style: italic;
+}
+
+.white-text {
+    -fx-text-fill: white;
+}
