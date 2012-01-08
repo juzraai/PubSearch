@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pubsearch.gui;
 
 import javafx.event.EventHandler;
@@ -13,38 +9,34 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import pubsearch.data.Link;
 import pubsearch.data.Publication;
 
 /**
  * Egy publikáció adatait megjelenítő ablak.
+ *
  * @author Zsolt
  */
-public class PubWindow extends Stage {
+public class PubWindow extends AWindow {
 
     private Publication p;
 
+    /**
+     * Létrehozza a publikációhoz tartozó ablakot.
+     * @param p A publikáció, melynek adatai az ablakban megjelennek.
+     */
     public PubWindow(Publication p) {
+        super(p.getAuthors() + " - " + p.getTitle(), false, false);
         this.p = p;
-        setResizable(false);
-        setTitle(p.getAuthors() + " - " + p.getTitle());
         setScene(buildScene());
-        setOnShown(new EventHandler<WindowEvent>(){
-
-            public void handle(WindowEvent event) {
-                Tools.centerizeStage((Stage)(PubWindow.this));
-            }
-        }); 
+        setCSS();
     }
 
     /**
-     * Felépíti az ablakot.
-     * @return 
+     * @return A felépített ablaktartalom.
      */
-    protected Scene buildScene() {
+    private Scene buildScene() {
         /*
          * Tab list
          */
@@ -73,13 +65,13 @@ public class PubWindow extends Stage {
         titleLabel2.setAlignment(Pos.CENTER_RIGHT);
         titleLabel2.setTextAlignment(TextAlignment.RIGHT);
         titleLabel2.setWrapText(true);
-        
+
         Label yearLabel1 = new Label("Év:");
         yearLabel1.getStyleClass().add("bold-text");
-        
+
         Label yearLabel2 = new Label(Integer.toString(p.getYear()));
         yearLabel2.getStyleClass().add("italic-text");
-        
+
 
         GridPane detailsGrid = new GridPane();
         detailsGrid.setPadding(new Insets(12));
@@ -100,11 +92,11 @@ public class PubWindow extends Stage {
          */
         TableView<Link> linksView = new TableView<Link>();
         linksView.setPlaceholder(new Label("Nincs link ehhez a publikációhoz."));
-        
+
         TableColumn dbNameCol = new TableColumn("Adatbázis");
         dbNameCol.setPrefWidth(125);
         dbNameCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("dbID")); // unsafe op.
-        
+
         TableColumn linkCol = new TableColumn("URL");
         linkCol.setPrefWidth(250);
         linkCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("url"));
@@ -141,8 +133,6 @@ public class PubWindow extends Stage {
         tabs.tabClosingPolicyProperty().set(TabPane.TabClosingPolicy.UNAVAILABLE);
         tabs.getTabs().addAll(detailsTab, linksTab, refPubsTab, exportTab);
 
-        Scene scene = new Scene(tabs, 400, 250);
-        //scene.getStylesheets().add("pubsearch/gui/style.css");
-        return scene;
+        return new Scene(tabs, 400, 250);
     }
 }

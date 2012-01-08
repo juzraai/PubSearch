@@ -9,8 +9,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import pubsearch.config.ConfigModel;
 
@@ -19,16 +17,18 @@ import pubsearch.config.ConfigModel;
  *
  * @author Zsolt
  */
-public class ProxyWindow extends Stage {
+public class ProxyWindow extends AWindow {
 
     private TextArea proxyTA = new TextArea();
 
-    public ProxyWindow(Stage mainWindow) {
-        initModality(Modality.APPLICATION_MODAL);
-        setResizable(false);
-        setTitle("Proxy lista");
+    /**
+     * Létrehozza az ablakot.
+     */
+    public ProxyWindow() {
+        super("Proxy lista beállítása", false, true);
         setScene(buildScene());
-        setOnShown(new EventHandler<WindowEvent>() {
+        setCSS();
+        setOnShowing(new EventHandler<WindowEvent>() {
 
             public void handle(WindowEvent event) {
                 String[] pl = ConfigModel.getProxyList();
@@ -38,12 +38,13 @@ public class ProxyWindow extends Stage {
                     sb.append("\n");
                 }
                 proxyTA.setText(sb.toString());
-                Tools.centerizeStage((Stage) (ProxyWindow.this));
-
             }
         });
     }
 
+    /**
+     * @return A felépített ablaktartalom.
+     */
     private Scene buildScene() {
         Label plzLabel = new Label("A publikációs adatbázisok nem nézik jó szemmel a sűrű lekérdezéseket, ezért a program proxy-n keresztül küldi a kéréseket. Kérlek adj meg egy érvényes proxy listát (IP:PORT).");
         plzLabel.getStyleClass().addAll("white-text");
@@ -68,9 +69,7 @@ public class ProxyWindow extends Stage {
         layout.setBottom(saveButton);
         BorderPane.setMargin(proxyTA, new Insets(10, 0, 10, 0));
         BorderPane.setAlignment(saveButton, Pos.CENTER);
-
-        Scene scene = new Scene(layout, 320, 340);
-        scene.getStylesheets().add("pubsearch/gui/style.css");
-        return scene;
+        
+        return new Scene(layout, 320, 340);
     }
 }

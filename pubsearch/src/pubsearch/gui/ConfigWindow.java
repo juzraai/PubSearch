@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pubsearch.gui;
 
 import javafx.event.ActionEvent;
@@ -16,17 +12,17 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import pubsearch.config.ConfigModel;
 import pubsearch.data.Connection;
 
 /**
+ * Az adatbáziskapcsolat beállítására szolgáló ablak.
  *
  * @author Zsolt
  */
-public class ConfigWindow extends Stage {
+public class ConfigWindow extends AWindow {
 
     private final Stage mainWindow;
     private TextField urlField = new TextField();
@@ -36,19 +32,17 @@ public class ConfigWindow extends Stage {
     private boolean configIsOK;
 
     public ConfigWindow(Stage mainWindow) {
+        super("Adatbáziskapcsolat beállítása", false, true);
         this.mainWindow = mainWindow;
-        initModality(Modality.APPLICATION_MODAL);
-        setResizable(false);
-        setTitle("Adatbáziskapcsolat");
         setScene(buildScene());
-        setOnShown(new EventHandler<WindowEvent>() {
+        setCSS();
+        setOnShowing(new EventHandler<WindowEvent>() {
 
             public void handle(WindowEvent event) {
                 configIsOK = (Connection.getEm() != null);
                 urlField.setText(ConfigModel.getJdbcUrl());
                 userField.setText(ConfigModel.getJdbcUser());
                 passwordField.setText(ConfigModel.getJdbcPass());
-                Tools.centerizeStage((Stage) (ConfigWindow.this));
             }
         });
         setOnHidden(new EventHandler<WindowEvent>() {
@@ -63,6 +57,9 @@ public class ConfigWindow extends Stage {
         });
     }
 
+    /**
+     * @return A felépített ablaktartalom.
+     */
     private Scene buildScene() {
         Label plzLabel = new Label("A programnak szüksége van egy MySQL adatbázisra a találatok tárolásához, kérlek add meg a paramétereket.");
         plzLabel.getStyleClass().addAll("white-text");
@@ -147,12 +144,14 @@ public class ConfigWindow extends Stage {
         layout.setTop(plzLabel);
         layout.setCenter(grid);
         BorderPane.setAlignment(grid, Pos.CENTER);
-
-        Scene scene = new Scene(layout, 310, 380);
-        scene.getStylesheets().add("pubsearch/gui/style.css");
-        return scene;
+        
+        return new Scene(layout, 310, 380);
     }
 
+    /**
+     * Megpróbálja újrainicializálni az adatbáziskapcsolatot. Ha sikeres, akkor
+     * bezárja az ablakot és elmenti a beállításokat.
+     */
     private void reInit() {
         if (!ConfigModel.getJdbcUrl().equals(urlField.getText())
                 || !ConfigModel.getJdbcUser().equals(userField.getText())

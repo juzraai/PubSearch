@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pubsearch.gui;
 
 import javafx.collections.FXCollections;
@@ -20,17 +16,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import pubsearch.config.ConfigModel;
 import pubsearch.data.Publication;
 
 /**
+ * A program főablaka.
  *
  * @author Zsolt
  */
-public class MainWindow extends Stage {
+public class MainWindow extends AWindow {
 
     public final ConfigWindow configWindow = new ConfigWindow((Stage) this);
-    private final ProxyWindow proxyWindow = new ProxyWindow((Stage) this);
+    private final ProxyWindow proxyWindow = new ProxyWindow();
     private ObservableList<Publication> results = FXCollections.observableArrayList();
     private TextField authorField = new TextField();
     private TextField titleField = new TextField();
@@ -38,22 +35,26 @@ public class MainWindow extends Stage {
     private final TableView<Publication> resultsView = new TableView<Publication>();
     private Label resultCountLabel = new Label();
 
+    /**
+     * Létrehozza az ablakot.
+     */
     public MainWindow() {
-        setTitle("PubSearch");
+        super("PubSearch", true, false);
         setScene(buildScene());
-        setOnShown(new EventHandler<WindowEvent>() {
-
-            public void handle(WindowEvent event) {
-                Tools.centerizeStage((Stage) (MainWindow.this));
-            }
-        });
+        setCSS();
     }
 
     /**
-     * Felépíti az ablakot.
-     * @return 
+     * @return A felépített ablaktartalom.
      */
     private Scene buildScene() {
+
+        EventHandler<ActionEvent> startSearchAction = new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent event) {
+                startSearch();
+            }
+        };
 
         /*
          * Top
@@ -62,23 +63,13 @@ public class MainWindow extends Stage {
         authorLabel.setLabelFor(authorField);
         authorLabel.setStyle("-fx-text-fill: white");
 
-        authorField.setOnAction(new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent event) {
-                startSearch();
-            }
-        });
+        authorField.setOnAction(startSearchAction);
 
         Label titleLabel = new Label("Cím:");
         titleLabel.setLabelFor(titleField);
         titleLabel.setStyle("-fx-text-fill: white");
 
-        titleField.setOnAction(new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent event) {
-                startSearch();
-            }
-        });
+        titleField.setOnAction(startSearchAction);
 
         onlyLocalCheckBox.setStyle("-fx-text-fill: #AFA");
 
@@ -86,12 +77,7 @@ public class MainWindow extends Stage {
         searchButton.setPrefWidth(75);
         searchButton.setPrefHeight(45);
         searchButton.setStyle("-fx-base: #3AD;");
-        searchButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent event) {
-                startSearch();
-            }
-        });
+        searchButton.setOnAction(startSearchAction);
 
         Button editProxiesButton = new Button("Proxy...");
         editProxiesButton.setPrefWidth(100);
@@ -152,15 +138,14 @@ public class MainWindow extends Stage {
                 }
             }
         });
-        resultsView.setOnMouseClicked(
-                new EventHandler<MouseEvent>() {
+        resultsView.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
-                    public void handle(MouseEvent event) {
-                        if (event.getClickCount() > 1) {
-                            showPubWindow();
-                        }
-                    }
-                });
+            public void handle(MouseEvent event) {
+                if (event.getClickCount() > 1) {
+                    showPubWindow();
+                }
+            }
+        });
 
         resultCountLabel.getStyleClass().addAll("white-text", "bold-text");
         resultCountLabel.setTextAlignment(TextAlignment.CENTER);
@@ -180,9 +165,7 @@ public class MainWindow extends Stage {
         layout.setTop(top);
         layout.setCenter(center);
 
-        Scene scene = new Scene(layout, 600, 300);
-        scene.getStylesheets().add("pubsearch/gui/style.css");
-        return scene;
+        return new Scene(layout, 600, 300);
     }
 
     /**
@@ -201,10 +184,17 @@ public class MainWindow extends Stage {
      */
     private void startSearch() {
         if (!onlyLocalCheckBox.selectedProperty().get()) {
+            if (ConfigModel.getProxyList().length == 0) {
+                AlertWindow.show("A kereséshez meg kell adnod egy érvényes proxy listát.");
+            }
             // crawl
             // TODO majd bent a szóközöket +-ra cseréli! (?)
         }
-        resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(authorField.getText(), titleField.getText())));
+        try {
+            resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(authorField.getText(), titleField.getText())));
+        } catch (Throwable t) {
+            AlertWindow.show("Hiba történt lekérdezés közben (JPA_ERROR).");
+        }
         resultCountLabel.setText(String.format("%d db találat (szerző: ' %s ', cím: ' %s '); a művelet %d KB adatforgalmat vett igénybe", resultsView.getItems().size(), authorField.getText(), titleField.getText(), 0));
     }
 }
