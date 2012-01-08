@@ -22,29 +22,31 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import pubsearch.data.Publication;
+
 /**
  *
  * @author Zsolt
  */
 public class MainWindow extends Stage {
-    
-    public final ConfigWindow configWindow = new ConfigWindow((Stage)this);
+
+    public final ConfigWindow configWindow = new ConfigWindow((Stage) this);
+    private final ProxyWindow proxyWindow = new ProxyWindow((Stage) this);
     private ObservableList<Publication> results = FXCollections.observableArrayList();
     private TextField authorField = new TextField();
     private TextField titleField = new TextField();
     private CheckBox onlyLocalCheckBox = new CheckBox("Keresés csak a helyi adatbázisban");
     private final TableView<Publication> resultsView = new TableView<Publication>();
-    private Label resultCountLabel = new Label("0 db találat a 'Szerző: blablabla és Cím: blablabla' keresésre, a művelet 0 KB adatforgalmat vett igénybe.");
-    
+    private Label resultCountLabel = new Label();
+
     public MainWindow() {
-        setTitle("Publikáció kereső");
+        setTitle("PubSearch");
         setScene(buildScene());
-        setOnShown(new EventHandler<WindowEvent>(){
+        setOnShown(new EventHandler<WindowEvent>() {
 
             public void handle(WindowEvent event) {
-                Tools.centerizeStage((Stage)(MainWindow.this));
+                Tools.centerizeStage((Stage) (MainWindow.this));
             }
-        });        
+        });
     }
 
     /**
@@ -61,40 +63,46 @@ public class MainWindow extends Stage {
         authorLabel.setStyle("-fx-text-fill: white");
 
         authorField.setOnAction(new EventHandler<ActionEvent>() {
-            
+
             public void handle(ActionEvent event) {
                 startSearch();
             }
         });
-        
+
         Label titleLabel = new Label("Cím:");
         titleLabel.setLabelFor(titleField);
         titleLabel.setStyle("-fx-text-fill: white");
-        
+
         titleField.setOnAction(new EventHandler<ActionEvent>() {
-            
+
             public void handle(ActionEvent event) {
                 startSearch();
             }
         });
-        
+
         onlyLocalCheckBox.setStyle("-fx-text-fill: #AFA");
-        
+
         Button searchButton = new Button("Keresés!");
         searchButton.setPrefWidth(75);
         searchButton.setPrefHeight(45);
         searchButton.setStyle("-fx-base: #3AD;");
         searchButton.setOnAction(new EventHandler<ActionEvent>() {
-            
+
             public void handle(ActionEvent event) {
                 startSearch();
             }
         });
-        
+
         Button editProxiesButton = new Button("Proxy...");
         editProxiesButton.setPrefWidth(100);
         editProxiesButton.setStyle("-fx-base: #D6F;");
-        
+        editProxiesButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent event) {
+                MainWindow.this.proxyWindow.show();
+            }
+        });
+
         Button editDBConnButton = new Button("Adatbázis...");
         editDBConnButton.setPrefWidth(100);
         editDBConnButton.setStyle("-fx-base: #D33;");
@@ -104,11 +112,11 @@ public class MainWindow extends Stage {
                 MainWindow.this.configWindow.show();
             }
         });
-        
+
         Button aboutButton = new Button("Névjegy");
         aboutButton.setPrefWidth(100);
         aboutButton.setStyle("-fx-base: #3D6");
-        
+
         GridPane top = new GridPane();
         top.setPadding(new Insets(12));
         top.setHgap(10);
@@ -137,7 +145,7 @@ public class MainWindow extends Stage {
         resultsView.getColumns().addAll(authorsCol, titleCol);
         resultsView.setEditable(false);
         resultsView.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            
+
             public void handle(KeyEvent event) {
                 if (event.getCode() == KeyCode.ENTER) {
                     showPubWindow();
@@ -146,21 +154,21 @@ public class MainWindow extends Stage {
         });
         resultsView.setOnMouseClicked(
                 new EventHandler<MouseEvent>() {
-                    
+
                     public void handle(MouseEvent event) {
                         if (event.getClickCount() > 1) {
                             showPubWindow();
                         }
                     }
                 });
-        
+
         resultCountLabel.getStyleClass().addAll("white-text", "bold-text");
         resultCountLabel.setTextAlignment(TextAlignment.CENTER);
         resultCountLabel.setWrapText(true);
         BorderPane.setAlignment(resultCountLabel, Pos.CENTER);
-        
+
         BorderPane center = new BorderPane();
-        center.setPadding(new Insets(12));        
+        center.setPadding(new Insets(12));
         center.setCenter(resultsView);
         center.setTop(resultCountLabel);
 
@@ -171,7 +179,7 @@ public class MainWindow extends Stage {
         layout.setPadding(new Insets(0));
         layout.setTop(top);
         layout.setCenter(center);
-        
+
         Scene scene = new Scene(layout, 600, 300);
         scene.getStylesheets().add("pubsearch/gui/style.css");
         return scene;
@@ -183,7 +191,7 @@ public class MainWindow extends Stage {
     private void showPubWindow() {
         if (resultsView.getSelectionModel().getSelectedIndex() > -1) {
             Publication p = resultsView.getSelectionModel().getSelectedItem();
-            
+
             new PubWindow(p).show();
         }
     }
@@ -194,7 +202,9 @@ public class MainWindow extends Stage {
     private void startSearch() {
         if (!onlyLocalCheckBox.selectedProperty().get()) {
             // crawl
+            // TODO majd bent a szóközöket +-ra cseréli! (?)
         }
-        resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(authorField.getText(), titleField.getText())));        
+        resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(authorField.getText(), titleField.getText())));
+        resultCountLabel.setText(String.format("%d db találat (szerző: ' %s ', cím: ' %s '); a művelet %d KB adatforgalmat vett igénybe", resultsView.getItems().size(), authorField.getText(), titleField.getText(), 0));
     }
 }

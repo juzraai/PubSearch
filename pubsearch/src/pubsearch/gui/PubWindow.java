@@ -20,7 +20,7 @@ import pubsearch.data.Link;
 import pubsearch.data.Publication;
 
 /**
- *
+ * Egy publikáció adatait megjelenítő ablak.
  * @author Zsolt
  */
 public class PubWindow extends Stage {
@@ -44,13 +44,13 @@ public class PubWindow extends Stage {
      * Felépíti az ablakot.
      * @return 
      */
-    private Scene buildScene() {
+    protected Scene buildScene() {
         /*
          * Tab list
          */
         Tab detailsTab = new Tab("Adatok");
-        Tab linksTab = new Tab("Linkek");
-        Tab refPubsTab = new Tab("Hivatkozó publikációk");
+        Tab linksTab = new Tab("Linkek (#)");
+        Tab refPubsTab = new Tab("Hivatkozó publikációk (#)");
         Tab exportTab = new Tab("Exportálás");
 
         /*
@@ -73,6 +73,13 @@ public class PubWindow extends Stage {
         titleLabel2.setAlignment(Pos.CENTER_RIGHT);
         titleLabel2.setTextAlignment(TextAlignment.RIGHT);
         titleLabel2.setWrapText(true);
+        
+        Label yearLabel1 = new Label("Év:");
+        yearLabel1.getStyleClass().add("bold-text");
+        
+        Label yearLabel2 = new Label(Integer.toString(p.getYear()));
+        yearLabel2.getStyleClass().add("italic-text");
+        
 
         GridPane detailsGrid = new GridPane();
         detailsGrid.setPadding(new Insets(12));
@@ -83,6 +90,8 @@ public class PubWindow extends Stage {
         detailsGrid.add(authorsLabel2, 1, 0);
         detailsGrid.add(titleLabel1, 0, 1);
         detailsGrid.add(titleLabel2, 1, 1);
+        detailsGrid.add(yearLabel1, 0, 2);
+        detailsGrid.add(yearLabel2, 1, 2);
 
         detailsTab.setContent(detailsGrid);
 
@@ -133,7 +142,7 @@ public class PubWindow extends Stage {
         tabs.getTabs().addAll(detailsTab, linksTab, refPubsTab, exportTab);
 
         Scene scene = new Scene(tabs, 400, 250);
-        scene.getStylesheets().add("pubsearch/gui/style.css");
+        //scene.getStylesheets().add("pubsearch/gui/style.css");
         return scene;
     }
 }

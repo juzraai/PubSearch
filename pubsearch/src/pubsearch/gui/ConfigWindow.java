@@ -8,15 +8,18 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Popup;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import pubsearch.config.ConfigModel;
 import pubsearch.data.Connection;
 
 /**
@@ -25,41 +28,46 @@ import pubsearch.data.Connection;
  */
 public class ConfigWindow extends Stage {
 
-    private Stage mainWindow;
-    private TextField urlField = new TextField(Connection.dburl);
-    private TextField userField = new TextField(Connection.username);
+    private final Stage mainWindow;
+    private TextField urlField = new TextField();
+    private TextField userField = new TextField();
     private PasswordField passwordField = new PasswordField();
     private Label msgLabel = new Label();
-    private boolean configIsOK = true;
+    private boolean configIsOK;
 
     public ConfigWindow(Stage mainWindow) {
         this.mainWindow = mainWindow;
+        initModality(Modality.APPLICATION_MODAL);
         setResizable(false);
         setTitle("Adatbáziskapcsolat");
         setScene(buildScene());
         setOnShown(new EventHandler<WindowEvent>() {
 
             public void handle(WindowEvent event) {
+                configIsOK = (Connection.getEm() != null);
+                urlField.setText(ConfigModel.getJdbcUrl());
+                userField.setText(ConfigModel.getJdbcUser());
+                passwordField.setText(ConfigModel.getJdbcPass());
                 Tools.centerizeStage((Stage) (ConfigWindow.this));
             }
         });
-        setOnShowing(new EventHandler<WindowEvent>() {
-
-            public void handle(WindowEvent event) {
-                ConfigWindow.this.mainWindow.hide();
-            }
-        });
-        setOnHiding(new EventHandler<WindowEvent>() {
+        setOnHidden(new EventHandler<WindowEvent>() {
 
             public void handle(WindowEvent event) {
                 if (configIsOK) {
                     ConfigWindow.this.mainWindow.show();
+                } else {
+                    System.exit(1);
                 }
             }
         });
     }
 
     private Scene buildScene() {
+        Label plzLabel = new Label("A programnak szüksége van egy MySQL adatbázisra a találatok tárolásához, kérlek add meg a paramétereket.");
+        plzLabel.getStyleClass().addAll("white-text");
+        plzLabel.setWrapText(true);
+
         Label urlLabel1 = new Label("Adatbázis URL:");
         urlLabel1.getStyleClass().addAll("bold-text", "white-text");
 
@@ -102,7 +110,6 @@ public class ConfigWindow extends Stage {
                 reInit();
             }
         });
-        passwordField.setText(Connection.password);
 
         msgLabel.getStyleClass().addAll("bold-text", "white-text");
 
@@ -117,45 +124,51 @@ public class ConfigWindow extends Stage {
         });
 
         GridPane grid = new GridPane();
-        grid.setPadding(new Insets(12));
         grid.setHgap(5);
         grid.setVgap(10);
-        grid.add(urlLabel1, 0, 0, 3, 1);
-        grid.add(urlLabel2, 0, 1);
-        grid.add(urlField, 1, 1);
-        grid.add(urlLabel3, 2, 1);
-        grid.add(urlLabel4, 1, 2);
-        grid.add(userLabel1, 0, 3, 3, 1);
-        grid.add(userField, 1, 4);
-        grid.add(userLabel2, 1, 5);
-        grid.add(passwordLabel1, 0, 6, 3, 1);
-        grid.add(passwordField, 1, 7);
-        grid.add(passwordLabel2, 1, 8);
-        grid.add(okButton, 0, 9, 3, 1);
-        grid.add(msgLabel, 0, 10, 3, 1);
+        grid.add(urlLabel1, 0, 1, 3, 1);
+        grid.add(urlLabel2, 0, 2);
+        grid.add(urlField, 1, 2);
+        grid.add(urlLabel3, 2, 2);
+        grid.add(urlLabel4, 1, 3);
+        grid.add(userLabel1, 0, 4, 3, 1);
+        grid.add(userField, 1, 5);
+        grid.add(userLabel2, 1, 6);
+        grid.add(passwordLabel1, 0, 7, 3, 1);
+        grid.add(passwordField, 1, 8);
+        grid.add(passwordLabel2, 1, 9);
+        grid.add(okButton, 0, 10, 3, 1);
+        grid.add(msgLabel, 0, 11, 3, 1);
         GridPane.setHalignment(okButton, HPos.CENTER);
         GridPane.setHalignment(msgLabel, HPos.CENTER);
 
-        Scene scene = new Scene(grid, 310, 340);
+        BorderPane layout = new BorderPane();
+        layout.setPadding(new Insets(10));
+        layout.setTop(plzLabel);
+        layout.setCenter(grid);
+        BorderPane.setAlignment(grid, Pos.CENTER);
+
+        Scene scene = new Scene(layout, 310, 380);
         scene.getStylesheets().add("pubsearch/gui/style.css");
         return scene;
     }
 
     private void reInit() {
-        if (!Connection.dburl.equals(urlField.getText())
-                || !Connection.username.equals(userField.getText())
-                || !Connection.password.equals(passwordField.getText())) {
-            Connection.dburl = urlField.getText();
-            Connection.username = userField.getText();
-            Connection.password = passwordField.getText();
+        if (!ConfigModel.getJdbcUrl().equals(urlField.getText())
+                || !ConfigModel.getJdbcUser().equals(userField.getText())
+                || !ConfigModel.getJdbcPass().equals(passwordField.getText())
+                || !configIsOK) {
+            ConfigModel.setJdbcUrl(urlField.getText());
+            ConfigModel.setJdbcUser(userField.getText());
+            ConfigModel.setJdbcPass(passwordField.getText());
             msgLabel.setText("");
-            try {
-                Connection.init();
-                configIsOK = true;
-            } catch (Throwable t) {
-                configIsOK = false;
+
+            configIsOK = Connection.tryInit();
+            if (configIsOK) {
+                ConfigModel.save();
+            } else {
                 msgLabel.setText("Nem sikerült felépíteni a kapcsolatot.");
-                return;
+                // TODO lehetne itt is hiba típus alapján eljárni
             }
         }
 

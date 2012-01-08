@@ -10,35 +10,30 @@ import javax.persistence.*;
 
 /**
  * Egy publikáció alapvető adatai.
+ *
  * @author Zsolt
  */
 @Entity
-public class Publication implements Serializable {
+public class Publication extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    private String bibtex;
     private String authors;
     private String title;
     private int year;
-    @Transient
-    private boolean stored = false;
 
     public Publication() {
     }
 
-    public Publication(String authors, String title, int year) {
+    public Publication(String bibtex, String authors, String title, int year) {
+        this.bibtex = bibtex;
         this.authors = authors;
         this.title = title;
         this.year = year;
-
-        if (!stored) {
-            Connection.em.getTransaction().begin();
-            Connection.em.persist(this);
-            Connection.em.getTransaction().commit();
-            stored = true;
-        }
+        store();
     }
 
     /**
@@ -50,11 +45,11 @@ public class Publication implements Serializable {
     public static List<Publication> searchResults(String filterAuthors, String filterTitle) {
         filterAuthors = filterAuthors.replace(' ', '%');
         filterTitle = filterTitle.replace(' ', '%');
-        Query q = Connection.em.createQuery("SELECT p FROM Publication p WHERE p.authors LIKE '%" + filterAuthors + "%' AND p.title LIKE '%" + filterTitle + "%'");
+        Query q = Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors LIKE '%" + filterAuthors + "%' AND p.title LIKE '%" + filterTitle + "%'");
         return q.getResultList();
     }
 
-        public Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -68,6 +63,14 @@ public class Publication implements Serializable {
 
     public void setAuthors(String authors) {
         this.authors = authors;
+    }
+
+    public String getBibtex() {
+        return bibtex;
+    }
+
+    public void setBibtex(String bibtex) {
+        this.bibtex = bibtex;
     }
 
     public String getTitle() {

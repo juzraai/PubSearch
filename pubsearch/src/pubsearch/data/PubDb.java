@@ -1,42 +1,74 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pubsearch.data;
 
 import java.io.Serializable;
 import javax.persistence.*;
 
 /**
+ * Egy publikációs adatbázis jellemzői (feldolgozáshoz).
  *
  * @author Zsolt
  */
 @Entity
-public class PubDb implements Serializable {
+public class PubDb extends BaseEntity implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    @Transient
-    private boolean stored = false;
+    private String baseUrl;
+    // form submit
+    private String submitUrl;
+    private String submitMethod;                // "GET" / "POST"
+    private String submitParams;                // formatstring, %s:author, %s:title
+    // result list
+    private String pubPageLink;                 // regex, group 1 kell
+    private String pubPageLinkMod;              // formatstring, %s:link before mod
+    private String nextPageLink;                // regex, group 1 kell
+    // pub page
+    private String bibtexLink;                  // regex, group 1 kell
+    private String bibtex;                      // regex, group 1 kell
+    private String authors;                     // regex, group 1 kell
+    private String title;                       // regex, group 1 kell
+    private String year;                        // regex, group 1 kell
+    private String refPubListPageLink;          // regex, group 1 kell
+    // ref pub list
+    private String refPubListBlock;             // regex, group 1 kell
 
-    public PubDb()
-    {
-        
+    public PubDb() {
     }
-    public PubDb(String name) {
-        this.name = name;
-        
-        if (!stored) {
-            Connection.em.getTransaction().begin();
-            Connection.em.persist(this);
-            Connection.em.getTransaction().commit();
-            stored = true;
-        }
+
+    public String getAuthors() {
+        return authors;
     }
-    
-    
+
+    public void setAuthors(String authors) {
+        this.authors = authors;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public String getBibtex() {
+        return bibtex;
+    }
+
+    public void setBibtex(String bibtex) {
+        this.bibtex = bibtex;
+    }
+
+    public String getBibtexLink() {
+        return bibtexLink;
+    }
+
+    public void setBibtexLink(String bibtexLink) {
+        this.bibtexLink = bibtexLink;
+    }
 
     public Long getId() {
         return id;
@@ -44,6 +76,94 @@ public class PubDb implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getNextPageLink() {
+        return nextPageLink;
+    }
+
+    public void setNextPageLink(String nextPageLink) {
+        this.nextPageLink = nextPageLink;
+    }
+
+    public String getPubPageLink() {
+        return pubPageLink;
+    }
+
+    public void setPubPageLink(String pubPageLink) {
+        this.pubPageLink = pubPageLink;
+    }
+
+    public String getPubPageLinkMod() {
+        return pubPageLinkMod;
+    }
+
+    public void setPubPageLinkMod(String pubPageLinkMod) {
+        this.pubPageLinkMod = pubPageLinkMod;
+    }
+
+    public String getRefPubListBlock() {
+        return refPubListBlock;
+    }
+
+    public void setRefPubListBlock(String refPubListBlock) {
+        this.refPubListBlock = refPubListBlock;
+    }
+
+    public String getRefPubListPageLink() {
+        return refPubListPageLink;
+    }
+
+    public void setRefPubListPageLink(String refPubListPageLink) {
+        this.refPubListPageLink = refPubListPageLink;
+    }
+
+    public String getSubmitMethod() {
+        return submitMethod;
+    }
+
+    public void setSubmitMethod(String submitMethod) {
+        this.submitMethod = submitMethod;
+    }
+
+    public String getSubmitParams() {
+        return submitParams;
+    }
+
+    public void setSubmitParams(String submitParams) {
+        this.submitParams = submitParams;
+    }
+
+    public String getSubmitUrl() {
+        return submitUrl;
+    }
+
+    public void setSubmitUrl(String submitUrl) {
+        this.submitUrl = submitUrl;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 
     @Override
@@ -70,5 +190,4 @@ public class PubDb implements Serializable {
     public String toString() {
         return "pubsearch.data.PubDb[ id=" + id + " ]";
     }
-    
 }

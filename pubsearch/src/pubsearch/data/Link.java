@@ -13,13 +13,23 @@ import javax.persistence.Id;
  * @author Zsolt
  */
 @Entity
-public class Link implements Serializable {
+public class Link extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     private String url;
     private int dbID;
     private int pubID;
+
+    public Link() {
+    }
+
+    public Link(String url, int dbID, int pubID) {
+        this.url = url;
+        this.dbID = dbID;
+        this.pubID = pubID;
+        store();
+    }
 
     public String getUrl() {
         return url;

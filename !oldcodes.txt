@@ -1,0 +1,42 @@
+régi init kezelés:
+
+
+        /*
+         * try {
+         * Connection.init(); // azért inicializálunk itt, hogy ne futás közben fagyjon ki a program
+         * primaryStage.show();
+         * } catch (SQLException ex) {
+         * ((MainWindow) primaryStage).configWindow.show();
+         * } catch (Throwable t)
+         * {
+         * // TODO más kivételt a JPA dobhat, arra valami AlertBox szerû cucc kéne
+         * t.printStackTrace();
+         * System.exit(1);
+         * }
+         */
+
+
+            /*
+             * try {
+             * Connection.init();
+             * configIsOK = true;
+             * ConfigModel.save();
+             * } catch (Throwable t) {
+             * configIsOK = false;
+             * msgLabel.setText("Nem sikerült felépíteni a kapcsolatot.");
+             * return;
+             * }
+             */
+
+
+AWindow, try #1
+
+protected AWindow(String title, boolean resizable, boolean modal) {
+        setTitle(title);
+        setResizable(resizable);
+        if (modal) {
+            initModality(Modality.APPLICATION_MODAL);
+        }
+        //setScene(buildScene());
+        getScene().getStylesheets().add("pubsearch/gui/style.css");
+    }

@@ -7,6 +7,8 @@ package pubsearch;
 import java.sql.SQLException;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import javax.print.PrintService;
+import pubsearch.config.ConfigModel;
 import pubsearch.data.Connection;
 import pubsearch.data.PubDb;
 import pubsearch.gui.ConfigWindow;
@@ -18,8 +20,7 @@ import pubsearch.gui.Tools;
  *
  * @author Zsolt
  */
-public class Pubsearch extends Application {   
-   
+public class Pubsearch extends Application {
 
     /**
      * Elindítja az alkalmazást.
@@ -38,19 +39,20 @@ public class Pubsearch extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        
-        // TODO load config
-       
-        primaryStage = new MainWindow();        
-        try {
-            Connection.init(); // azért inicializálunk itt, hogy ne futás közben fagyjon ki a program    
-            //new PubDb("alma");
+
+        ConfigModel.load();
+
+        primaryStage = new MainWindow();
+        if (Connection.tryInit()) {
             primaryStage.show();
-        } catch (SQLException ex) {
-            new ConfigWindow(primaryStage).show();
-        } catch (Throwable t)
-        {
-            // TODO más kivételt a JPA dobhat, arra valami AlertBox szerű cucc kéne
+        } else {
+            if (Connection.getLastError() == Connection.SQL_ERROR) {
+                ((MainWindow) primaryStage).configWindow.show();
+            } else if (Connection.getLastError() == Connection.JPA_ERROR) {
+                // TODO ALERT ABLAK (adatbázis és programverzió nem konzisztens, módsult a séma, ilyesmi)
+                System.err.println("JPA ERROR");
+                System.exit(1);
+            }
         }
     }
 }

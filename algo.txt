@@ -1,0 +1,44 @@
+Result List
+-----------
+
+kivágja a \n-eket a HTML-bõl
+
+kigyûjti a linkeket a PubPageLinkPattern alapján, majd
+ha van PubPageLinkMod, akkor kiegészíti azokat.
+
+a NextPageLinkPattern alapján lapoz.
+
+Pub Page
+--------
+
+Ha van BibTexLinkPattern, akkor odamegy.
+Ha van BibTexPattern, akkor
+	szûkíti a kódot
+	kiveszi a &nbsp;-ket, HTML tag-eket
+	és a BibTeX-es globális patternekkel kinyeri az a/t/y adatokat.
+
+ELSE
+	AuthorsPattern alapján
+		az összes találatot konkatenálja, "  "->" " csere, HTML-kód/"by" kivágás, ","->"\n" csere
+	TitlePattern, YearPattern
+		elsõ találat, title-nél clean
+
+
+RefBy
+-----
+
+ha van RefPubListPageLinkPattern, akkor odamegy.
+ha van RefPubListBlockPattern, akkor szûkít erre.
+
+innentõl kezdve a PubPageLinkPattern-t, és a PubPageLinkMod-ot használja, ahogy fent.
+ha volt RefPubListPageLinkPattern, akkor használja a NextPageLinkPattern-t és lapoz.
+
+
+
+
+
+
+---
+EXPORT
+	ha van BibTex-ünk, akkor azt, ellenben
+	felépítjük a 3 adatból
