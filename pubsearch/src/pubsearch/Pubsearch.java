@@ -1,6 +1,7 @@
 package pubsearch;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import pubsearch.config.ConfigModel;
 import pubsearch.data.Connection;
@@ -19,7 +20,7 @@ public class Pubsearch extends Application {
      *
      * @param args the command line arguments
      */
-    public static void main(String[] args) {        
+    public static void main(String[] args) {
         Application.launch(args);
     }
 
@@ -30,20 +31,19 @@ public class Pubsearch extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        AlertWindow.show("Teszt hibaüzi. Sok szót még ideírok, hogy több sorosan is le tudjam tesztelni!");
-        if (true) return;
-
+        //new AboutWindow().show(); if(true)return;
         ConfigModel.load();
 
-        primaryStage = new MainWindow();
+        Stage stage = new MainWindow();
         if (Connection.tryInit()) {
-            primaryStage.show();
+            stage.show();
         } else {
             if (Connection.getLastError() == Connection.SQL_ERROR) {
-                ((MainWindow) primaryStage).configWindow.show();
+                ((MainWindow) stage).configWindow.show();
+                AlertWindow.show("Nem sikerült csatlakozni a MySQL adatbázishoz, kérlek add meg a megfelelő paramétereket!");
             } else if (Connection.getLastError() == Connection.JPA_ERROR) {
                 AlertWindow.show("Hiba történt az adatbáziskapcsolat felépítésekor (JPA_ERROR).");
-                System.exit(1);
+                Platform.exit();
             }
         }
     }

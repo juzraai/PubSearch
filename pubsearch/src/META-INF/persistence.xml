@@ -6,6 +6,7 @@
     <class>pubsearch.data.Publication</class>
     <class>pubsearch.data.Database</class>
     <class>pubsearch.data.PubDb</class>
+    <class>pubsearch.data.Cite</class>
     <properties>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
       <property name="eclipselink.ddl-generation" value="create-tables"/>

@@ -6,6 +6,8 @@ package pubsearch.data;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.*;
 
 /**
@@ -33,7 +35,6 @@ public class Publication extends BaseEntity implements Serializable {
         this.authors = authors;
         this.title = title;
         this.year = year;
-        store();
     }
 
     /**
@@ -45,16 +46,15 @@ public class Publication extends BaseEntity implements Serializable {
     public static List<Publication> searchResults(String filterAuthors, String filterTitle) {
         filterAuthors = filterAuthors.replace(' ', '%');
         filterTitle = filterTitle.replace(' ', '%');
-        Query q = Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors LIKE '%" + filterAuthors + "%' AND p.title LIKE '%" + filterTitle + "%'");
-        return q.getResultList();
+        return Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors LIKE '%" + filterAuthors + "%' AND p.title LIKE '%" + filterTitle + "%'").getResultList();
     }
 
-    public Long getId() {
-        return id;
+    public List<Publication> getCites() {
+        return Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.id IN (SELECT c.citedByPubID FROM Cite c WHERE c.pubID=" + id + ")").getResultList();
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public List<Link> getLinks() {
+        return Connection.getEm().createQuery("SELECT l FROM Link l WHERE l.pubID=" + id).getResultList();
     }
 
     public String getAuthors() {
@@ -66,11 +66,20 @@ public class Publication extends BaseEntity implements Serializable {
     }
 
     public String getBibtex() {
+        // TODO if (bibtex==null) GENERÁL!!!
         return bibtex;
     }
 
     public void setBibtex(String bibtex) {
         this.bibtex = bibtex;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {

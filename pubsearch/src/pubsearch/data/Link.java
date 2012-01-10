@@ -7,19 +7,20 @@ package pubsearch.data;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 /**
  * Egy publikációs adatbázisból egy publikációra mutató link.
+ *
  * @author Zsolt
  */
 @Entity
 public class Link extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
     private String url;
-    private int dbID;
     private int pubID;
+    private int dbID;
 
     public Link() {
     }
@@ -28,9 +29,9 @@ public class Link extends BaseEntity implements Serializable {
         this.url = url;
         this.dbID = dbID;
         this.pubID = pubID;
-        store();
     }
 
+    @Id
     public String getUrl() {
         return url;
     }
@@ -47,6 +48,13 @@ public class Link extends BaseEntity implements Serializable {
         this.dbID = dbID;
     }
 
+    @Transient
+    public String getDbName() {
+        // nem a legszebb megoldás, JPA nélkül ezt a külső lekérdezésbe is be lehetett volna tenni...
+        return (String) Connection.getEm().createQuery("SELECT d.name FROM PubDb d WHERE d.id=" + dbID).getSingleResult();
+    }
+
+    @Id
     public int getPubID() {
         return pubID;
     }
@@ -64,15 +72,14 @@ public class Link extends BaseEntity implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Link)) {
             return false;
         }
         Link other = (Link) object;
-        if ((this.url == null && other.url != null) || (this.url != null && !this.url.equals(other.url))) {
+        if (this.url == null || other.url == null) {
             return false;
         }
-        return true;
+        return (this.url.equalsIgnoreCase(other.url));
     }
 
     @Override

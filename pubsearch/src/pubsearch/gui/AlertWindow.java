@@ -1,5 +1,6 @@
 package pubsearch.gui;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -8,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Reflection;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -17,6 +17,7 @@ import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.StageStyle;
 
 /**
  * Hibaüzenet ablak.
@@ -24,7 +25,7 @@ import javafx.scene.text.TextAlignment;
  * @author Zsolt
  */
 public class AlertWindow extends AWindow {
-
+ 
     /**
      * Eltárolunk egy objektumot, ezt fogja beállítani és megjeleníteni a
      * statikus show(msg), így nem kell mindig felépíteni egy ablakot.
@@ -107,30 +108,31 @@ public class AlertWindow extends AWindow {
         Scene scene = new Scene(layout, 400, 125);
         scene.getRoot().setStyle("-fx-background-color: transparent;"); // levesszük a CSS hátteret      
         scene.setFill(gradient);
-        scene.getRoot().setCache(true);        
+        scene.getRoot().setCache(true);
         return scene;
     }
 
     public void setMessage(String message) {
         messageLabel.setText(message);
     }
-    
+
     /**
      * Megjelenít egy hibaüzenet ablakot.
      * @param msg A hibaüzenet.
      */
     public static void show(String msg) {
-        alertWindow.setMessage(msg);
-        alertWindow.show();
+        show("PubSearch", msg);
     }
-    
+
     /**
      * Megjelenít egy hibaüzenet ablakot.
+     *
      * @param title Ablak címsora.
-     * @param msg  Hibaüzenet.
+     * @param msg Hibaüzenet.
      */
     public static void show(String title, String msg) {
         alertWindow.setTitle(title);
-        show(msg);
+        alertWindow.setMessage(msg);
+        alertWindow.show();
     }
 }

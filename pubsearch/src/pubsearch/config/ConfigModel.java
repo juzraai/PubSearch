@@ -63,6 +63,7 @@ public class ConfigModel {
             proxyList = readProxyList.toArray(proxyList);
         } catch (IOException e) {
         } finally {
+            System.out.println("CONFIG LOADED.");
             if (r != null) {
                 try {
                     r.close();
@@ -88,6 +89,7 @@ public class ConfigModel {
             }
         } catch (IOException e) {
         } finally {
+            System.out.println("CONFIG SAVED.");
             if (w != null) {
                 try {
                     w.close();

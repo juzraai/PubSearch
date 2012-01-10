@@ -28,12 +28,13 @@ public class MainWindow extends AWindow {
 
     public final ConfigWindow configWindow = new ConfigWindow((Stage) this);
     private final ProxyWindow proxyWindow = new ProxyWindow();
-    private ObservableList<Publication> results = FXCollections.observableArrayList();
-    private TextField authorField = new TextField();
-    private TextField titleField = new TextField();
-    private CheckBox onlyLocalCheckBox = new CheckBox("Keresés csak a helyi adatbázisban");
-    private final TableView<Publication> resultsView = new TableView<Publication>();
-    private Label resultCountLabel = new Label();
+    private final AboutWindow aboutWindow = new AboutWindow();
+    private final TextField authorField = new TextField();
+    private final TextField titleField = new TextField();
+    private final CheckBox onlyLocalCheckBox = new CheckBox("Keresés csak a helyi adatbázisban");
+    private final Button searchButton = new Button("Keresés!");
+    private final PubTable resultsView = new PubTable();
+    private final Label resultCountLabel = new Label();
 
     /**
      * Létrehozza az ablakot.
@@ -52,28 +53,39 @@ public class MainWindow extends AWindow {
         EventHandler<ActionEvent> startSearchAction = new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent event) {
-                startSearch();
+                if (!searchButton.isDisabled()) {
+                    startSearch();
+                }
             }
         };
 
         /*
          * Top
          */
-        Label authorLabel = new Label("Szerző:");
+        Label authorLabel = new Label("Keresés szerzőre:");
         authorLabel.setLabelFor(authorField);
-        authorLabel.setStyle("-fx-text-fill: white");
+        authorLabel.getStyleClass().addAll("white-text", "bold-text");
 
         authorField.setOnAction(startSearchAction);
 
-        Label titleLabel = new Label("Cím:");
+        authorField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+
+            public void handle(KeyEvent event) {
+                searchButton.setDisable(authorField.getText().length() == 0);
+                titleField.setDisable(authorField.getText().length() == 0);
+            }
+        });
+
+        Label titleLabel = new Label("Szűkítés címre:");
         titleLabel.setLabelFor(titleField);
-        titleLabel.setStyle("-fx-text-fill: white");
+        titleLabel.getStyleClass().addAll("white-text");
 
         titleField.setOnAction(startSearchAction);
+        titleField.setDisable(true);
 
         onlyLocalCheckBox.setStyle("-fx-text-fill: #AFA");
 
-        Button searchButton = new Button("Keresés!");
+        searchButton.setDisable(true);
         searchButton.setPrefWidth(75);
         searchButton.setPrefHeight(45);
         searchButton.setStyle("-fx-base: #3AD;");
@@ -85,7 +97,7 @@ public class MainWindow extends AWindow {
         editProxiesButton.setOnAction(new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent event) {
-                MainWindow.this.proxyWindow.show();
+                proxyWindow.show();
             }
         });
 
@@ -95,13 +107,19 @@ public class MainWindow extends AWindow {
         editDBConnButton.setOnAction(new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent event) {
-                MainWindow.this.configWindow.show();
+                configWindow.show();
             }
         });
 
         Button aboutButton = new Button("Névjegy");
         aboutButton.setPrefWidth(100);
         aboutButton.setStyle("-fx-base: #3D6");
+        aboutButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent event) {
+                aboutWindow.show();
+            }
+        });
 
         GridPane top = new GridPane();
         top.setPadding(new Insets(12));
@@ -127,26 +145,6 @@ public class MainWindow extends AWindow {
         titleCol.setPrefWidth(250);
         titleCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("title")); // unsafe op.
 
-        resultsView.setPlaceholder(new Label("Nincs megjeleníthető találat."));
-        resultsView.getColumns().addAll(authorsCol, titleCol);
-        resultsView.setEditable(false);
-        resultsView.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-            public void handle(KeyEvent event) {
-                if (event.getCode() == KeyCode.ENTER) {
-                    showPubWindow();
-                }
-            }
-        });
-        resultsView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-            public void handle(MouseEvent event) {
-                if (event.getClickCount() > 1) {
-                    showPubWindow();
-                }
-            }
-        });
-
         resultCountLabel.getStyleClass().addAll("white-text", "bold-text");
         resultCountLabel.setTextAlignment(TextAlignment.CENTER);
         resultCountLabel.setWrapText(true);
@@ -164,37 +162,34 @@ public class MainWindow extends AWindow {
         layout.setPadding(new Insets(0));
         layout.setTop(top);
         layout.setCenter(center);
-
-        return new Scene(layout, 600, 300);
-    }
-
-    /**
-     * Eseménykezelő. Esemény: duplakattintás/ENTER a találati listában. Tevékenység: betölti a hivatkozó publikációkat.
-     */
-    private void showPubWindow() {
-        if (resultsView.getSelectionModel().getSelectedIndex() > -1) {
-            Publication p = resultsView.getSelectionModel().getSelectedItem();
-
-            new PubWindow(p).show();
-        }
+        return new Scene(layout, 520, 300);
     }
 
     /**
      * Eseménykezelő. Esemény: keresés gomb akciója. Tevékenység: elindítja a kereső algoritmust, és elérhetetlenné teszi a GUI-t (beviteli mező, keresés gomb).
      */
     private void startSearch() {
+        long startTime = System.nanoTime();
         if (!onlyLocalCheckBox.selectedProperty().get()) {
             if (ConfigModel.getProxyList().length == 0) {
-                AlertWindow.show("A kereséshez meg kell adnod egy érvényes proxy listát.");
+                proxyWindow.show();
+                AlertWindow.show("A kereséshez meg kell adnod egy proxy listát.\n(Vagy keress csak a helyi adatbázisban.)");
+                return;
             }
             // crawl
             // TODO majd bent a szóközöket +-ra cseréli! (?)
         }
+
         try {
             resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(authorField.getText(), titleField.getText())));
         } catch (Throwable t) {
             AlertWindow.show("Hiba történt lekérdezés közben (JPA_ERROR).");
+            return;
         }
-        resultCountLabel.setText(String.format("%d db találat (szerző: ' %s ', cím: ' %s '); a művelet %d KB adatforgalmat vett igénybe", resultsView.getItems().size(), authorField.getText(), titleField.getText(), 0));
+
+        long time = System.nanoTime() - startTime;
+        System.out.println(time);
+        System.out.println(Tools.formatNanoTime(time));
+        resultCountLabel.setText(String.format("%d db találat (idő: %s, adatforgalom: %d KB)", resultsView.getItems().size(), Tools.formatNanoTime(time), 0));
     }
 }

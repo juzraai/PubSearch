@@ -1,3 +1,16 @@
+Submit parameters
+-----------------
+
+Paramlista = String.format(SubmitParams, author);
+
+ha van title szûrés, akkor:
+
+Paramlista = String.format(SubmitParams2, Paramlista, title);
+
+
+...
+
+
 Result List
 -----------
 

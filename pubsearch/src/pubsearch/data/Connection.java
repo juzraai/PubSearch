@@ -52,6 +52,7 @@ public class Connection {
         //s.execute("DROP TABLE PubDb;");
         s.close();
         c.close();
+        System.out.println("MYSQL CONNECTION OK.");
 
         /*
          * Csatalakoztatjuk a JPA-t.
@@ -63,6 +64,7 @@ public class Connection {
         //props.put(PersistenceUnitProperties.)
         emf = Persistence.createEntityManagerFactory("pubsearch", props);
         em = emf.createEntityManager();
+        System.out.println("JPA CONNECTION BUILT.");
 
         /*
          * Feltöltjük a publikációs adatbázisok adatait. Ezt a CRAWL package-ben kéne már!!!
@@ -80,8 +82,13 @@ public class Connection {
             } catch (Throwable t) {
             }
         }*/
+        
+        /*Publication p = new Publication(null, "sz1", "c1", 1);
+        p.store();
+        new Link("url1", 0, p.getId().intValue()).store();
+        System.out.println("TEST DATA STORED.");*/
 
-
+        System.out.println("INIT DONE.");
     }
 
     /**

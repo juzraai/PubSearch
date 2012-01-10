@@ -1,7 +1,10 @@
 package pubsearch.data;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /**
  * Egy publikációs adatbázis jellemzői (feldolgozáshoz).
@@ -12,6 +15,7 @@ import javax.persistence.*;
 public class PubDb extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    // basic data
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -20,20 +24,21 @@ public class PubDb extends BaseEntity implements Serializable {
     // form submit
     private String submitUrl;
     private String submitMethod;                // "GET" / "POST"
-    private String submitParams;                // formatstring, %s:author, %s:title
+    private String submitParams;                // formatstring, %s:author
+    private String submitParamsWithTitle;       // formatstring, %s:querystring, %s:title
     // result list
-    private String pubPageLink;                 // regex, group 1 kell
+    private String pubPageLink;                 // regex
     private String pubPageLinkMod;              // formatstring, %s:link before mod
     private String nextPageLink;                // regex, group 1 kell
     // pub page
-    private String bibtexLink;                  // regex, group 1 kell
-    private String bibtex;                      // regex, group 1 kell
-    private String authors;                     // regex, group 1 kell
-    private String title;                       // regex, group 1 kell
-    private String year;                        // regex, group 1 kell
-    private String refPubListPageLink;          // regex, group 1 kell
+    private String bibtexLink;                  // regex
+    private String bibtex;                      // regex
+    private String authors;                     // regex
+    private String title;                       // regex
+    private String year;                        // regex
+    private String refPubListPageLink;          // regex
     // ref pub list
-    private String refPubListBlock;             // regex, group 1 kell
+    private String refPubListBlock;             // regex
 
     public PubDb() {
     }
@@ -140,6 +145,14 @@ public class PubDb extends BaseEntity implements Serializable {
 
     public void setSubmitParams(String submitParams) {
         this.submitParams = submitParams;
+    }
+
+    public String getSubmitParamsWithTitle() {
+        return submitParamsWithTitle;
+    }
+
+    public void setSubmitParamsWithTitle(String submitParamsWithTitle) {
+        this.submitParamsWithTitle = submitParamsWithTitle;
     }
 
     public String getSubmitUrl() {

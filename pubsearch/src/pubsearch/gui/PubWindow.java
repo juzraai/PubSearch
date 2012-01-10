@@ -1,5 +1,12 @@
 package pubsearch.gui;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -7,8 +14,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import pubsearch.data.Link;
 import pubsearch.data.Publication;
@@ -37,13 +47,8 @@ public class PubWindow extends AWindow {
      * @return A felépített ablaktartalom.
      */
     private Scene buildScene() {
-        /*
-         * Tab list
-         */
-        Tab detailsTab = new Tab("Adatok");
-        Tab linksTab = new Tab("Linkek (#)");
-        Tab refPubsTab = new Tab("Hivatkozó publikációk (#)");
-        Tab exportTab = new Tab("Exportálás");
+        TabPane tabs = new TabPane();
+        tabs.tabClosingPolicyProperty().set(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         /*
          * Details tab
@@ -72,7 +77,6 @@ public class PubWindow extends AWindow {
         Label yearLabel2 = new Label(Integer.toString(p.getYear()));
         yearLabel2.getStyleClass().add("italic-text");
 
-
         GridPane detailsGrid = new GridPane();
         detailsGrid.setPadding(new Insets(12));
         detailsGrid.setHgap(20);
@@ -85,53 +89,117 @@ public class PubWindow extends AWindow {
         detailsGrid.add(yearLabel1, 0, 2);
         detailsGrid.add(yearLabel2, 1, 2);
 
+        Tab detailsTab = new Tab("Adatok");
         detailsTab.setContent(detailsGrid);
+        tabs.getTabs().add(detailsTab);
+
+        /*
+         * BibTeX tab
+         */
+        final TextArea bibtexTA = new TextArea("ALMA");
+        bibtexTA.setEditable(false);
+
+        Button copyButton = new Button("Másolás");
+        copyButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent event) {
+                bibtexTA.selectAll();
+                bibtexTA.copy();
+            }
+        });
+
+        Button saveButton = new Button("Fájlba mentés...");
+        saveButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent event) {
+                FileChooser fc = new FileChooser();
+                fc.setTitle("BibTeX exportálása...");
+                fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Minden fájl (*.*)", "*.*"));
+
+                File f = fc.showSaveDialog(PubWindow.this.getOwner());
+
+                BufferedWriter w = null;
+                try {
+                    w = new BufferedWriter(new FileWriter(f));
+                    w.write(bibtexTA.getText());
+                    w.newLine();
+                } catch (IOException e) {
+                } finally {
+                    System.out.println("BIBTEX EXPORTED.");
+                    if (w != null) {
+                        try {
+                            w.close();
+                        } catch (IOException e) {
+                        }
+                    }
+                }
+            }
+        });
+
+        HBox buttons = new HBox(10);
+        buttons.setAlignment(Pos.CENTER_RIGHT);
+        buttons.setPadding(new Insets(12));
+        buttons.getChildren().addAll(copyButton, saveButton);
+
+        BorderPane bibtexTabLayout = new BorderPane();
+        bibtexTabLayout.setTop(buttons);
+        bibtexTabLayout.setCenter(bibtexTA);
+        BorderPane.setMargin(bibtexTA, new Insets(0, 10, 10, 10));
+
+        Tab bibtexTab = new Tab("BibTeX");
+        bibtexTab.setContent(bibtexTabLayout);
+        tabs.getTabs().add(bibtexTab);
 
         /*
          * Links tab
          */
-        TableView<Link> linksView = new TableView<Link>();
-        linksView.setPlaceholder(new Label("Nincs link ehhez a publikációhoz."));
+        ObservableList<Link> links = FXCollections.observableArrayList(p.getLinks());
+        if (links.size() > 0) {
+            TableView<Link> linksView = new TableView<Link>();
+            linksView.setPlaceholder(new Label("Nincs link ehhez a publikációhoz."));
 
-        TableColumn dbNameCol = new TableColumn("Adatbázis");
-        dbNameCol.setPrefWidth(125);
-        dbNameCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("dbID")); // unsafe op.
+            TableColumn dbNameCol = new TableColumn("Adatbázis");
+            dbNameCol.setPrefWidth(125);
+            dbNameCol.setCellValueFactory(new PropertyValueFactory<Link, String>("dbName")); // unsafe op.
 
-        TableColumn linkCol = new TableColumn("URL");
-        linkCol.setPrefWidth(250);
-        linkCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("url"));
-        final Callback<TableColumn<Link, String>, TableCell<Link, String>> cf = linkCol.getCellFactory();
-        linkCol.setCellFactory(new Callback<TableColumn<Link, String>, TableCell<Link, String>>() {
+            TableColumn linkCol = new TableColumn("URL");
+            linkCol.setPrefWidth(250);
+            linkCol.setCellValueFactory(new PropertyValueFactory<Link, String>("url"));
+            final Callback<TableColumn<Link, String>, TableCell<Link, String>> cf = linkCol.getCellFactory();
+            linkCol.setCellFactory(new Callback<TableColumn<Link, String>, TableCell<Link, String>>() {
 
-            public TableCell<Link, String> call(TableColumn<Link, String> param) {
-                final TableCell<Link, String> cell = cf.call(param);
-                cell.setStyle("-fx-text-fill: blue; -fx-underline: true");
-                cell.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                public TableCell<Link, String> call(TableColumn<Link, String> param) {
+                    final TableCell<Link, String> cell = cf.call(param);
+                    cell.setStyle("-fx-text-fill: blue; -fx-underline: true");
+                    cell.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
-                    public void handle(MouseEvent event) {
-                        //TODO open link (cell.getText()) in new browser window
-                        System.out.println("LINK: " + cell.getText());
-                    }
-                });
-                return cell;
-            }
-        });
-        linksView.getColumns().addAll(dbNameCol, linkCol);
-        // TODO valahogy megoldani, hogy a dbID helyett majd dbName-et kapjunk vissza, persze tesztadatok is kellenek
-        //Query q = Connection.em.createQuery("select d.dbName, l.url FROM dbName d, Link l WHERE l.pubID="+p.getId()+" AND l.dbID=d.id");
-        //linksView.setItems(FXCollections.observableArrayList(q.getResultList()));
+                        public void handle(MouseEvent event) {
+                            //TODO open link (cell.getText()) in new browser window
+                            System.out.println("LINK: " + cell.getText());
+                        }
+                    });
+                    return cell;
+                }
+            });
+            linksView.getColumns().addAll(dbNameCol, linkCol);
+            linksView.setItems(links);
 
-        //BorderPane linksPane = new BorderPane();
-        //linksPane.setPadding(new Insets(10));
-        //linksPane.getChildren().add(linksView);
-        linksTab.setContent(linksView);
+            Tab linksTab = new Tab("Linkek (" + links.size() + ")");
+            linksTab.setContent(linksView);
+            tabs.getTabs().add(linksTab);
+        }
 
         /*
-         * Build
+         * Cites tab
          */
-        TabPane tabs = new TabPane();
-        tabs.tabClosingPolicyProperty().set(TabPane.TabClosingPolicy.UNAVAILABLE);
-        tabs.getTabs().addAll(detailsTab, linksTab, refPubsTab, exportTab);
+        ObservableList<Publication> cites = FXCollections.observableArrayList(p.getCites());
+        if (cites.size() > 0) {
+            Tab citesTab = new Tab("Hivatkozik erre (" + cites.size() + ")");
+            PubTable citesView = new PubTable();
+            citesView.setItems(cites);
+            citesTab.setContent(citesView);
+            tabs.getTabs().add(citesTab);
+        }
 
         return new Scene(tabs, 400, 250);
     }
