@@ -6,7 +6,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
@@ -46,9 +45,10 @@ public class ProxyWindow extends AWindow {
      * @return A felépített ablaktartalom.
      */
     private Scene buildScene() {
-        Label plzLabel = new Label("A publikációs adatbázisok nem nézik jó szemmel a sűrű lekérdezéseket, ezért a program proxy-n keresztül küldi a kéréseket. Kérlek adj meg egy érvényes proxy listát (IP:PORT).");
-        plzLabel.getStyleClass().addAll("white-text");
+        MyLabel plzLabel = new MyLabel("A publikációs adatbázisok nem nézik jó szemmel a sűrű lekérdezéseket, ezért a program proxy-n keresztül küldi a kéréseket. Kérlek adj meg egy érvényes proxy listát (IP:PORT).", true, false, false, shadow);
         plzLabel.setWrapText(true);
+        
+        proxyTA.setStyle("-fx-font-family:monospace;");
 
         Button saveButton = new Button("Mentés");
         saveButton.setPrefWidth(100);
@@ -69,7 +69,7 @@ public class ProxyWindow extends AWindow {
         layout.setBottom(saveButton);
         BorderPane.setMargin(proxyTA, new Insets(10, 0, 10, 0));
         BorderPane.setAlignment(saveButton, Pos.CENTER);
-        
+
         return new Scene(layout, 320, 340);
     }
 }

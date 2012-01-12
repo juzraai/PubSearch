@@ -1,7 +1,8 @@
 package pubsearch.gui;
 
+import pubsearch.Tools;
+import com.sun.glass.ui.Application;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -9,14 +10,18 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.Paint;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import pubsearch.config.ConfigModel;
+import pubsearch.crawl.Crawler;
 import pubsearch.data.Publication;
 
 /**
@@ -35,21 +40,41 @@ public class MainWindow extends AWindow {
     private final Button searchButton = new Button("Keresés!");
     private final PubTable resultsView = new PubTable();
     private final Label resultCountLabel = new Label();
+    private BorderPane mainLayout, searchLayout;
+    private Paint mainFill, searchFill;
+    private final int WIDTH = 520;
+    private long startTime;
 
     /**
      * Létrehozza az ablakot.
      */
     public MainWindow() {
         super("PubSearch", true, false);
-        setScene(buildScene());
+        build();
+        setScene(new Scene(mainLayout, WIDTH, 300));
         setCSS();
+        switchScene(true);
     }
 
     /**
-     * @return A felépített ablaktartalom.
+     * Vált a főablak kétféle állapota között: keresőform; keresés folyamatban.
+     * @param toMain Keresőform állapot? Ha nem, akkor keresés folyamatban.
      */
-    private Scene buildScene() {
+    private void switchScene(boolean toMain) {
+        if (toMain) {
+            getScene().setRoot(mainLayout);
+            getScene().setFill(mainFill);
+        } else {
+            getScene().setRoot(searchLayout);
+            getScene().setFill(searchFill);
+        }
+    }
 
+    /**
+     * Felépíti az ablak tartalmát, mindkét állapothoz (keresőform; keresés folyamatban),
+     * és eltárolja az adattagokban.
+     */
+    private void build() {
         EventHandler<ActionEvent> startSearchAction = new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent event) {
@@ -62,12 +87,10 @@ public class MainWindow extends AWindow {
         /*
          * Top
          */
-        Label authorLabel = new Label("Keresés szerzőre:");
-        authorLabel.setLabelFor(authorField);
-        authorLabel.getStyleClass().addAll("white-text", "bold-text");
+        MyLabel authorLabel = new MyLabel("Keresés szerzőre:", true, true, false, shadow);
+        MyLabel titleLabel = new MyLabel("Szűkítés címre:", true, false, false, shadow);
 
         authorField.setOnAction(startSearchAction);
-
         authorField.setOnKeyReleased(new EventHandler<KeyEvent>() {
 
             public void handle(KeyEvent event) {
@@ -75,10 +98,6 @@ public class MainWindow extends AWindow {
                 titleField.setDisable(authorField.getText().length() == 0);
             }
         });
-
-        Label titleLabel = new Label("Szűkítés címre:");
-        titleLabel.setLabelFor(titleField);
-        titleLabel.getStyleClass().addAll("white-text");
 
         titleField.setOnAction(startSearchAction);
         titleField.setDisable(true);
@@ -90,6 +109,7 @@ public class MainWindow extends AWindow {
         searchButton.setPrefHeight(45);
         searchButton.setStyle("-fx-base: #3AD;");
         searchButton.setOnAction(startSearchAction);
+        searchButton.setEffect(reflection);
 
         Button editProxiesButton = new Button("Proxy...");
         editProxiesButton.setPrefWidth(100);
@@ -155,41 +175,70 @@ public class MainWindow extends AWindow {
         center.setCenter(resultsView);
         center.setTop(resultCountLabel);
 
+        mainLayout = new BorderPane();
+        mainLayout.setPadding(new Insets(0));
+        mainLayout.setTop(top);
+        mainLayout.setCenter(center);
+        mainLayout.setStyle("-fx-background-color: transparent;");
+
+        Stop[] mainFillColors = new Stop[]{
+            new Stop(0, Color.web("#484860")),
+            new Stop(1, Color.web("#333344")),};
+        mainFill = new RadialGradient(0, 0, WIDTH / 2, 0, WIDTH, false, CycleMethod.NO_CYCLE, mainFillColors);
+
         /*
-         * Build
+         * Searching
          */
-        BorderPane layout = new BorderPane();
-        layout.setPadding(new Insets(0));
-        layout.setTop(top);
-        layout.setCenter(center);
-        return new Scene(layout, 520, 300);
+        ProgressBar progressBar = new ProgressBar(-1f);
+        progressBar.setPrefSize(250, 25);
+        progressBar.setEffect(reflection);
+
+        searchLayout = new BorderPane();
+        searchLayout.setCenter(progressBar);
+        searchLayout.setStyle("-fx-background-color: transparent;");
+
+        Stop[] searchFillColors = new Stop[]{
+            new Stop(0, Color.web("#A5DDFE")),
+            new Stop(1, Color.web("#029DFB")),};
+        searchFill = new RadialGradient(0, 0, WIDTH / 2, 0, WIDTH, false, CycleMethod.NO_CYCLE, searchFillColors);
+
     }
 
     /**
      * Eseménykezelő. Esemény: keresés gomb akciója. Tevékenység: elindítja a kereső algoritmust, és elérhetetlenné teszi a GUI-t (beviteli mező, keresés gomb).
      */
     private void startSearch() {
-        long startTime = System.nanoTime();
+        startTime = System.nanoTime();
         if (!onlyLocalCheckBox.selectedProperty().get()) {
+            // crawl eset
             if (ConfigModel.getProxyList().length == 0) {
+                // nincs proxy, hibajelzés
                 proxyWindow.show();
                 AlertWindow.show("A kereséshez meg kell adnod egy proxy listát.\n(Vagy keress csak a helyi adatbázisban.)");
-                return;
+            } else {
+                // van proxy, indul a crawl, külön szálon, majd ő értesít az eredmények megjelenítéséről
+                switchScene(false);
+                Crawler crawler = new Crawler(this, authorField.getText(), titleField.getText());
+                crawler.start();
             }
-            // crawl
-            // TODO majd bent a szóközöket +-ra cseréli! (?)
+        } else {
+            // only local eset, csak lekérdezés
+            showResults(0);
         }
+    }
 
+    /**
+     * Megjeleníti az eredményeket. A keresés befejeztével hívódik meg.
+     * @param bytes Ennyi bájt adatforgalmat vett igénybe a keresés, a crawler motor jegyzi és adja át.
+     */
+    public void showResults(long bytes) {
         try {
             resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(authorField.getText(), titleField.getText())));
         } catch (Throwable t) {
             AlertWindow.show("Hiba történt lekérdezés közben (JPA_ERROR).");
-            return;
         }
-
         long time = System.nanoTime() - startTime;
-        System.out.println(time);
-        System.out.println(Tools.formatNanoTime(time));
-        resultCountLabel.setText(String.format("%d db találat (idő: %s, adatforgalom: %d KB)", resultsView.getItems().size(), Tools.formatNanoTime(time), 0));
+        resultCountLabel.setText(String.format("%d db találat (idő: %s, adatforgalom: %s)", resultsView.getItems().size(), Tools.formatNanoTime(time, false, false), Tools.formatDataSize(bytes)));
+        switchScene(true);
     }
 }

@@ -48,6 +48,10 @@ public class ConfigModel {
         ConfigModel.proxyList = proxyList;
     }
 
+    public static String getRandomProxy() {
+        return proxyList[(int) (Math.random() * proxyList.length)];
+    }
+
     public static void load() {
         BufferedReader r = null;
         try {

@@ -1,10 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pubsearch.gui;
 
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -16,7 +11,8 @@ import javafx.scene.input.MouseEvent;
 import pubsearch.data.Publication;
 
 /**
- *
+ * Egy publikációkat megjelenítő TableView, ami egy publikáció kiválasztásakor
+ * (ENTER vagy dupla klikk hatására) megjeleníti a hozzá tartozó ablakot.
  * @author Zsolt
  */
 public class PubTable extends TableView<Publication> {

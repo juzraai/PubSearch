@@ -17,6 +17,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
@@ -37,7 +39,7 @@ public class PubWindow extends AWindow {
      * @param p A publikáció, melynek adatai az ablakban megjelennek.
      */
     public PubWindow(Publication p) {
-        super(p.getAuthors() + " - " + p.getTitle(), false, false);
+        super(p.getAuthors() + " - " + p.getTitle(), true, false);
         this.p = p;
         setScene(buildScene());
         setCSS();
@@ -53,29 +55,25 @@ public class PubWindow extends AWindow {
         /*
          * Details tab
          */
-        Label authorsLabel1 = new Label("Szerzők:");
-        authorsLabel1.getStyleClass().add("bold-text");
+        MyLabel authorsLabel1 = new MyLabel("Szerzők:", false, true, false, null);
 
-        Label authorsLabel2 = new Label(p.getAuthors());
-        authorsLabel2.getStyleClass().add("italic-text");
+        MyLabel authorsLabel2 = new MyLabel(p.getAuthors(), false, false, true, null);
         authorsLabel2.setAlignment(Pos.CENTER_RIGHT);
         authorsLabel2.setTextAlignment(TextAlignment.RIGHT);
         authorsLabel2.setWrapText(true);
 
-        Label titleLabel1 = new Label("Cím:");
-        titleLabel1.getStyleClass().add("bold-text");
+        MyLabel titleLabel1 = new MyLabel("Cím:", false, true, false, null);
 
-        Label titleLabel2 = new Label(p.getTitle());
-        titleLabel2.getStyleClass().add("italic-text");
+        MyLabel titleLabel2 = new MyLabel(p.getTitle(), false, false, true, null);
         titleLabel2.setAlignment(Pos.CENTER_RIGHT);
         titleLabel2.setTextAlignment(TextAlignment.RIGHT);
         titleLabel2.setWrapText(true);
 
-        Label yearLabel1 = new Label("Év:");
-        yearLabel1.getStyleClass().add("bold-text");
+        MyLabel yearLabel1 = new MyLabel("Év:", false, true, false, null);
 
-        Label yearLabel2 = new Label(Integer.toString(p.getYear()));
-        yearLabel2.getStyleClass().add("italic-text");
+        Integer y = p.getYear();
+        String ys = (y == null) ? "(ismeretlen)" : y.toString();
+        MyLabel yearLabel2 = new MyLabel(ys, false, false, true, null);
 
         GridPane detailsGrid = new GridPane();
         detailsGrid.setPadding(new Insets(12));
@@ -96,8 +94,9 @@ public class PubWindow extends AWindow {
         /*
          * BibTeX tab
          */
-        final TextArea bibtexTA = new TextArea("ALMA");
+        final TextArea bibtexTA = new TextArea(p.getBibtex());
         bibtexTA.setEditable(false);
+        bibtexTA.setStyle("-fx-font-family:monospace;");        
 
         Button copyButton = new Button("Másolás");
         copyButton.setOnAction(new EventHandler<ActionEvent>() {

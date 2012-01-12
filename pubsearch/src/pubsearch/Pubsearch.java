@@ -31,7 +31,14 @@ public class Pubsearch extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        //new AboutWindow().show(); if(true)return;
+        System.out.println(Tools.formatDataSize(100));
+        System.out.println(Tools.formatDataSize(850));
+        System.out.println(Tools.formatDataSize(1450));
+        System.out.println(Tools.formatDataSize(9830));
+        System.out.println(Tools.formatDataSize(2345980));
+        //if (true) return;
+        
+        
         ConfigModel.load();
 
         Stage stage = new MainWindow();

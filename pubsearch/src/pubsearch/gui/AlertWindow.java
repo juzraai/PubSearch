@@ -1,15 +1,11 @@
 package pubsearch.gui;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Reflection;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -17,7 +13,6 @@ import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.StageStyle;
 
 /**
  * Hibaüzenet ablak.
@@ -31,7 +26,7 @@ public class AlertWindow extends AWindow {
      * statikus show(msg), így nem kell mindig felépíteni egy ablakot.
      */
     private static AlertWindow alertWindow = new AlertWindow("");
-    private Label messageLabel = new Label();
+    private MyLabel messageLabel = new MyLabel("", true, true, false, shadow);
 
     /**
      * Létrehoz egy új hibaüzenet ablakot,
@@ -57,25 +52,15 @@ public class AlertWindow extends AWindow {
      * @return A felépített ablaktartalom.
      */
     private Scene buildScene() {
-        DropShadow ds = new DropShadow();
-        ds.setOffsetX(3.0f);
-        ds.setOffsetY(3.0f);
-        ds.setColor(Color.BLACK);
-
-        messageLabel.getStyleClass().addAll("bold-text", "white-text");
         messageLabel.setTextAlignment(TextAlignment.JUSTIFY);
         messageLabel.setWrapText(true);
-        messageLabel.setEffect(ds);
-
-        Reflection r = new Reflection();
-        r.setFraction(0.75);
 
         Text icon = new Text("!");
         icon.setTextAlignment(TextAlignment.CENTER);
         icon.getStyleClass().addAll("bold-text");
         icon.setFill(Color.WHITE);
         icon.setStyle("-fx-font-size:36pt;");
-        icon.setEffect(r);
+        icon.setEffect(reflection);
 
         Button okButton = new Button("OK");
         okButton.setCancelButton(true); // így lesz kiESCelhető a dialog

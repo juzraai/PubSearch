@@ -7,7 +7,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -28,7 +27,7 @@ public class ConfigWindow extends AWindow {
     private TextField urlField = new TextField();
     private TextField userField = new TextField();
     private PasswordField passwordField = new PasswordField();
-    private Label msgLabel = new Label();
+    private MyLabel msgLabel = new MyLabel("", true, true, false, null);
     private boolean configIsOK;
 
     public ConfigWindow(Stage mainWindow) {
@@ -61,64 +60,31 @@ public class ConfigWindow extends AWindow {
      * @return A felépített ablaktartalom.
      */
     private Scene buildScene() {
-        Label plzLabel = new Label("A programnak szüksége van egy MySQL adatbázisra a találatok tárolásához, kérlek add meg a paramétereket.");
-        plzLabel.getStyleClass().addAll("white-text");
+        MyLabel plzLabel = new MyLabel("A programnak szüksége van egy MySQL adatbázisra a találatok tárolásához, kérlek add meg a paramétereket.", true, false, false, shadow);
         plzLabel.setWrapText(true);
+        MyLabel urlLabel1 = new MyLabel("Adatbázis URL:", true, true, false, shadow);
+        MyLabel urlLabel2 = new MyLabel("\tmysql://", true, false, true, shadow);
+        MyLabel urlLabel3 = new MyLabel("/pubsearch", true, false, true, shadow);
+        MyLabel urlLabel4 = new MyLabel("(alapért.: 'localhost:3306')", true, false, false, shadow);
+        MyLabel userLabel1 = new MyLabel("Felhasználó:", true, true, false, shadow);
+        MyLabel userLabel2 = new MyLabel("(alapért.: 'root')", true, false, false, shadow);
+        MyLabel passwordLabel1 = new MyLabel("Jelszó:", true, true, false, shadow);
+        MyLabel passwordLabel2 = new MyLabel("(alapért.: üres)", true, false, false, shadow);
 
-        Label urlLabel1 = new Label("Adatbázis URL:");
-        urlLabel1.getStyleClass().addAll("bold-text", "white-text");
-
-        Label urlLabel2 = new Label("\tmysql://");
-        urlLabel2.getStyleClass().addAll("italic-text", "white-text");
-
-        Label urlLabel3 = new Label("/pubsearch");
-        urlLabel3.getStyleClass().addAll("italic-text", "white-text");
-
-        Label urlLabel4 = new Label("(alapért.: 'localhost:3306')");
-        urlLabel4.getStyleClass().addAll("white-text");
-
-        Label userLabel1 = new Label("Felhasználó:");
-        userLabel1.getStyleClass().addAll("bold-text", "white-text");
-
-        Label userLabel2 = new Label("(alapért.: 'root')");
-        userLabel2.getStyleClass().addAll("white-text");
-
-        Label passwordLabel1 = new Label("Jelszó:");
-        passwordLabel1.getStyleClass().addAll("bold-text", "white-text");
-
-        Label passwordLabel2 = new Label("(alapért.: üres)");
-        passwordLabel2.getStyleClass().addAll("white-text");
-
-        urlField.setOnAction(new EventHandler<ActionEvent>() {
+        EventHandler<ActionEvent> reInitAction = new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent event) {
                 reInit();
             }
-        });
-        userField.setOnAction(new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent event) {
-                reInit();
-            }
-        });
-        passwordField.setOnAction(new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent event) {
-                reInit();
-            }
-        });
-
-        msgLabel.getStyleClass().addAll("bold-text", "white-text");
+        };
 
         Button okButton = new Button("OK");
         okButton.setPrefWidth(75);
         okButton.setPrefHeight(32);
-        okButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent event) {
-                reInit();
-            }
-        });
+        okButton.setOnAction(reInitAction);
+        urlField.setOnAction(reInitAction);
+        userField.setOnAction(reInitAction);
+        passwordField.setOnAction(reInitAction);
 
         GridPane grid = new GridPane();
         grid.setHgap(5);
@@ -144,7 +110,7 @@ public class ConfigWindow extends AWindow {
         layout.setTop(plzLabel);
         layout.setCenter(grid);
         BorderPane.setAlignment(grid, Pos.CENTER);
-        
+
         return new Scene(layout, 310, 380);
     }
 

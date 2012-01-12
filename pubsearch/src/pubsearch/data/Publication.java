@@ -6,9 +6,11 @@ package pubsearch.data;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import pubsearch.Tools;
 
 /**
  * Egy publikáció alapvető adatai.
@@ -25,7 +27,7 @@ public class Publication extends BaseEntity implements Serializable {
     private String bibtex;
     private String authors;
     private String title;
-    private int year;
+    private Integer year;
 
     public Publication() {
     }
@@ -49,15 +51,26 @@ public class Publication extends BaseEntity implements Serializable {
         return Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors LIKE '%" + filterAuthors + "%' AND p.title LIKE '%" + filterTitle + "%'").getResultList();
     }
 
+    /**
+     * Lekérdezi az adatbázisból azokat a publikációkat, amelyek erre a publikációra hivatkoznak (idéznek belőle).
+     * @return  A megfelelő publikációk listja.
+     */
     public List<Publication> getCites() {
         return Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.id IN (SELECT c.citedByPubID FROM Cite c WHERE c.pubID=" + id + ")").getResultList();
     }
 
+    /**
+     * Lekérdezi az adatbázisból a publikációhoz tartozó linkeket.
+     * @return A megfelelő linkek listája.
+     */
     public List<Link> getLinks() {
         return Connection.getEm().createQuery("SELECT l FROM Link l WHERE l.pubID=" + id).getResultList();
     }
 
     public String getAuthors() {
+        if (authors == null && bibtex != null) {
+            return Tools.findFirstMatch(bibtex, "author = {(.*?)}");
+        }
         return authors;
     }
 
@@ -83,6 +96,9 @@ public class Publication extends BaseEntity implements Serializable {
     }
 
     public String getTitle() {
+        if (title == null && bibtex != null) {
+            return Tools.findFirstMatch(bibtex, "[^(book)]title = {(.*?)}");
+        }
         return title;
     }
 
@@ -90,11 +106,14 @@ public class Publication extends BaseEntity implements Serializable {
         this.title = title;
     }
 
-    public int getYear() {
+    public Integer getYear() {
+        if (year == null && bibtex != null) {
+            return Integer.parseInt(Tools.findFirstMatch(bibtex, "year = {(.*?)}"));
+        }
         return year;
     }
 
-    public void setYear(int year) {
+    public void setYear(Integer year) {
         this.year = year;
     }
 
@@ -107,7 +126,6 @@ public class Publication extends BaseEntity implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Publication)) {
             return false;
         }

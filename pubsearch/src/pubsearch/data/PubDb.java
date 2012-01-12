@@ -1,6 +1,7 @@
 package pubsearch.data;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -41,6 +42,10 @@ public class PubDb extends BaseEntity implements Serializable {
     private String refPubListBlock;             // regex
 
     public PubDb() {
+    }
+    
+    public static List<PubDb> getAll() {
+        return Connection.getEm().createQuery("SELECT p FROM PubDb;").getResultList();
     }
 
     public String getAuthors() {
@@ -188,7 +193,6 @@ public class PubDb extends BaseEntity implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof PubDb)) {
             return false;
         }
