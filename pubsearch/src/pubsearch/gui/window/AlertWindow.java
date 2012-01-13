@@ -1,4 +1,4 @@
-package pubsearch.gui;
+package pubsearch.gui.window;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -13,6 +14,8 @@ import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import pubsearch.gui.GuiTools;
+import pubsearch.gui.control.MyLabel;
 
 /**
  * Hibaüzenet ablak.
@@ -26,7 +29,7 @@ public class AlertWindow extends AWindow {
      * statikus show(msg), így nem kell mindig felépíteni egy ablakot.
      */
     private static AlertWindow alertWindow = new AlertWindow("");
-    private MyLabel messageLabel = new MyLabel("", true, true, false, shadow);
+    private Label messageLabel = new MyLabel("", true, true, false, GuiTools.shadow);
 
     /**
      * Létrehoz egy új hibaüzenet ablakot,
@@ -60,7 +63,7 @@ public class AlertWindow extends AWindow {
         icon.getStyleClass().addAll("bold-text");
         icon.setFill(Color.WHITE);
         icon.setStyle("-fx-font-size:36pt;");
-        icon.setEffect(reflection);
+        icon.setEffect(GuiTools.reflection);
 
         Button okButton = new Button("OK");
         okButton.setCancelButton(true); // így lesz kiESCelhető a dialog

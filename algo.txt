@@ -21,6 +21,15 @@ ha van PubPageLinkMod, akkor kiegészíti azokat.
 
 a NextPageLinkPattern alapján lapoz.
 
+ha nincs PubPageLinkPattern, akkor alternatív végrehajtás: (pl. G Scholar)
+	Authors/Title/YearPattern alapján kigyûjti az adott oldalról
+	összerakja Publication-öknek
+	[illetve kigyûjti a RefPubListPageLinkPattern-eket is, az ugyanolyan oldalra visz (Scholar)...
+	viszont azt az adott Publication store()-ja után kéne feldolgozni rögtön, hogy hozzá tudjuk kapcsolni.
+	lehetne pl. a Publication-ban egy transient CitedByListURL mezõ...]
+	lapoz (és újra)
+	
+
 Pub Page
 --------
 
@@ -36,6 +45,8 @@ ELSE
 	TitlePattern, YearPattern
 		elsõ találat, title-nél clean
 
+utána összepakolja Publication-be
+
 
 RefBy
 -----
@@ -46,7 +57,10 @@ ha van RefPubListBlockPattern, akkor szûkít erre.
 innentõl kezdve a PubPageLinkPattern-t, és a PubPageLinkMod-ot használja, ahogy fent.
 ha volt RefPubListPageLinkPattern, akkor használja a NextPageLinkPattern-t és lapoz.
 
-
+ha nem talál PubPageLinkPattern-t, akkor
+	RefPubAuthor/Title/Year
+	összeset kiszedi, clean
+	összepakolja Publication-be
 
 
 

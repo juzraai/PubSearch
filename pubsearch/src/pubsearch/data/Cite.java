@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package pubsearch.data;
 
 import java.io.Serializable;
@@ -9,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 /**
+ * Egy idézett-idéző pár megvalósítása.
  *
  * @author Zsolt
  */
@@ -57,7 +54,7 @@ public class Cite extends BaseEntity implements Serializable {
         if (!(object instanceof Cite)) {
             return false;
         }
-        Cite other = (Cite) object;        
+        Cite other = (Cite) object;
         if (this.pubID == null || this.citedByPubID == null || other.pubID == null || other.citedByPubID == null) {
             return false;
         }

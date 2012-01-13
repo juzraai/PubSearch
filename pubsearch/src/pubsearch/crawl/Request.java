@@ -6,7 +6,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
-import pubsearch.config.ConfigModel;
+import pubsearch.Config;
 
 /**
  *
@@ -21,7 +21,7 @@ public class Request {
     public Request(String url) {
         try {
             URL u = new URL(url);
-            String[] proxy = ConfigModel.getRandomProxy().split(":");
+            String[] proxy = Config.getRandomProxy().split(":");
             Proxy p = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxy[0], Integer.parseInt(proxy[1])));
 
             URLConnection uc = u.openConnection(p);

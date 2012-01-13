@@ -1,4 +1,4 @@
-package pubsearch.gui;
+package pubsearch.gui.window;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -7,14 +7,16 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import pubsearch.config.ConfigModel;
+import pubsearch.Config;
 import pubsearch.data.Connection;
+import pubsearch.gui.GuiTools;
+import pubsearch.gui.control.MyLabel;
 
 /**
  * Az adatbáziskapcsolat beállítására szolgáló ablak.
@@ -23,15 +25,15 @@ import pubsearch.data.Connection;
  */
 public class ConfigWindow extends AWindow {
 
-    private final Stage mainWindow;
+    private final MainWindow mainWindow;
     private TextField urlField = new TextField();
     private TextField userField = new TextField();
     private PasswordField passwordField = new PasswordField();
-    private MyLabel msgLabel = new MyLabel("", true, true, false, null);
+    private Label msgLabel = new MyLabel("", true, true, false);
     private boolean configIsOK;
 
-    public ConfigWindow(Stage mainWindow) {
-        super("Adatbáziskapcsolat beállítása", false, true);
+    public ConfigWindow(MainWindow mainWindow) {
+        super("Setup local database connection", false, true);
         this.mainWindow = mainWindow;
         setScene(buildScene());
         setCSS();
@@ -39,9 +41,9 @@ public class ConfigWindow extends AWindow {
 
             public void handle(WindowEvent event) {
                 configIsOK = (Connection.getEm() != null);
-                urlField.setText(ConfigModel.getJdbcUrl());
-                userField.setText(ConfigModel.getJdbcUser());
-                passwordField.setText(ConfigModel.getJdbcPass());
+                urlField.setText(Config.getJdbcUrl());
+                userField.setText(Config.getJdbcUser());
+                passwordField.setText(Config.getJdbcPass());
             }
         });
         setOnHidden(new EventHandler<WindowEvent>() {
@@ -60,16 +62,16 @@ public class ConfigWindow extends AWindow {
      * @return A felépített ablaktartalom.
      */
     private Scene buildScene() {
-        MyLabel plzLabel = new MyLabel("A programnak szüksége van egy MySQL adatbázisra a találatok tárolásához, kérlek add meg a paramétereket.", true, false, false, shadow);
+        MyLabel plzLabel = new MyLabel("PubSearch needs a MySQL database to store the gathered informations. Please specify the parameters.", true, false, false, GuiTools.shadow);
         plzLabel.setWrapText(true);
-        MyLabel urlLabel1 = new MyLabel("Adatbázis URL:", true, true, false, shadow);
-        MyLabel urlLabel2 = new MyLabel("\tmysql://", true, false, true, shadow);
-        MyLabel urlLabel3 = new MyLabel("/pubsearch", true, false, true, shadow);
-        MyLabel urlLabel4 = new MyLabel("(alapért.: 'localhost:3306')", true, false, false, shadow);
-        MyLabel userLabel1 = new MyLabel("Felhasználó:", true, true, false, shadow);
-        MyLabel userLabel2 = new MyLabel("(alapért.: 'root')", true, false, false, shadow);
-        MyLabel passwordLabel1 = new MyLabel("Jelszó:", true, true, false, shadow);
-        MyLabel passwordLabel2 = new MyLabel("(alapért.: üres)", true, false, false, shadow);
+        MyLabel urlLabel1 = new MyLabel("Database (server) URL:", true, true, false, GuiTools.shadow);
+        MyLabel urlLabel2 = new MyLabel("\tmysql://", true, false, true, GuiTools.shadow);
+        MyLabel urlLabel3 = new MyLabel("/pubsearch", true, false, true, GuiTools.shadow);
+        MyLabel urlLabel4 = new MyLabel("(default: 'localhost:3306')", true, false, false, GuiTools.shadow);
+        MyLabel userLabel1 = new MyLabel("Username:", true, true, false, GuiTools.shadow);
+        MyLabel userLabel2 = new MyLabel("(default: 'root')", true, false, false, GuiTools.shadow);
+        MyLabel passwordLabel1 = new MyLabel("Password:", true, true, false, GuiTools.shadow);
+        MyLabel passwordLabel2 = new MyLabel("(default: empty)", true, false, false, GuiTools.shadow);
 
         EventHandler<ActionEvent> reInitAction = new EventHandler<ActionEvent>() {
 
@@ -78,8 +80,8 @@ public class ConfigWindow extends AWindow {
             }
         };
 
-        Button okButton = new Button("OK");
-        okButton.setPrefWidth(75);
+        Button okButton = new Button("Connect & save");
+        okButton.setPrefWidth(150);
         okButton.setPrefHeight(32);
         okButton.setOnAction(reInitAction);
         urlField.setOnAction(reInitAction);
@@ -119,21 +121,20 @@ public class ConfigWindow extends AWindow {
      * bezárja az ablakot és elmenti a beállításokat.
      */
     private void reInit() {
-        if (!ConfigModel.getJdbcUrl().equals(urlField.getText())
-                || !ConfigModel.getJdbcUser().equals(userField.getText())
-                || !ConfigModel.getJdbcPass().equals(passwordField.getText())
+        if (!Config.getJdbcUrl().equals(urlField.getText())
+                || !Config.getJdbcUser().equals(userField.getText())
+                || !Config.getJdbcPass().equals(passwordField.getText())
                 || !configIsOK) {
-            ConfigModel.setJdbcUrl(urlField.getText());
-            ConfigModel.setJdbcUser(userField.getText());
-            ConfigModel.setJdbcPass(passwordField.getText());
+            Config.setJdbcUrl(urlField.getText());
+            Config.setJdbcUser(userField.getText());
+            Config.setJdbcPass(passwordField.getText());
             msgLabel.setText("");
 
             configIsOK = Connection.tryInit();
             if (configIsOK) {
-                ConfigModel.save();
+                Config.save();
             } else {
-                msgLabel.setText("Nem sikerült felépíteni a kapcsolatot.");
-                // TODO lehetne itt is hiba típus alapján eljárni
+                msgLabel.setText("Can't connect to database.");
             }
         }
 

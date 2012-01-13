@@ -3,10 +3,9 @@ package pubsearch;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
-import pubsearch.config.ConfigModel;
 import pubsearch.data.Connection;
-import pubsearch.gui.AlertWindow;
-import pubsearch.gui.MainWindow;
+import pubsearch.gui.window.AlertWindow;
+import pubsearch.gui.window.MainWindow;
 
 /**
  * A főprogram, és a főablak osztálya.
@@ -31,17 +30,10 @@ public class Pubsearch extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        System.out.println(Tools.formatDataSize(100));
-        System.out.println(Tools.formatDataSize(850));
-        System.out.println(Tools.formatDataSize(1450));
-        System.out.println(Tools.formatDataSize(9830));
-        System.out.println(Tools.formatDataSize(2345980));
-        //if (true) return;
         
-        
-        ConfigModel.load();
+        Config.load();
 
-        Stage stage = new MainWindow();
+        MainWindow stage = new MainWindow();
         if (Connection.tryInit()) {
             stage.show();
         } else {

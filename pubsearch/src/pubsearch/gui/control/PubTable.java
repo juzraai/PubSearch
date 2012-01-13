@@ -1,4 +1,4 @@
-package pubsearch.gui;
+package pubsearch.gui.control;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
@@ -9,27 +9,32 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import pubsearch.data.Publication;
+import pubsearch.gui.tab.PubTab;
+import pubsearch.gui.window.MainWindow;
 
 /**
  * Egy publikációkat megjelenítő TableView, ami egy publikáció kiválasztásakor
  * (ENTER vagy dupla klikk hatására) megjeleníti a hozzá tartozó ablakot.
+ *
  * @author Zsolt
  */
 public class PubTable extends TableView<Publication> {
 
-    public PubTable() {
-        TableColumn authorsCol = new TableColumn("Szerzők");
+    private final MainWindow mainWindow;
+
+    public PubTable(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
+        TableColumn authorsCol = new TableColumn("Authors");
         authorsCol.setPrefWidth(250);
         authorsCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("authors")); // unsafe op.
 
-        TableColumn titleCol = new TableColumn("Cím");
+        TableColumn titleCol = new TableColumn("Title");
         titleCol.setPrefWidth(250);
         titleCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("title")); // unsafe op.
 
-
         getColumns().addAll(authorsCol, titleCol);
         setEditable(false);
-        setPlaceholder(new Label("Nincs megjeleníthető találat."));
+        setPlaceholder(new Label(""));
 
         setOnKeyPressed(new EventHandler<KeyEvent>() {
 
@@ -54,7 +59,7 @@ public class PubTable extends TableView<Publication> {
      */
     private void showPubWindow() {
         if (getSelectionModel().getSelectedIndex() > -1) {
-            new PubWindow(getSelectionModel().getSelectedItem()).show();
+            mainWindow.getTabPane().getTabs().add(new PubTab(mainWindow, getSelectionModel().getSelectedItem()));
         }
     }
 }

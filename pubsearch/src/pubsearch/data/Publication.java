@@ -1,5 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose StringTools | Templates
  * and open the template in the editor.
  */
 package pubsearch.data;
@@ -10,7 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import pubsearch.Tools;
+import pubsearch.StringTools;
 
 /**
  * Egy publikáció alapvető adatai.
@@ -69,7 +69,7 @@ public class Publication extends BaseEntity implements Serializable {
 
     public String getAuthors() {
         if (authors == null && bibtex != null) {
-            return Tools.findFirstMatch(bibtex, "author = {(.*?)}");
+            return StringTools.findFirstMatch(bibtex, "author = {(.*?)}");
         }
         return authors;
     }
@@ -80,7 +80,7 @@ public class Publication extends BaseEntity implements Serializable {
 
     public String getBibtex() {
         // TODO if (bibtex==null) GENERÁL!!!
-        return bibtex;
+        return (null != bibtex) ? bibtex : "N/A";
     }
 
     public void setBibtex(String bibtex) {
@@ -97,7 +97,7 @@ public class Publication extends BaseEntity implements Serializable {
 
     public String getTitle() {
         if (title == null && bibtex != null) {
-            return Tools.findFirstMatch(bibtex, "[^(book)]title = {(.*?)}");
+            return StringTools.findFirstMatch(bibtex, "[^(book)]title = {(.*?)}");
         }
         return title;
     }
@@ -108,7 +108,7 @@ public class Publication extends BaseEntity implements Serializable {
 
     public Integer getYear() {
         if (year == null && bibtex != null) {
-            return Integer.parseInt(Tools.findFirstMatch(bibtex, "year = {(.*?)}"));
+            return Integer.parseInt(StringTools.findFirstMatch(bibtex, "year = {(.*?)}"));
         }
         return year;
     }

@@ -1,6 +1,8 @@
 package pubsearch.crawl;
 
 import java.util.List;
+import pubsearch.StringTools;
+import pubsearch.data.PubDb;
 
 /**
  * Egy találati lista oldalt kezel le.
@@ -14,10 +16,12 @@ public class ResultListPage {
     // és lenne egy ilyen contstr.: RLP(PubDb, String URLorHTML, boolean isHTML),
     // az RLP(PubDb, String URL) pedig annyi lenne: this(pubdb, URL, false)
 
+    private PubDb pubdb;
+    private String html;
     /*
      * private Crawler crawler;
-     * private PubDb pubdb;
-     * private String html;
+     * 
+     * 
      *
      * public ResultListPage(Crawler crawler, PubDb pubdb) {
      * this.crawler = crawler;
@@ -32,11 +36,30 @@ public class ResultListPage {
      * html = r.getHtml();
      * }
      */
+
+    /**
+     * Kiszedi a HTML kódból a találatokra mutató linkeket, kiegészíti őket
+     * a megfelelő módon (pub. adatb. függő), és a bázis URL mögé illeszti őket.
+     * @return A találatokra mutató linkek listája.
+     */
     public List<String> getResultURLs() {
-        return null;
+        List<String> resultURLs = StringTools.findAllMatch(html, pubdb.getPubPageLinkPattern());
+        String modFormat;
+        if (null != (modFormat = pubdb.getPubPageLinkModFormat())) {
+            for (int i = 0; i < resultURLs.size(); i++) {
+                resultURLs.set(i, pubdb.getBaseUrl() + String.format(modFormat, resultURLs.get(i)));
+            }
+        }
+        return resultURLs;
     }
 
+    /**
+     * Kiszedi a HTML kódból a következő találati lista oldalra mutató linket (lapozáshoz),
+     * és a bázis URL mögé illeszti.
+     * @return Az URL.
+     */
     public String getNextResultListPageURL() {
-        return null; // TODO null, ha nem talál
+        String nextURL = StringTools.findFirstMatch(html, pubdb.getNextPageLinkPattern());
+        return (null == nextURL) ? null : pubdb.getBaseUrl() + nextURL;
     }
 }

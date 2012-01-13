@@ -3,14 +3,12 @@ package pubsearch.data;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import pubsearch.config.ConfigModel;
+import pubsearch.Config;
 
 /**
  * Az adatbáziskapcsolatot innen érik el az osztályok. Jelen esetben a JPA használatához szükséges EntityManager objektumot.
@@ -46,7 +44,7 @@ public class Connection {
         /*
          * Létrehozzuk az adatbázist, ha még nincs (egyúttal teszteljük a konfigot)
          */
-        java.sql.Connection c = DriverManager.getConnection("jdbc:mysql://" + ConfigModel.getJdbcUrl() + "/mysql", ConfigModel.getJdbcUser(), ConfigModel.getJdbcPass());
+        java.sql.Connection c = DriverManager.getConnection("jdbc:mysql://" + Config.getJdbcUrl() + "/mysql", Config.getJdbcUser(), Config.getJdbcPass());
         Statement s = c.createStatement();
         s.execute("CREATE DATABASE IF NOT EXISTS pubsearch;");
         //s.execute("DROP TABLE PubDb;");
@@ -58,9 +56,9 @@ public class Connection {
          * Csatalakoztatjuk a JPA-t.
          */
         Map props = new HashMap();
-        props.put("javax.persistence.jdbc.url", "jdbc:mysql://" + ConfigModel.getJdbcUrl() + "/pubsearch");
-        props.put("javax.persistence.jdbc.user", ConfigModel.getJdbcUser());
-        props.put("javax.persistence.jdbc.password", ConfigModel.getJdbcPass());
+        props.put("javax.persistence.jdbc.url", "jdbc:mysql://" + Config.getJdbcUrl() + "/pubsearch");
+        props.put("javax.persistence.jdbc.user", Config.getJdbcUser());
+        props.put("javax.persistence.jdbc.password", Config.getJdbcPass());
         //props.put(PersistenceUnitProperties.)
         emf = Persistence.createEntityManagerFactory("pubsearch", props);
         em = emf.createEntityManager();

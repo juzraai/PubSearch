@@ -22,3 +22,30 @@
 .white-text {
     -fx-text-fill: white;
 }
+
+.tab {
+    -fx-background-color: linear-gradient(to bottom, #484860, #333344);
+    -fx-text-fill: white;
+}
+
+.tab:hover {
+    -fx-background-color: linear-gradient(to bottom, #646486, #333344);
+}
+
+.tab:selected {
+    -fx-background-color: linear-gradient(to bottom, #646486, #484860);
+}
+
+.tab-header-background {
+    -fx-background-color: linear-gradient(to bottom, #000011, #333344);
+}
+
+.tab-content-area {
+    /*-fx-background-color: linear-gradient(to bottom, #484860, #333344);*/
+    -fx-background-color: #484860;
+    -fx-text-fill: white;
+}
+
+.pubtabs .tab-header-background  {    
+    -fx-background-color: transparent;
+}

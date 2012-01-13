@@ -1,4 +1,4 @@
-package pubsearch.gui;
+package pubsearch.gui.tab;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,70 +10,58 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
+import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Paint;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import pubsearch.data.Link;
 import pubsearch.data.Publication;
+import pubsearch.gui.GuiTools;
+import pubsearch.gui.control.PubTable;
+import pubsearch.gui.window.MainWindow;
 
 /**
- * Egy publikáció adatait megjelenítő ablak.
+ * Egy publikáció adatait megjelenítő tab.
  *
  * @author Zsolt
  */
-public class PubWindow extends AWindow {
+public class PubTab extends Tab {
 
+    private MainWindow mainWindow;
     private Publication p;
 
-    /**
-     * Létrehozza a publikációhoz tartozó ablakot.
-     * @param p A publikáció, melynek adatai az ablakban megjelennek.
-     */
-    public PubWindow(Publication p) {
-        super(p.getAuthors() + " - " + p.getTitle(), true, false);
+    public PubTab(MainWindow mainWindow, Publication p) {
+        super(p.getTitle());
+        this.mainWindow = mainWindow;
         this.p = p;
-        setScene(buildScene());
-        setCSS();
-    }
 
-    /**
-     * @return A felépített ablaktartalom.
-     */
-    private Scene buildScene() {
-        TabPane tabs = new TabPane();
-        tabs.tabClosingPolicyProperty().set(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         /*
-         * Details tab
+         * Details
          */
-        MyLabel authorsLabel1 = new MyLabel("Szerzők:", false, true, false, null);
+        Label authorsLabel1 = new Label("Authors");
+        Label titleLabel1 = new Label("Title");
+        Label yearLabel1 = new Label("Year");
 
-        MyLabel authorsLabel2 = new MyLabel(p.getAuthors(), false, false, true, null);
-        authorsLabel2.setAlignment(Pos.CENTER_RIGHT);
-        authorsLabel2.setTextAlignment(TextAlignment.RIGHT);
+        Label authorsLabel2 = new Label(p.getAuthors());
         authorsLabel2.setWrapText(true);
 
-        MyLabel titleLabel1 = new MyLabel("Cím:", false, true, false, null);
-
-        MyLabel titleLabel2 = new MyLabel(p.getTitle(), false, false, true, null);
-        titleLabel2.setAlignment(Pos.CENTER_RIGHT);
-        titleLabel2.setTextAlignment(TextAlignment.RIGHT);
+        Label titleLabel2 = new Label(p.getTitle());
         titleLabel2.setWrapText(true);
 
-        MyLabel yearLabel1 = new MyLabel("Év:", false, true, false, null);
-
         Integer y = p.getYear();
-        String ys = (y == null) ? "(ismeretlen)" : y.toString();
-        MyLabel yearLabel2 = new MyLabel(ys, false, false, true, null);
+        String ys = (null == y) ? "(ismeretlen)" : y.toString();
+        Label yearLabel2 = new Label(ys);
+
+        GuiTools.addStyleClassToNodes("bold-text", authorsLabel1, titleLabel1, yearLabel1);
+        GuiTools.addStyleClassToNodes("italic-text", authorsLabel2, titleLabel2, yearLabel2);
 
         GridPane detailsGrid = new GridPane();
         detailsGrid.setPadding(new Insets(12));
@@ -86,17 +74,26 @@ public class PubWindow extends AWindow {
         detailsGrid.add(titleLabel2, 1, 1);
         detailsGrid.add(yearLabel1, 0, 2);
         detailsGrid.add(yearLabel2, 1, 2);
+        GridPane.setValignment(authorsLabel1, VPos.TOP);
+        GridPane.setValignment(titleLabel1, VPos.TOP);
 
-        Tab detailsTab = new Tab("Adatok");
-        detailsTab.setContent(detailsGrid);
-        tabs.getTabs().add(detailsTab);
+        /*
+         * Tabs
+         */
+        TabPane tabs = new TabPane();
+        tabs.getStyleClass().add("pubtabs");
+        tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        tabs.setTabMinWidth(75);
+        DropShadow shadow = new DropShadow();
+        shadow.setOffsetY(3);
+        tabs.setEffect(shadow);
 
         /*
          * BibTeX tab
          */
         final TextArea bibtexTA = new TextArea(p.getBibtex());
         bibtexTA.setEditable(false);
-        bibtexTA.setStyle("-fx-font-family:monospace;");        
+        bibtexTA.setStyle("-fx-font-family:monospace;");
 
         Button copyButton = new Button("Másolás");
         copyButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -104,6 +101,7 @@ public class PubWindow extends AWindow {
             public void handle(ActionEvent event) {
                 bibtexTA.selectAll();
                 bibtexTA.copy();
+                bibtexTA.deselect();
             }
         });
 
@@ -115,7 +113,7 @@ public class PubWindow extends AWindow {
                 fc.setTitle("BibTeX exportálása...");
                 fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Minden fájl (*.*)", "*.*"));
 
-                File f = fc.showSaveDialog(PubWindow.this.getOwner());
+                File f = fc.showSaveDialog(PubTab.this.mainWindow);
 
                 BufferedWriter w = null;
                 try {
@@ -150,14 +148,13 @@ public class PubWindow extends AWindow {
         tabs.getTabs().add(bibtexTab);
 
         /*
-         * Links tab
+         * Links
          */
         ObservableList<Link> links = FXCollections.observableArrayList(p.getLinks());
         if (links.size() > 0) {
             TableView<Link> linksView = new TableView<Link>();
-            linksView.setPlaceholder(new Label("Nincs link ehhez a publikációhoz."));
 
-            TableColumn dbNameCol = new TableColumn("Adatbázis");
+            TableColumn dbNameCol = new TableColumn("Database");
             dbNameCol.setPrefWidth(125);
             dbNameCol.setCellValueFactory(new PropertyValueFactory<Link, String>("dbName")); // unsafe op.
 
@@ -182,9 +179,13 @@ public class PubWindow extends AWindow {
             });
             linksView.getColumns().addAll(dbNameCol, linkCol);
             linksView.setItems(links);
+            
+            BorderPane linksLayout = new BorderPane();
+            linksLayout.setCenter(linksView);
+            BorderPane.setMargin(linksView, new Insets(10));
 
-            Tab linksTab = new Tab("Linkek (" + links.size() + ")");
-            linksTab.setContent(linksView);
+            Tab linksTab = new Tab("Links (" + links.size() + ")");
+            linksTab.setContent(linksLayout);
             tabs.getTabs().add(linksTab);
         }
 
@@ -193,13 +194,25 @@ public class PubWindow extends AWindow {
          */
         ObservableList<Publication> cites = FXCollections.observableArrayList(p.getCites());
         if (cites.size() > 0) {
-            Tab citesTab = new Tab("Hivatkozik erre (" + cites.size() + ")");
-            PubTable citesView = new PubTable();
+            PubTable citesView = new PubTable(mainWindow);
             citesView.setItems(cites);
-            citesTab.setContent(citesView);
+            
+            BorderPane citesLayout = new BorderPane();
+            citesLayout.setCenter(citesView);
+            BorderPane.setMargin(citesView, new Insets(10));
+            
+            Tab citesTab = new Tab("Cited by (" + cites.size() + ")");            
+            citesTab.setContent(citesLayout);
             tabs.getTabs().add(citesTab);
         }
 
-        return new Scene(tabs, 400, 250);
+        /*
+         * Build
+         */
+        BorderPane layout = new BorderPane();
+        layout.setTop(detailsGrid);
+        layout.setCenter(tabs);
+        BorderPane.setMargin(tabs, new Insets(10));
+        setContent(layout);
     }
 }

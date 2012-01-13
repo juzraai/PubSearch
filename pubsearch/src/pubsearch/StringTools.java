@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  *
  * @author Zsolt
  */
-public class Tools {
+public class StringTools {
 
     /**
      * Megtisztít egy szöveget a HTML kódoktól, a többszörös szóközöket szimplára

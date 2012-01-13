@@ -1,8 +1,9 @@
 package pubsearch.crawl;
 
+import com.sun.glass.ui.Application;
 import java.util.List;
 import pubsearch.data.PubDb;
-import pubsearch.gui.MainWindow;
+import pubsearch.gui.tab.MainTab;
 
 /**
  * Levezényli az egész crawling procedúrát.
@@ -11,12 +12,12 @@ import pubsearch.gui.MainWindow;
  */
 public class Crawler extends Thread {
 
-    private final MainWindow caller;
+    private final MainTab caller;
     private String authorFilter;
     private String titleFilter;
     private long bytes = 0;
 
-    public Crawler(MainWindow caller, String authorFilter, String titleFilter) {
+    public Crawler(MainTab caller, String authorFilter, String titleFilter) {
         this.caller = caller;
         this.authorFilter = authorFilter;
         this.titleFilter = (titleFilter != null && titleFilter.trim().length() > 0) ? titleFilter : null;
@@ -24,10 +25,22 @@ public class Crawler extends Thread {
 
     @Override
     public void run() {
+        System.out.println("Crawler thread started.");
         try {
+            //Thread.sleep(5000);
             // TODO majd bent a szóközöket +-ra cseréli! vagy majd a Request-en belül... ?
             List<PubDb> pubdbs = PubDb.getAll();
             for (PubDb pubdb : pubdbs) {
+                System.out.println("\t" + pubdb.getName());
+
+                /*
+                 * List<String> resultURLs = new ArrayList<String>();
+                 * ResultListPage resultListPage = new ResultListPage(PubDb, formURLwithGETparams);
+                 * do {
+                 * resultURLs.addAll(resultListPage.getResultURLs());
+                 *
+                 * } while (null != resultListPage.getNextResultListPageURL());
+                 */
                 /*
                  * 1. elküldi a formot -> resultlistpage
                  * 2. lekéri a linkeket
@@ -38,16 +51,28 @@ public class Crawler extends Thread {
                  * (majd arra is egy külön osztályt, paramétere egy boolean extractCitesToo is!!!)
                  *
                  */
+
             }
         } catch (Throwable t) {
         } finally {
-            caller.showResults(bytes);
+            System.out.println("Crawler thread stops.");
+            notifyCaller();
+
         }
     }
 
-    /*public void addBytes(long b) {
-        bytes += b;
-    }*/
+    /**
+     * Értesíti a hívó MainTab-ot, hogy kész a keresés, lekérdezheti az eredményeket.
+     */
+    private void notifyCaller() {
+        Application.invokeLater(new Runnable() {
+
+            public void run() {
+                caller.showResults(bytes);
+            }
+        });
+    }
+
     public String getAuthorFilter() {
         return authorFilter;
     }

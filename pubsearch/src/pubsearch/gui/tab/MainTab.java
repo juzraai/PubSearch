@@ -1,80 +1,54 @@
-package pubsearch.gui;
+package pubsearch.gui.tab;
 
-import pubsearch.Tools;
-import com.sun.glass.ui.Application;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.Paint;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-import pubsearch.config.ConfigModel;
+import pubsearch.Config;
+import pubsearch.gui.GuiTools;
+import pubsearch.StringTools;
 import pubsearch.crawl.Crawler;
 import pubsearch.data.Publication;
+import pubsearch.gui.control.MyLabel;
+import pubsearch.gui.control.PubTable;
+import pubsearch.gui.window.*;
 
 /**
- * A program főablaka.
  *
  * @author Zsolt
  */
-public class MainWindow extends AWindow {
+public class MainTab extends Tab {
 
-    public final ConfigWindow configWindow = new ConfigWindow((Stage) this);
+    // Connection
+    private final MainWindow mainWindow;
+    // Windows
     private final ProxyWindow proxyWindow = new ProxyWindow();
     private final AboutWindow aboutWindow = new AboutWindow();
+    // MainTab states
+    private BorderPane mainLayout;
+    private BorderPane searchLayout;
+    // Controls
     private final TextField authorField = new TextField();
     private final TextField titleField = new TextField();
-    private final CheckBox onlyLocalCheckBox = new CheckBox("Keresés csak a helyi adatbázisban");
-    private final Button searchButton = new Button("Keresés!");
-    private final PubTable resultsView = new PubTable();
+    private final CheckBox onlyLocalCheckBox = new CheckBox("Search only in the local database");
+    private final Button searchButton = new Button("Search!");
+    private final PubTable resultsView;
     private final Label resultCountLabel = new Label();
-    private BorderPane mainLayout, searchLayout;
-    private Paint mainFill, searchFill;
-    private final int WIDTH = 520;
+    // Variables
     private long startTime;
 
-    /**
-     * Létrehozza az ablakot.
-     */
-    public MainWindow() {
-        super("PubSearch", true, false);
-        build();
-        setScene(new Scene(mainLayout, WIDTH, 300));
-        setCSS();
-        switchScene(true);
-    }
+    public MainTab(MainWindow mainWindow) {
+        super("Search");
+        this.mainWindow = mainWindow;
+        setClosable(false);
 
-    /**
-     * Vált a főablak kétféle állapota között: keresőform; keresés folyamatban.
-     * @param toMain Keresőform állapot? Ha nem, akkor keresés folyamatban.
-     */
-    private void switchScene(boolean toMain) {
-        if (toMain) {
-            getScene().setRoot(mainLayout);
-            getScene().setFill(mainFill);
-        } else {
-            getScene().setRoot(searchLayout);
-            getScene().setFill(searchFill);
-        }
-    }
-
-    /**
-     * Felépíti az ablak tartalmát, mindkét állapothoz (keresőform; keresés folyamatban),
-     * és eltárolja az adattagokban.
-     */
-    private void build() {
         EventHandler<ActionEvent> startSearchAction = new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent event) {
@@ -87,8 +61,8 @@ public class MainWindow extends AWindow {
         /*
          * Top
          */
-        MyLabel authorLabel = new MyLabel("Keresés szerzőre:", true, true, false, shadow);
-        MyLabel titleLabel = new MyLabel("Szűkítés címre:", true, false, false, shadow);
+        MyLabel authorLabel = new MyLabel("Search for author:", true, false, GuiTools.shadow);
+        MyLabel titleLabel = new MyLabel("Filter by title:", false, false, GuiTools.shadow);
 
         authorField.setOnAction(startSearchAction);
         authorField.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -109,10 +83,10 @@ public class MainWindow extends AWindow {
         searchButton.setPrefHeight(45);
         searchButton.setStyle("-fx-base: #3AD;");
         searchButton.setOnAction(startSearchAction);
-        searchButton.setEffect(reflection);
+        searchButton.setEffect(GuiTools.reflection);
 
-        Button editProxiesButton = new Button("Proxy...");
-        editProxiesButton.setPrefWidth(100);
+        Button editProxiesButton = new Button("Proxy setup");
+        editProxiesButton.setPrefWidth(120);
         editProxiesButton.setStyle("-fx-base: #D6F;");
         editProxiesButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -121,18 +95,18 @@ public class MainWindow extends AWindow {
             }
         });
 
-        Button editDBConnButton = new Button("Adatbázis...");
-        editDBConnButton.setPrefWidth(100);
+        Button editDBConnButton = new Button("Database setup");
+        editDBConnButton.setPrefWidth(120);
         editDBConnButton.setStyle("-fx-base: #D33;");
         editDBConnButton.setOnAction(new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent event) {
-                configWindow.show();
+                MainTab.this.mainWindow.configWindow.show();
             }
         });
 
-        Button aboutButton = new Button("Névjegy");
-        aboutButton.setPrefWidth(100);
+        Button aboutButton = new Button("About PubSearch");
+        aboutButton.setPrefWidth(120);
         aboutButton.setStyle("-fx-base: #3D6");
         aboutButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -158,13 +132,14 @@ public class MainWindow extends AWindow {
         /*
          * Center
          */
-        TableColumn authorsCol = new TableColumn("Szerzők");
+        TableColumn authorsCol = new TableColumn("Authors");
         authorsCol.setPrefWidth(250);
         authorsCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("authors")); // unsafe op.
-        TableColumn titleCol = new TableColumn("Cím");
+        TableColumn titleCol = new TableColumn("Title");
         titleCol.setPrefWidth(250);
         titleCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("title")); // unsafe op.
 
+        resultsView = new PubTable(mainWindow);
         resultCountLabel.getStyleClass().addAll("white-text", "bold-text");
         resultCountLabel.setTextAlignment(TextAlignment.CENTER);
         resultCountLabel.setWrapText(true);
@@ -179,29 +154,19 @@ public class MainWindow extends AWindow {
         mainLayout.setPadding(new Insets(0));
         mainLayout.setTop(top);
         mainLayout.setCenter(center);
-        mainLayout.setStyle("-fx-background-color: transparent;");
-
-        Stop[] mainFillColors = new Stop[]{
-            new Stop(0, Color.web("#484860")),
-            new Stop(1, Color.web("#333344")),};
-        mainFill = new RadialGradient(0, 0, WIDTH / 2, 0, WIDTH, false, CycleMethod.NO_CYCLE, mainFillColors);
 
         /*
          * Searching
          */
         ProgressBar progressBar = new ProgressBar(-1f);
         progressBar.setPrefSize(250, 25);
-        progressBar.setEffect(reflection);
+        progressBar.setEffect(GuiTools.reflection);
 
         searchLayout = new BorderPane();
         searchLayout.setCenter(progressBar);
-        searchLayout.setStyle("-fx-background-color: transparent;");
 
-        Stop[] searchFillColors = new Stop[]{
-            new Stop(0, Color.web("#A5DDFE")),
-            new Stop(1, Color.web("#029DFB")),};
-        searchFill = new RadialGradient(0, 0, WIDTH / 2, 0, WIDTH, false, CycleMethod.NO_CYCLE, searchFillColors);
-
+        // ---
+        setContent(mainLayout);
     }
 
     /**
@@ -211,20 +176,29 @@ public class MainWindow extends AWindow {
         startTime = System.nanoTime();
         if (!onlyLocalCheckBox.selectedProperty().get()) {
             // crawl eset
-            if (ConfigModel.getProxyList().length == 0) {
+            if (Config.getProxyList().length == 0) {
                 // nincs proxy, hibajelzés
                 proxyWindow.show();
-                AlertWindow.show("A kereséshez meg kell adnod egy proxy listát.\n(Vagy keress csak a helyi adatbázisban.)");
+                AlertWindow.show("Please define a proxy list first.\nOr you can search only in the local database.");
             } else {
                 // van proxy, indul a crawl, külön szálon, majd ő értesít az eredmények megjelenítéséről
                 switchScene(false);
-                Crawler crawler = new Crawler(this, authorField.getText(), titleField.getText());
+                final Crawler crawler = new Crawler(this, authorField.getText(), titleField.getText());
                 crawler.start();
             }
         } else {
             // only local eset, csak lekérdezés
             showResults(0);
         }
+    }
+
+    /**
+     * Vált a keresés kétféle állapota között: keresőform; keresés folyamatban.
+     * @param toMain Keresőform állapot? Ha nem, akkor keresés folyamatban.
+     */
+    public void switchScene(boolean toMain) {
+        setContent((toMain) ? mainLayout : searchLayout);
+        setText((toMain) ? "Search" : "( . . . )");
     }
 
     /**
@@ -235,10 +209,14 @@ public class MainWindow extends AWindow {
         try {
             resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(authorField.getText(), titleField.getText())));
         } catch (Throwable t) {
-            AlertWindow.show("Hiba történt lekérdezés közben (JPA_ERROR).");
+            AlertWindow.show("Error while querying results. (JPA_ERROR).");
         }
         long time = System.nanoTime() - startTime;
-        resultCountLabel.setText(String.format("%d db találat (idő: %s, adatforgalom: %s)", resultsView.getItems().size(), Tools.formatNanoTime(time, false, false), Tools.formatDataSize(bytes)));
+        resultCountLabel.setText(String.format("%d results (time: %s, net traffic: %s)", resultsView.getItems().size(), StringTools.formatNanoTime(time, false, false), StringTools.formatDataSize(bytes)));
         switchScene(true);
+    }
+
+    public void focusAuthorField() {        
+        authorField.requestFocus();
     }
 }

@@ -1,4 +1,4 @@
-package pubsearch.gui;
+package pubsearch.gui.window;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -6,18 +6,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.effect.Blend;
-import javafx.scene.effect.BlendMode;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Reflection;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
+import javafx.scene.paint.*;
 import javafx.scene.text.Text;
+import pubsearch.gui.GuiTools;
 
 /**
  * Névjegyablak.
@@ -39,13 +32,13 @@ public class AboutWindow extends AWindow {
         appName.getStyleClass().addAll("bold-text", "italic-text");
         appName.setFill(textGradient);
         appName.setStyle("-fx-font-size:42px;");
-        appName.setEffect(reflAndShadow);
+        appName.setEffect(GuiTools.reflAndShadow);
 
         Text myName = new Text("Jurányi Zsolt");
         myName.getStyleClass().addAll("bold-text", "italic-text");
         myName.setFill(textGradient);
         myName.setStyle("-fx-font-size:18px;");
-        myName.setEffect(reflAndShadow);
+        myName.setEffect(GuiTools.reflAndShadow);
 
         /*
          * Verzió: 1.0
@@ -59,22 +52,22 @@ public class AboutWindow extends AWindow {
 
         Text ver1 = new Text("Verzió");
         ver1.setFill(Color.WHITE);
-        ver1.setEffect(shadow);
+        ver1.setEffect(GuiTools.shadow);
         Text ver2 = new Text("1.0");
         ver2.setFill(Color.WHITE);
-        ver2.setEffect(shadow);
+        ver2.setEffect(GuiTools.shadow);
         Text rel1 = new Text("Kiadás dátuma");
         rel1.setFill(Color.WHITE);
-        rel1.setEffect(shadow);
+        rel1.setEffect(GuiTools.shadow);
         Text rel2 = new Text("2012.05.15");
         rel2.setFill(Color.WHITE);
-        rel2.setEffect(shadow);
+        rel2.setEffect(GuiTools.shadow);
         Text mail1 = new Text("E-mail");
         mail1.setFill(Color.WHITE);
-        mail1.setEffect(shadow);
+        mail1.setEffect(GuiTools.shadow);
         Text mail2 = new Text("zsolt.juranyi@gmail.com");
         mail2.setFill(Color.WHITE);
-        mail2.setEffect(shadow);
+        mail2.setEffect(GuiTools.shadow);
 
         VBox left = new VBox(8);
         left.setPrefWidth(195);
@@ -88,7 +81,7 @@ public class AboutWindow extends AWindow {
 
         Text thesis = new Text("Ez a program a Programtervező Informatikus BSc. szakdolgozatom.");
         thesis.setFill(Color.WHITE);
-        thesis.setEffect(shadow);
+        thesis.setEffect(GuiTools.shadow);
 
         BorderPane center = new BorderPane();
         center.setTop(myName);
