@@ -20,7 +20,7 @@ import pubsearch.gui.GuiTools;
 public class AboutWindow extends AWindow {
 
     public AboutWindow() {
-        super("Névjegy", false, true);
+        super("About PubSearch", false, true);
         setScene(buildScene());
         setCSS();
     }
@@ -40,26 +40,16 @@ public class AboutWindow extends AWindow {
         myName.setStyle("-fx-font-size:18px;");
         myName.setEffect(GuiTools.reflAndShadow);
 
-        /*
-         * Verzió: 1.0
-         * Kiadva: 2012.05.??
-         * Web: _projekt a SourceForge-on_
-         * E-mail: zsolt.juranyi@gmail.com
-         *
-         * Ez a program a BSc szakdolgozatom 2012.-ben az ELTE-IK-n.
-         * Témavez?!
-         */
-
-        Text ver1 = new Text("Verzió");
+        Text ver1 = new Text("Version");
         ver1.setFill(Color.WHITE);
         ver1.setEffect(GuiTools.shadow);
         Text ver2 = new Text("1.0");
         ver2.setFill(Color.WHITE);
         ver2.setEffect(GuiTools.shadow);
-        Text rel1 = new Text("Kiadás dátuma");
+        Text rel1 = new Text("Release date");
         rel1.setFill(Color.WHITE);
         rel1.setEffect(GuiTools.shadow);
-        Text rel2 = new Text("2012.05.15");
+        Text rel2 = new Text("15/05/2012");
         rel2.setFill(Color.WHITE);
         rel2.setEffect(GuiTools.shadow);
         Text mail1 = new Text("E-mail");
@@ -79,15 +69,15 @@ public class AboutWindow extends AWindow {
         right.setAlignment(Pos.TOP_LEFT);
         right.getChildren().addAll(ver2, rel2, mail2);
 
-        Text thesis = new Text("Ez a program a Programtervező Informatikus BSc. szakdolgozatom.");
+        /*Text thesis = new Text("Ez a program a Programtervező Informatikus BSc. szakdolgozatom.");
         thesis.setFill(Color.WHITE);
-        thesis.setEffect(GuiTools.shadow);
+        thesis.setEffect(GuiTools.shadow);*/
 
         BorderPane center = new BorderPane();
         center.setTop(myName);
         center.setLeft(left);
         center.setRight(right);
-        center.setBottom(thesis);
+        //center.setBottom(thesis);
 
         Button okButton = new Button("OK");
         okButton.setStyle("-fx-base:#000033;");
@@ -107,8 +97,8 @@ public class AboutWindow extends AWindow {
         BorderPane.setMargin(myName, new Insets(30, 0, 30, 0));
         BorderPane.setAlignment(appName, Pos.CENTER);
         BorderPane.setMargin(appName, new Insets(10));
-        BorderPane.setAlignment(thesis, Pos.CENTER);
-        BorderPane.setMargin(thesis, new Insets(10, 0, 10, 0));
+        /*BorderPane.setAlignment(thesis, Pos.CENTER);
+        BorderPane.setMargin(thesis, new Insets(10, 0, 10, 0));*/
         BorderPane.setAlignment(okButton, Pos.CENTER);
         BorderPane.setMargin(okButton, new Insets(5, 0, 15, 0));
 

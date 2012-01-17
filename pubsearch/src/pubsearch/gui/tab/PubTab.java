@@ -18,7 +18,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import pubsearch.data.Link;
@@ -179,7 +178,7 @@ public class PubTab extends Tab {
             });
             linksView.getColumns().addAll(dbNameCol, linkCol);
             linksView.setItems(links);
-            
+
             BorderPane linksLayout = new BorderPane();
             linksLayout.setCenter(linksView);
             BorderPane.setMargin(linksView, new Insets(10));
@@ -192,16 +191,16 @@ public class PubTab extends Tab {
         /*
          * Cites tab
          */
-        ObservableList<Publication> cites = FXCollections.observableArrayList(p.getCites());
+        ObservableList<Publication> cites = FXCollections.observableArrayList(p.getCitedBy());
         if (cites.size() > 0) {
             PubTable citesView = new PubTable(mainWindow);
             citesView.setItems(cites);
-            
+
             BorderPane citesLayout = new BorderPane();
             citesLayout.setCenter(citesView);
             BorderPane.setMargin(citesView, new Insets(10));
-            
-            Tab citesTab = new Tab("Cited by (" + cites.size() + ")");            
+
+            Tab citesTab = new Tab("Cited by (" + cites.size() + ")");
             citesTab.setContent(citesLayout);
             tabs.getTabs().add(citesTab);
         }

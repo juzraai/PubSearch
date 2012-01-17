@@ -5,11 +5,9 @@
 package pubsearch.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import pubsearch.StringTools;
 
 /**
@@ -28,6 +26,15 @@ public class Publication extends BaseEntity implements Serializable {
     private String authors;
     private String title;
     private Integer year;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "publication")
+    private List<Link> links = new ArrayList<Link>();
+    @ManyToMany(cascade= CascadeType.ALL)
+    @JoinTable(name = "Citing", joinColumns =
+    @JoinColumn(name = "PubID"), inverseJoinColumns =
+    @JoinColumn(name = "CitedByPubID"))
+    private List<Publication> citedBy = new ArrayList<Publication>();
+    @ManyToMany(mappedBy = "citedBy", cascade= CascadeType.ALL)
+    private List<Publication> cites = new ArrayList<Publication>();
 
     public Publication() {
     }
@@ -55,21 +62,12 @@ public class Publication extends BaseEntity implements Serializable {
      * Lekérdezi az adatbázisból azokat a publikációkat, amelyek erre a publikációra hivatkoznak (idéznek belőle).
      * @return  A megfelelő publikációk listja.
      */
-    public List<Publication> getCites() {
+    /*public List<Publication> getCites() {
         return Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.id IN (SELECT c.citedByPubID FROM Cite c WHERE c.pubID=" + id + ")").getResultList();
-    }
-
-    /**
-     * Lekérdezi az adatbázisból a publikációhoz tartozó linkeket.
-     * @return A megfelelő linkek listája.
-     */
-    public List<Link> getLinks() {
-        return Connection.getEm().createQuery("SELECT l FROM Link l WHERE l.pubID=" + id).getResultList();
-    }
-
+    }*/
     public String getAuthors() {
         if (authors == null && bibtex != null) {
-            return StringTools.findFirstMatch(bibtex, "author = {(.*?)}");
+            return StringTools.findFirstMatch(bibtex, "author = {(.*?)}", 1); // TODO javítani a regex-et!
         }
         return authors;
     }
@@ -87,6 +85,22 @@ public class Publication extends BaseEntity implements Serializable {
         this.bibtex = bibtex;
     }
 
+    public List<Publication> getCitedBy() {
+        return citedBy;
+    }
+
+    public void setCitedBy(List<Publication> citedBy) {
+        this.citedBy = citedBy;
+    }
+
+    public List<Publication> getCites() {
+        return cites;
+    }
+
+    public void setCites(List<Publication> cites) {
+        this.cites = cites;
+    }
+
     public Long getId() {
         return id;
     }
@@ -95,9 +109,17 @@ public class Publication extends BaseEntity implements Serializable {
         this.id = id;
     }
 
+    public List<Link> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<Link> links) {
+        this.links = links;
+    }
+
     public String getTitle() {
         if (title == null && bibtex != null) {
-            return StringTools.findFirstMatch(bibtex, "[^(book)]title = {(.*?)}");
+            return StringTools.findFirstMatch(bibtex, "[^(book)]title = {(.*?)}", 1); // TODO javítani
         }
         return title;
     }
@@ -108,7 +130,7 @@ public class Publication extends BaseEntity implements Serializable {
 
     public Integer getYear() {
         if (year == null && bibtex != null) {
-            return Integer.parseInt(StringTools.findFirstMatch(bibtex, "year = {(.*?)}"));
+            return Integer.parseInt(StringTools.findFirstMatch(bibtex, "year = {(.*?)}", 1)); // TODO javítani
         }
         return year;
     }

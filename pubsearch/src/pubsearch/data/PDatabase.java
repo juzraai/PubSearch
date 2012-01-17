@@ -1,11 +1,9 @@
 package pubsearch.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Egy publikációs adatbázis jellemzői (feldolgozáshoz).
@@ -13,42 +11,57 @@ import javax.persistence.Id;
  * @author Zsolt
  */
 @Entity
-public class PubDb extends BaseEntity implements Serializable {
+public class PDatabase extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     // basic data
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
     private String baseUrl;
     // form submit
-    private String submitUrl;
+    private String submitUrl = "";
     private String submitMethod;                // "GET" / "POST"
+    @Column(nullable = false)
     private String submitParamsFormat;          // formatstring, %s:author
+    @Column(nullable = false)
     private String submitParamsWithTitleFormat; // formatstring, %s:querystring, %s:title
     // result list
     private String pubPageLinkPattern;          // regex
-    private String pubPageLinkModFormat;        // formatstring, %s:link before mod
+    private String pubPageLinkModFormat = "%s"; // formatstring, %s:link before mod
     private String nextPageLinkPattern;         // regex
     // pub page
     private String bibtexLinkPattern;           // regex
     private String bibtePatternx;               // regex
     private String authorsPattern;              // regex
     private String titlePattern;                // regex
-    private String yearPattern;                 // regex, group 2 kell !!! (többinél 1)
+    private String yearPattern;                 // regex, data in group #2
     private String refPubListPageLinkPattern;   // regex
     // ref pub list
     private String refPubListBlockPattern;      // regex
     private String refPubAuthorsPattern;        // regex
     private String refPubTitlePattern;          // regex
     private String refPubYearPattern;           // regex
+    // links
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "pdatabase")
+    private List<Link> links = new ArrayList<Link>();
 
-    public PubDb() {
+    public PDatabase() {
     }
 
-    public static List<PubDb> getAll() {
-        return Connection.getEm().createQuery("SELECT p FROM PubDb p").getResultList();
+    public static List<PDatabase> getAll() {
+        return Connection.getEm().createQuery("SELECT p FROM PDatabase p").getResultList();
+    }
+
+    public List<Link> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<Link> links) {
+        this.links = links;
     }
 
     @Override
@@ -60,10 +73,10 @@ public class PubDb extends BaseEntity implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof PubDb)) {
+        if (!(object instanceof PDatabase)) {
             return false;
         }
-        PubDb other = (PubDb) object;
+        PDatabase other = (PDatabase) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

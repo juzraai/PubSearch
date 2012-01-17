@@ -2,7 +2,7 @@ package pubsearch.crawl;
 
 import java.util.List;
 import pubsearch.StringTools;
-import pubsearch.data.PubDb;
+import pubsearch.data.PDatabase;
 
 /**
  * Egy találati lista oldalt kezel le.
@@ -10,56 +10,50 @@ import pubsearch.data.PubDb;
  * @author Zsolt
  */
 public class ResultListPage {
-    // TODO megtervezni jobban! lehet, hogy Request-et kéne tárolni inkább?
-    // vagy eredeti terv: a Request kívülről oldja meg a POST kérdést,
-    // és akkor nem URL-t továbbít, hanem a POST submit HTML eredményét,
-    // és lenne egy ilyen contstr.: RLP(PubDb, String URLorHTML, boolean isHTML),
-    // az RLP(PubDb, String URL) pedig annyi lenne: this(pubdb, URL, false)
 
-    private PubDb pubdb;
+    // in
+    private PDatabase pDatabase;
     private String html;
-    /*
-     * private Crawler crawler;
-     * 
-     * 
-     *
-     * public ResultListPage(Crawler crawler, PubDb pubdb) {
-     * this.crawler = crawler;
-     * this.pubdb = pubdb;
-     * }
-     *
-     * public ResultListPage(Crawler crawler, PubDb pubdb, String url) {
-     * this.crawler = crawler;
-     * this.pubdb = pubdb;
-     * Request r = new Request(url);
-     * crawler.addBytes(r.getBytes());
-     * html = r.getHtml();
-     * }
-     */
+    // out
+    private List<String> resultURLs;
+    private String nextPageURL;
 
-    /**
-     * Kiszedi a HTML kódból a találatokra mutató linkeket, kiegészíti őket
-     * a megfelelő módon (pub. adatb. függő), és a bázis URL mögé illeszti őket.
-     * @return A találatokra mutató linkek listája.
-     */
-    public List<String> getResultURLs() {
-        List<String> resultURLs = StringTools.findAllMatch(html, pubdb.getPubPageLinkPattern());
-        String modFormat;
-        if (null != (modFormat = pubdb.getPubPageLinkModFormat())) {
-            for (int i = 0; i < resultURLs.size(); i++) {
-                resultURLs.set(i, pubdb.getBaseUrl() + String.format(modFormat, resultURLs.get(i)));
-            }
-        }
-        return resultURLs;
+    public ResultListPage(PDatabase pubdb, String html) {
+        this.pDatabase = pubdb;
+        this.html = html;
     }
 
     /**
-     * Kiszedi a HTML kódból a következő találati lista oldalra mutató linket (lapozáshoz),
-     * és a bázis URL mögé illeszti.
-     * @return Az URL.
+     * Kiszedi a HTML kódból a találatokra és a következő találati lista oldalra
+     * mutató URL-eket.
      */
-    public String getNextResultListPageURL() {
-        String nextURL = StringTools.findFirstMatch(html, pubdb.getNextPageLinkPattern());
-        return (null == nextURL) ? null : pubdb.getBaseUrl() + nextURL;
+    public void extractURLs() {
+        resultURLs = StringTools.findAllMatch(html, pDatabase.getPubPageLinkPattern(), 1);
+        String modFormat;
+        if (null != (modFormat = pDatabase.getPubPageLinkModFormat())) {
+            for (int i = 0; i < resultURLs.size(); i++) {
+                resultURLs.set(i, pDatabase.getBaseUrl() + String.format(modFormat, resultURLs.get(i)));
+            }
+        }
+        
+        nextPageURL = StringTools.findFirstMatch(html, pDatabase.getNextPageLinkPattern(), 1);
+        if (null != nextPageURL) {
+            nextPageURL = pDatabase.getBaseUrl() + nextPageURL;
+        }
+
+    }
+
+    /** 
+     * @return A következő találati lista oldal URL-je.
+     */
+    public String getNextPageURL() {
+        return nextPageURL;
+    }
+
+    /**
+     * @return A talált publikációk adataihoz vezető URL-lek listája.
+     */
+    public List<String> getResultURLs() {
+        return resultURLs;
     }
 }

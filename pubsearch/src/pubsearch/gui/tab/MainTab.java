@@ -12,13 +12,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.TextAlignment;
 import pubsearch.Config;
-import pubsearch.gui.GuiTools;
 import pubsearch.StringTools;
 import pubsearch.crawl.Crawler;
 import pubsearch.data.Publication;
+import pubsearch.gui.GuiTools;
 import pubsearch.gui.control.MyLabel;
 import pubsearch.gui.control.PubTable;
-import pubsearch.gui.window.*;
+import pubsearch.gui.window.AboutWindow;
+import pubsearch.gui.window.AlertWindow;
+import pubsearch.gui.window.MainWindow;
+import pubsearch.gui.window.ProxyWindow;
 
 /**
  *
@@ -170,7 +173,8 @@ public class MainTab extends Tab {
     }
 
     /**
-     * Eseménykezelő. Esemény: keresés gomb akciója. Tevékenység: elindítja a kereső algoritmust, és elérhetetlenné teszi a GUI-t (beviteli mező, keresés gomb).
+     * Eseménykezelő. Esemény: keresés gomb akciója. Tevékenység: elindítja a
+     * kereső algoritmust, és elérhetetlenné teszi a GUI-t (beviteli mező, keresés gomb).
      */
     private void startSearch() {
         startTime = System.nanoTime();

@@ -60,6 +60,7 @@ public class PubTable extends TableView<Publication> {
     private void showPubWindow() {
         if (getSelectionModel().getSelectedIndex() > -1) {
             mainWindow.getTabPane().getTabs().add(new PubTab(mainWindow, getSelectionModel().getSelectedItem()));
+            mainWindow.getTabPane().getSelectionModel().selectLast();
         }
     }
 }

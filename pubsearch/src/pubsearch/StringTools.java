@@ -30,25 +30,39 @@ public class StringTools {
      * @param pattern A minta, reguláris kifejezés, mely tartalmaz legalább 1 csoportot.
      * @return Az illeszkedő szövegrészletből az 1-es csoport, vagy null, ha nincs találat.
      */
-    public static String findFirstMatch(String in, String pattern) {
-        Pattern p = Pattern.compile(pattern);
+    /**
+     * Megkeresi az illeszkedő szövegrészt és visszaaindja annak egy csoportját.
+     * @param in Amiben keresni kell.
+     * @param pattern A minta (reguláris kifejezés), amit keresni kell.
+     * @param group A reguláris kifejezésben szereplő csoport száma, amire szükség van.
+     * @return Az illesztett szöveg megadott csoportja.
+     */
+    public static String findFirstMatch(String in, String pattern, int group) {
+        if (null == in || null == pattern || 0 == in.length() || 0 == pattern.length() || group < 0) {
+            return null;
+        }
+        Pattern p = Pattern.compile(pattern, Pattern.DOTALL);
         Matcher m = p.matcher(in);
-        return (m.find()) ? m.group(1) : null;
+        return (m.find()) ? m.group(group) : null;
     }
 
     /**
      * Megkeresi a szövegben egy adott minta összes előfordulását, és visszatér
-     * azok 1-es csoportjainak listájával.
+     * azok megadott csoportjainak listájával.
      * @param in Amiben keresni kell.
-     * @param pattern A minta, reguláris kifejezés, mely tartalmaz legalább 1 csoportot.
-     * @return Az illeszkedő szövegrészletek 1-es csoportjai, listába szervezve.
+     * @param pattern A minta (reguláris kifejezés), amit keresni kell.
+     * @param group A reguláris kifejezésben szereplő csoport száma, amire szükség van.
+     * @return Az illeszkedő szövegrészletek megfelelő csoportjai, listába szervezve.
      */
-    public static List<String> findAllMatch(String in, String pattern) {
-        Pattern p = Pattern.compile(pattern);
+    public static List<String> findAllMatch(String in, String pattern, int group) {
+        if (null == in || null == pattern || 0 == in.length() || 0 == pattern.length() || group < 0) {
+            return null;
+        }
+        Pattern p = Pattern.compile(pattern, Pattern.DOTALL);
         Matcher m = p.matcher(in);
         ArrayList<String> a = new ArrayList<String>();
         while (m.find()) {
-            a.add(m.group(1));
+            a.add(m.group(group));
         }
         return a;
     }
@@ -96,7 +110,7 @@ public class StringTools {
         long nanosec = time % 1000;
         long microsec = (time / 1000) % 1000;
         long millisec = (time / 1000 / 1000) % 1000;
-        long sec = (time / 1000 / 1000 / 1000) % 1000;
+        long sec = (time / 1000 / 1000 / 1000) % 60;
         long min = (time / 1000 / 1000 / 1000 / 60);
 
         String r = lpad(Long.toString(min), 2, '0') + ":"

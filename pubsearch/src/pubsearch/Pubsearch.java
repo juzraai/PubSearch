@@ -1,7 +1,6 @@
 package pubsearch;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.stage.Stage;
 import pubsearch.data.Connection;
 import pubsearch.gui.window.AlertWindow;
@@ -42,7 +41,6 @@ public class Pubsearch extends Application {
                 AlertWindow.show("Nem sikerült csatlakozni a MySQL adatbázishoz, kérlek add meg a megfelelő paramétereket!");
             } else if (Connection.getLastError() == Connection.JPA_ERROR) {
                 AlertWindow.show("Hiba történt az adatbáziskapcsolat felépítésekor (JPA_ERROR).");
-                Platform.exit();
             }
         }
     }

@@ -23,7 +23,7 @@ import pubsearch.gui.control.MyLabel;
  * @author Zsolt
  */
 public class AlertWindow extends AWindow {
- 
+
     /**
      * Eltárolunk egy objektumot, ezt fogja beállítani és megjeleníteni a
      * statikus show(msg), így nem kell mindig felépíteni egy ablakot.
@@ -108,7 +108,7 @@ public class AlertWindow extends AWindow {
      * Megjelenít egy hibaüzenet ablakot.
      * @param msg A hibaüzenet.
      */
-    public static void show(String msg) {
+    public static void show(final String msg) {
         show("PubSearch", msg);
     }
 

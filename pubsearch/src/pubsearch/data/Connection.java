@@ -32,6 +32,22 @@ public class Connection {
     }
 
     /**
+     * Megkísérli az inicializálást. Hiba esetén a lastError mező értékében tájékoztat,
+     * hogy SQL vagy JPA kivételről volt-e szó.
+     * @return sikerült-e
+     */
+    public static boolean tryInit() {
+        try {
+            init();
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            lastError = (t instanceof SQLException) ? SQL_ERROR : JPA_ERROR;
+            return false;
+        }
+    }
+
+    /**
      * Létrehozza az adatbázist (ha még nem létezik), valamint a kapcsolatot
      * a JPA-val (ami pedig csatlakozik az adatbázishoz).
      */
@@ -47,7 +63,6 @@ public class Connection {
         java.sql.Connection c = DriverManager.getConnection("jdbc:mysql://" + Config.getJdbcUrl() + "/mysql", Config.getJdbcUser(), Config.getJdbcPass());
         Statement s = c.createStatement();
         s.execute("CREATE DATABASE IF NOT EXISTS pubsearch;");
-        //s.execute("DROP TABLE PubDb;");
         s.close();
         c.close();
         System.out.println("MYSQL CONNECTION OK.");
@@ -59,7 +74,7 @@ public class Connection {
         props.put("javax.persistence.jdbc.url", "jdbc:mysql://" + Config.getJdbcUrl() + "/pubsearch");
         props.put("javax.persistence.jdbc.user", Config.getJdbcUser());
         props.put("javax.persistence.jdbc.password", Config.getJdbcPass());
-        //props.put(PersistenceUnitProperties.)
+        //props.put("eclipselink.logging.level", "OFF");
         emf = Persistence.createEntityManagerFactory("pubsearch", props);
         em = emf.createEntityManager();
         System.out.println("JPA CONNECTION BUILT.");
@@ -68,39 +83,21 @@ public class Connection {
          * Feltöltjük a publikációs adatbázisok adatait. Ezt a CRAWL package-ben kéne már!!!
          */
         // TODO táblázat Excel -> CSV, beolvasót írni rá, ami felépít egy List<PubDb>-t, és egy ciklussal berántja JPA-ba
-        /*List<PubDb> pubdbs = new ArrayList<PubDb>();
-        //(id, name, baseUrl, submitUrl, submitMethod, submitParametersFormat, pubPageLinkPattern, pubPageLinkModFormat, nextPageLinkPattern, authorsPattern, titlePattern, yearPattern, bibtexLinkPattern, bibtexPattern)
-        pubdbs.add(new PubDb(1L, "CiteSeerX", "http://citeseerx.ist.psu.edu/", "search", "GET", "q=title%3A%s+AND+author%3A%s&sort=cite&t=doc", "href=\"/(viewdoc/summary(.*?))\"", null, "href=(.*?)>Next", null, "<p>(@(.*?))</p>", null, null, null));
-        //pubdbs.add(new PubDb(2L, "ACM", "http://dl.acm.org/", "results.cfm"))
-
-        for (PubDb pubdb : pubdbs) {
-            try {
-                pubdb.store();
-                System.out.println("PubDB added: " + pubdb.getName());
-            } catch (Throwable t) {
-            }
-        }*/
+        /*
+         * List<PubDb> pubdbs = new ArrayList<PubDb>();
+         * //(id, name, baseUrl, submitUrl, submitMethod, submitParametersFormat, pubPageLinkPattern, pubPageLinkModFormat, nextPageLinkPattern, authorsPattern, titlePattern, yearPattern, bibtexLinkPattern, bibtexPattern)
+         * pubdbs.add(new PubDb(1L, "CiteSeerX", "http://citeseerx.ist.psu.edu/", "search", "GET", "q=title%3A%s+AND+author%3A%s&sort=cite&t=doc", "href=\"/(viewdoc/summary(.*?))\"", null, "href=(.*?)>Next", null, "<p>(@(.*?))</p>", null, null, null));
+         * //pubdbs.add(new PubDb(2L, "ACM", "http://dl.acm.org/", "results.cfm"))
+         *
+         * for (PubDb pubdb : pubdbs) {
+         * try {
+         * pubdb.store();
+         * System.out.println("PubDB added: " + pubdb.getName());
+         * } catch (Throwable t) {
+         * }
+         * }
+         */
         
-        /*Publication p = new Publication(null, "sz1", "c1", 1);
-        p.store();
-        new Link("url1", 0, p.getId().intValue()).store();
-        System.out.println("TEST DATA STORED.");*/
-
         System.out.println("INIT DONE.");
-    }
-
-    /**
-     * Megkísérli az inicializálást. Hiba esetén a lastError mező értékében tájékoztat,
-     * hogy SQL vagy JPA kivételről volt-e szó.
-     * @return sikerült-e
-     */
-    public static boolean tryInit() {
-        try {
-            init();
-            return true;
-        } catch (Throwable t) {
-            lastError = (t instanceof SQLException) ? SQL_ERROR : JPA_ERROR;
-            return false;
-        }
     }
 }

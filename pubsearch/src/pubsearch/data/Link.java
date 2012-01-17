@@ -5,9 +5,7 @@
 package pubsearch.data;
 
 import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 /**
  * Egy publikációs adatbázisból egy publikációra mutató link.
@@ -19,16 +17,19 @@ public class Link extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String url;
-    private int pubID;
-    private int dbID;
+    private Publication publication;
+    private PDatabase pDatabase;
 
     public Link() {
     }
 
-    public Link(String url, int dbID, int pubID) {
+    public Link(String url) {
         this.url = url;
-        this.dbID = dbID;
-        this.pubID = pubID;
+    }
+    
+    @Transient
+    public String getDbName() {
+        return pDatabase.getName();
     }
 
     @Id
@@ -40,27 +41,22 @@ public class Link extends BaseEntity implements Serializable {
         this.url = url;
     }
 
-    public int getDbID() {
-        return dbID;
+    @ManyToOne(cascade = CascadeType.ALL)
+    public PDatabase getPdatabase() {
+        return pDatabase;
     }
 
-    public void setDbID(int dbID) {
-        this.dbID = dbID;
+    public void setPdatabase(PDatabase pdatabase) {
+        this.pDatabase = pdatabase;
     }
 
-    @Transient
-    public String getDbName() {
-        // nem a legszebb megoldás, JPA nélkül ezt a külső lekérdezésbe is be lehetett volna tenni...
-        return (String) Connection.getEm().createQuery("SELECT d.name FROM PubDb d WHERE d.id=" + dbID).getSingleResult();
+    @ManyToOne(cascade = CascadeType.ALL)
+    public Publication getPublication() {
+        return publication;
     }
 
-    @Id
-    public int getPubID() {
-        return pubID;
-    }
-
-    public void setPubID(int pubID) {
-        this.pubID = pubID;
+    public void setPublication(Publication publication) {
+        this.publication = publication;
     }
 
     @Override
