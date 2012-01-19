@@ -41,7 +41,7 @@ public class StringTools {
         if (null == in || null == pattern || 0 == in.length() || 0 == pattern.length() || group < 0) {
             return null;
         }
-        Pattern p = Pattern.compile(pattern, Pattern.DOTALL);
+        Pattern p = Pattern.compile(pattern, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(in);
         return (m.find()) ? m.group(group) : null;
     }
@@ -58,7 +58,7 @@ public class StringTools {
         if (null == in || null == pattern || 0 == in.length() || 0 == pattern.length() || group < 0) {
             return null;
         }
-        Pattern p = Pattern.compile(pattern, Pattern.DOTALL);
+        Pattern p = Pattern.compile(pattern, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(in);
         ArrayList<String> a = new ArrayList<String>();
         while (m.find()) {

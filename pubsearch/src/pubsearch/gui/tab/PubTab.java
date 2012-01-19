@@ -14,6 +14,7 @@ import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.Clipboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -170,7 +171,7 @@ public class PubTab extends Tab {
 
                         public void handle(MouseEvent event) {
                             //TODO open link (cell.getText()) in new browser window
-                            System.out.println("LINK: " + cell.getText());
+                            //System.out.println("LINK: " + cell.getText());
                         }
                     });
                     return cell;

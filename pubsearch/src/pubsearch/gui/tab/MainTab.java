@@ -16,7 +16,7 @@ import pubsearch.StringTools;
 import pubsearch.crawl.Crawler;
 import pubsearch.data.Publication;
 import pubsearch.gui.GuiTools;
-import pubsearch.gui.control.MyLabel;
+import pubsearch.gui.control.LabelEx;
 import pubsearch.gui.control.PubTable;
 import pubsearch.gui.window.AboutWindow;
 import pubsearch.gui.window.AlertWindow;
@@ -40,6 +40,7 @@ public class MainTab extends Tab {
     // Controls
     private final TextField authorField = new TextField();
     private final TextField titleField = new TextField();
+    private final ChoiceBox transLevCombo = new ChoiceBox(FXCollections.observableArrayList("0", "1", "2"));
     private final CheckBox onlyLocalCheckBox = new CheckBox("Search only in the local database");
     private final Button searchButton = new Button("Search!");
     private final PubTable resultsView;
@@ -64,8 +65,9 @@ public class MainTab extends Tab {
         /*
          * Top
          */
-        MyLabel authorLabel = new MyLabel("Search for author:", true, false, GuiTools.shadow);
-        MyLabel titleLabel = new MyLabel("Filter by title:", false, false, GuiTools.shadow);
+        Label authorLabel = new LabelEx("Search for author:", true, false, GuiTools.shadow);
+        Label titleLabel = new LabelEx("Filter by title:", false, false, GuiTools.shadow);
+        Label transLevLabel = new LabelEx("Transitivity level:", false, false, GuiTools.shadow);
 
         authorField.setOnAction(startSearchAction);
         authorField.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -79,7 +81,15 @@ public class MainTab extends Tab {
         titleField.setOnAction(startSearchAction);
         titleField.setDisable(true);
 
+        transLevCombo.getSelectionModel().selectFirst();
+
         onlyLocalCheckBox.setStyle("-fx-text-fill: #AFA");
+        onlyLocalCheckBox.setOnAction(new EventHandler<ActionEvent>(){
+
+            public void handle(ActionEvent arg0) {
+                transLevCombo.setDisable(onlyLocalCheckBox.selectedProperty().get());
+            }
+        });
 
         searchButton.setDisable(true);
         searchButton.setPrefWidth(75);
@@ -126,7 +136,9 @@ public class MainTab extends Tab {
         top.add(authorField, 1, 0);
         top.add(titleLabel, 0, 1);
         top.add(titleField, 1, 1);
-        top.add(onlyLocalCheckBox, 1, 2);
+        top.add(transLevLabel, 0, 2);
+        top.add(transLevCombo, 1, 2);
+        top.add(onlyLocalCheckBox, 1, 3);
         top.add(searchButton, 2, 0, 1, 2);
         top.add(aboutButton, 3, 0);
         top.add(editProxiesButton, 3, 1);
@@ -180,14 +192,14 @@ public class MainTab extends Tab {
         startTime = System.nanoTime();
         if (!onlyLocalCheckBox.selectedProperty().get()) {
             // crawl eset
-            if (Config.getProxyList().length == 0) {
+            if (Config.getProxyList().isEmpty()) {
                 // nincs proxy, hibajelzés
                 proxyWindow.show();
                 AlertWindow.show("Please define a proxy list first.\nOr you can search only in the local database.");
             } else {
                 // van proxy, indul a crawl, külön szálon, majd ő értesít az eredmények megjelenítéséről
                 switchScene(false);
-                final Crawler crawler = new Crawler(this, authorField.getText(), titleField.getText());
+                final Crawler crawler = new Crawler(this, authorField.getText(), titleField.getText(), transLevCombo.getSelectionModel().getSelectedIndex());
                 crawler.start();
             }
         } else {
@@ -220,7 +232,7 @@ public class MainTab extends Tab {
         switchScene(true);
     }
 
-    public void focusAuthorField() {        
+    public void focusAuthorField() {
         authorField.requestFocus();
     }
 }

@@ -16,7 +16,6 @@ public class ResultListPage {
     private String html;
     // out
     private List<String> resultURLs;
-    private String nextPageURL;
 
     public ResultListPage(PDatabase pubdb, String html) {
         this.pDatabase = pubdb;
@@ -24,8 +23,7 @@ public class ResultListPage {
     }
 
     /**
-     * Kiszedi a HTML kódból a találatokra és a következő találati lista oldalra
-     * mutató URL-eket.
+     * Kiszedi a HTML kódból a találatokra mutató URL-eket.
      */
     public void extractURLs() {
         resultURLs = StringTools.findAllMatch(html, pDatabase.getPubPageLinkPattern(), 1);
@@ -35,19 +33,6 @@ public class ResultListPage {
                 resultURLs.set(i, pDatabase.getBaseUrl() + String.format(modFormat, resultURLs.get(i)));
             }
         }
-        
-        nextPageURL = StringTools.findFirstMatch(html, pDatabase.getNextPageLinkPattern(), 1);
-        if (null != nextPageURL) {
-            nextPageURL = pDatabase.getBaseUrl() + nextPageURL;
-        }
-
-    }
-
-    /** 
-     * @return A következő találati lista oldal URL-je.
-     */
-    public String getNextPageURL() {
-        return nextPageURL;
     }
 
     /**

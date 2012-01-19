@@ -24,8 +24,8 @@ public class Pubsearch extends Application {
 
     /**
      * Létrehozza és megjeleníti a főablakot.
-     * 
-     * @param primaryStage 
+     *
+     * @param primaryStage
      */
     @Override
     public void start(Stage primaryStage) {

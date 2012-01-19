@@ -28,12 +28,12 @@ public class Publication extends BaseEntity implements Serializable {
     private Integer year;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "publication")
     private List<Link> links = new ArrayList<Link>();
-    @ManyToMany(cascade= CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "Citing", joinColumns =
     @JoinColumn(name = "PubID"), inverseJoinColumns =
     @JoinColumn(name = "CitedByPubID"))
     private List<Publication> citedBy = new ArrayList<Publication>();
-    @ManyToMany(mappedBy = "citedBy", cascade= CascadeType.ALL)
+    @ManyToMany(mappedBy = "citedBy", cascade = CascadeType.ALL)
     private List<Publication> cites = new ArrayList<Publication>();
 
     public Publication() {
@@ -44,6 +44,67 @@ public class Publication extends BaseEntity implements Serializable {
         this.authors = authors;
         this.title = title;
         this.year = year;
+    }
+
+    public Publication isAlreadyExists() {
+        List<Publication> pl = Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.title=\"" + title + "\" AND p.year=" + year).getResultList();
+        if (pl.isEmpty()) {
+            return null;
+        } else {
+            return pl.get(0);
+        }
+    }
+
+    /**
+     * Meghívja a BaseEntity-ben definiált store() metódust, ami kivételelnyeléssel
+     * kiadja a parancsot az objektum adatbázisba való feltöltésére.
+     * @deprecated Publikáció esetén nem érdemes használni, mert azonos című és
+     * évszámú publikációk többször bekerülnek így, ami felesleges. Használd inkább
+     * a storeWithUpdate() metódust.
+     */
+    @Override
+    public void store() {
+        super.store();
+        System.err.println("Please use storeWithUpdate() instead to avoid redundant publications in the database.");
+    }
+
+    /**
+     * Meghívja a BaseEntity-en definiált store() metódust, ami kivételelnyeléssel
+     * kiadja a parancsot az objektum adatbázisba való feltöltésére.
+     * Ezt a metódust csak akkor érdemes hívni, ha tudjuk, hogy a publikáció még
+     * nincs eltárolva az adatbázisban, különben többszöri előfordulást kapunk.
+     */
+    private void storeWithInsert() {
+        super.store();
+    }
+
+    /**
+     * Ellenőrzi, hogy az adott publikáció benne van-e már az adatbázisban, és ennek
+     * megfelelően végzi el a mentést. Ha még nincs fent, a storeWithInsert-et használja,
+     * ha már fent van, akkor pedig lekérdezi a fent lévőt, és azt frissíti.
+     */
+    public void storeWithUpdate() {
+        Publication p = isAlreadyExists();
+        if (null == p) {
+            storeWithInsert();
+        } else {
+            // update all fields except id/title/year
+            // TODO ÁTGONDOLNI !!!!!!
+            // TODO ALGORITMUS ALAPJÁN UPDATE, NEM ÉSZNÉLKÜL!!
+
+            /*if ((null == p.bibtex && null != bibtex)||(null != p.bibtex && null!=bibtex && p.bibtex.length()<bibtex.length())){
+                p.bibtex = bibtex;
+                p.authors = authors;
+            }
+
+
+
+            //itt még végig kéne állítani!!!!!!
+            p.getCitedBy().addAll(citedBy);
+            p.getCites().addAll(cites);
+            p.getLinks().addAll(links);
+            p.storeWithInsert();*/
+        }
     }
 
     /**
@@ -58,13 +119,6 @@ public class Publication extends BaseEntity implements Serializable {
         return Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors LIKE '%" + filterAuthors + "%' AND p.title LIKE '%" + filterTitle + "%'").getResultList();
     }
 
-    /**
-     * Lekérdezi az adatbázisból azokat a publikációkat, amelyek erre a publikációra hivatkoznak (idéznek belőle).
-     * @return  A megfelelő publikációk listja.
-     */
-    /*public List<Publication> getCites() {
-        return Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.id IN (SELECT c.citedByPubID FROM Cite c WHERE c.pubID=" + id + ")").getResultList();
-    }*/
     public String getAuthors() {
         if (authors == null && bibtex != null) {
             return StringTools.findFirstMatch(bibtex, "author = {(.*?)}", 1); // TODO javítani a regex-et!

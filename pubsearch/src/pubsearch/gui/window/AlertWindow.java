@@ -1,5 +1,6 @@
 package pubsearch.gui.window;
 
+import com.sun.glass.ui.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -14,8 +15,9 @@ import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.WindowEvent;
 import pubsearch.gui.GuiTools;
-import pubsearch.gui.control.MyLabel;
+import pubsearch.gui.control.LabelEx;
 
 /**
  * Hibaüzenet ablak.
@@ -29,7 +31,7 @@ public class AlertWindow extends AWindow {
      * statikus show(msg), így nem kell mindig felépíteni egy ablakot.
      */
     private static AlertWindow alertWindow = new AlertWindow("");
-    private Label messageLabel = new MyLabel("", true, true, false, GuiTools.shadow);
+    private Label messageLabel = new LabelEx("", true, true, false, GuiTools.shadow);
 
     /**
      * Létrehoz egy új hibaüzenet ablakot,
@@ -94,7 +96,7 @@ public class AlertWindow extends AWindow {
         RadialGradient gradient = new RadialGradient(0, 0, 38, 48, 300, false, CycleMethod.NO_CYCLE, gradientColors);
 
         Scene scene = new Scene(layout, 400, 125);
-        scene.getRoot().setStyle("-fx-background-color: transparent;"); // levesszük a CSS hátteret      
+        scene.getRoot().setStyle("-fx-background-color: transparent;"); // levesszük a CSS hátteret
         scene.setFill(gradient);
         scene.getRoot().setCache(true);
         return scene;
@@ -108,7 +110,7 @@ public class AlertWindow extends AWindow {
      * Megjelenít egy hibaüzenet ablakot.
      * @param msg A hibaüzenet.
      */
-    public static void show(final String msg) {
+    public static void show(String msg) {
         show("PubSearch", msg);
     }
 

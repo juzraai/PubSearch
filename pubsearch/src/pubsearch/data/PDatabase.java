@@ -18,27 +18,28 @@ public class PDatabase extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String baseUrl;
     // form submit
     private String submitUrl = "";
     private String submitMethod;                // "GET" / "POST"
     @Column(nullable = false)
     private String submitParamsFormat;          // formatstring, %s:author
-    @Column(nullable = false)
-    private String submitParamsWithTitleFormat; // formatstring, %s:querystring, %s:title
+    private String submitParamsWithTitleFormat = "%s"; // formatstring, %s:querystring, %s:title
     // result list
     private String pubPageLinkPattern;          // regex
     private String pubPageLinkModFormat = "%s"; // formatstring, %s:link before mod
-    private String nextPageLinkPattern;         // regex
+    private String startField = "start";
+    private Integer firstIndex = 0;                 // 0 / 1
+    private Integer resultsPerPage = 10;
     // pub page
     private String bibtexLinkPattern;           // regex
-    private String bibtePatternx;               // regex
+    private String bibtexPattern;               // regex
     private String authorsPattern;              // regex
     private String titlePattern;                // regex
-    private String yearPattern;                 // regex, data in group #2
+    private String yearPattern;                 // regex
     private String refPubListPageLinkPattern;   // regex
     // ref pub list
     private String refPubListBlockPattern;      // regex
@@ -54,14 +55,6 @@ public class PDatabase extends BaseEntity implements Serializable {
 
     public static List<PDatabase> getAll() {
         return Connection.getEm().createQuery("SELECT p FROM PDatabase p").getResultList();
-    }
-
-    public List<Link> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<Link> links) {
-        this.links = links;
     }
 
     @Override
@@ -85,7 +78,7 @@ public class PDatabase extends BaseEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "pubsearch.data.PubDb[ id=" + id + " ]";
+        return "pubsearch.data.PDatabase[ id=" + id + " ]";
     }
 
     public String getAuthorsPattern() {
@@ -104,12 +97,12 @@ public class PDatabase extends BaseEntity implements Serializable {
         this.baseUrl = baseUrl;
     }
 
-    public String getBibtePatternx() {
-        return bibtePatternx;
+    public String getBibtexPattern() {
+        return bibtexPattern;
     }
 
-    public void setBibtePatternx(String bibtePatternx) {
-        this.bibtePatternx = bibtePatternx;
+    public void setBibtexPattern(String bibtexPattern) {
+        this.bibtexPattern = bibtexPattern;
     }
 
     public String getBibtexLinkPattern() {
@@ -120,6 +113,14 @@ public class PDatabase extends BaseEntity implements Serializable {
         this.bibtexLinkPattern = bibtexLinkPattern;
     }
 
+    public int getFirstIndex() {
+        return firstIndex;
+    }
+
+    public void setFirstIndex(int firstIndex) {
+        this.firstIndex = firstIndex;
+    }
+
     public Long getId() {
         return id;
     }
@@ -128,20 +129,20 @@ public class PDatabase extends BaseEntity implements Serializable {
         this.id = id;
     }
 
+    public List<Link> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<Link> links) {
+        this.links = links;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getNextPageLinkPattern() {
-        return nextPageLinkPattern;
-    }
-
-    public void setNextPageLinkPattern(String nextPageLinkPattern) {
-        this.nextPageLinkPattern = nextPageLinkPattern;
     }
 
     public String getPubPageLinkModFormat() {
@@ -198,6 +199,22 @@ public class PDatabase extends BaseEntity implements Serializable {
 
     public void setRefPubYearPattern(String refPubYearPattern) {
         this.refPubYearPattern = refPubYearPattern;
+    }
+
+    public int getResultsPerPage() {
+        return resultsPerPage;
+    }
+
+    public void setResultsPerPage(int resultsPerPage) {
+        this.resultsPerPage = resultsPerPage;
+    }
+
+    public String getStartField() {
+        return startField;
+    }
+
+    public void setStartField(String startField) {
+        this.startField = startField;
     }
 
     public String getSubmitMethod() {

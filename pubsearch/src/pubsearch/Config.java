@@ -2,6 +2,7 @@ package pubsearch;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ public class Config {
     private static String jdbcUrl = "localhost:3306";
     private static String jdbcUser = "root";
     private static String jdbcPass = "root";
-    private static String[] proxyList = new String[0];
+    private static List<String> proxyList = new ArrayList<String>();
 
     public static String getJdbcPass() {
         return jdbcPass;
@@ -40,16 +41,21 @@ public class Config {
         Config.jdbcUser = jdbcUser;
     }
 
-    public static String[] getProxyList() {
+    public static List<String> getProxyList() {
         return proxyList;
     }
 
-    public static void setProxyList(String[] proxyList) {
+    public static void setProxyList(List<String> proxyList) {
         Config.proxyList = proxyList;
     }
 
+    public static void setProxyList(String[] proxyList) {
+        Config.proxyList.clear();
+        Collections.addAll(Config.proxyList, proxyList);
+    }
+
     public static String getRandomProxy() {
-        return proxyList[(int) (Math.random() * proxyList.length)];
+        return proxyList.get((int) (Math.random() * proxyList.size()));
     }
 
     public static void load() {
@@ -59,13 +65,12 @@ public class Config {
             setJdbcUrl(r.readLine());
             setJdbcUser(r.readLine());
             setJdbcPass(r.readLine());
-            List<String> readProxyList = new ArrayList<String>();
+            proxyList.clear();
             while (r.ready()) {
-                readProxyList.add(r.readLine());
+                proxyList.add(r.readLine());
             }
-            proxyList = new String[readProxyList.size()];
-            proxyList = readProxyList.toArray(proxyList);
         } catch (IOException e) {
+            System.out.println("ERROR WHILE LOADING CONFIG.");
         } finally {
             System.out.println("CONFIG LOADED.");
             if (r != null) {
@@ -93,7 +98,7 @@ public class Config {
             }
         } catch (IOException e) {
         } finally {
-            System.out.println("CONFIG SAVED.");
+            //System.out.println("CONFIG SAVED.");
             if (w != null) {
                 try {
                     w.close();
@@ -101,5 +106,17 @@ public class Config {
                 }
             }
         }
+    }
+
+    /**
+     * Törli a megadott proxy-t a listáról, és a változást rögzíti a konfig. fájlban is.
+     * Ez a metódus érvénytelen proxy esetén (hibás kapcsolódás) hívódik meg.
+     * @param proxy A törlendő proxy (IP:PORT).
+     */
+    public static void delProxy(String proxy) {
+        if (proxyList.remove(proxy)) {
+            System.out.println("Proxy " + proxy + " removed from the list.");
+        }
+        save();
     }
 }

@@ -23,10 +23,12 @@ public class Link extends BaseEntity implements Serializable {
     public Link() {
     }
 
-    public Link(String url) {
+    public Link(String url, Publication publication, PDatabase pDatabase) {
         this.url = url;
+        this.publication = publication;
+        this.pDatabase = pDatabase;
     }
-    
+
     @Transient
     public String getDbName() {
         return pDatabase.getName();

@@ -34,13 +34,16 @@ public class PubPage {
         // ha van bibtex block
         //      lekéri azt
         // ha nincs, akkor authors, title, year
-        
-        // ha semmilyen adat nem nyerhető ki, akkor publication=null;
 
-        refPubListPageURL = StringTools.findFirstMatch(html, pDatabase.getRefPubListPageLinkPattern(), 1);
+        // ha semmilyen adat nem nyerhető ki (pl. bibtexnél kapcsolódási hiba), akkor publication=null; return;
+
+        // összerak egy publication-t.
+
+        // ezt csak akkor, ha a transLev > 0 !
+        /*refPubListPageURL = StringTools.findFirstMatch(html, pDatabase.getRefPubListPageLinkPattern(), 1);
         if (null != refPubListPageURL) {
             refPubListPageURL = pDatabase.getBaseUrl() + refPubListPageURL;
-        }
+        }*/
     }
 
     public Publication getPublication() {

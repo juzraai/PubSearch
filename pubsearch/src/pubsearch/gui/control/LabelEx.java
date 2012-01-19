@@ -8,25 +8,25 @@ import javafx.scene.effect.Effect;
  *
  * @author Zsolt
  */
-public class MyLabel extends Label {
+public class LabelEx extends Label {
 
-    public MyLabel(String text, Effect effect) {
+    public LabelEx(String text, Effect effect) {
         this(text, false, false, false, effect);
     }
 
-    public MyLabel(String text, boolean bold, boolean italic) {
+    public LabelEx(String text, boolean bold, boolean italic) {
         this(text, false, bold, italic, null);
     }
 
-    public MyLabel(String text, boolean white, boolean bold, boolean italic) {
+    public LabelEx(String text, boolean white, boolean bold, boolean italic) {
         this(text, white, bold, italic, null);
     }
 
-    public MyLabel(String text, boolean bold, boolean italic, Effect effect) {
+    public LabelEx(String text, boolean bold, boolean italic, Effect effect) {
         this(text, false, bold, italic, effect);
     }
 
-    public MyLabel(String text, boolean white, boolean bold, boolean italic, Effect effect) {
+    public LabelEx(String text, boolean white, boolean bold, boolean italic, Effect effect) {
         super(text);
         if (white) {
             getStyleClass().add("white-text");

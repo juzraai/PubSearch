@@ -16,7 +16,7 @@ import javafx.stage.WindowEvent;
 import pubsearch.Config;
 import pubsearch.data.Connection;
 import pubsearch.gui.GuiTools;
-import pubsearch.gui.control.MyLabel;
+import pubsearch.gui.control.LabelEx;
 
 /**
  * Az adatbáziskapcsolat beállítására szolgáló ablak.
@@ -29,7 +29,7 @@ public class ConfigWindow extends AWindow {
     private TextField urlField = new TextField();
     private TextField userField = new TextField();
     private PasswordField passwordField = new PasswordField();
-    private Label msgLabel = new MyLabel("", true, true, false);
+    private Label msgLabel = new LabelEx("", true, true, false);
     private boolean configIsOK;
 
     public ConfigWindow(MainWindow mainWindow) {
@@ -62,16 +62,16 @@ public class ConfigWindow extends AWindow {
      * @return A felépített ablaktartalom.
      */
     private Scene buildScene() {
-        MyLabel plzLabel = new MyLabel("PubSearch needs a MySQL database to store the gathered informations. Please specify the parameters.", true, false, false, GuiTools.shadow);
+        LabelEx plzLabel = new LabelEx("PubSearch needs a MySQL database to store the gathered informations. Please specify the parameters.", true, false, false, GuiTools.shadow);
         plzLabel.setWrapText(true);
-        MyLabel urlLabel1 = new MyLabel("Database (server) URL:", true, true, false, GuiTools.shadow);
-        MyLabel urlLabel2 = new MyLabel("\tmysql://", true, false, true, GuiTools.shadow);
-        MyLabel urlLabel3 = new MyLabel("/pubsearch", true, false, true, GuiTools.shadow);
-        MyLabel urlLabel4 = new MyLabel("(default: 'localhost:3306')", true, false, false, GuiTools.shadow);
-        MyLabel userLabel1 = new MyLabel("Username:", true, true, false, GuiTools.shadow);
-        MyLabel userLabel2 = new MyLabel("(default: 'root')", true, false, false, GuiTools.shadow);
-        MyLabel passwordLabel1 = new MyLabel("Password:", true, true, false, GuiTools.shadow);
-        MyLabel passwordLabel2 = new MyLabel("(default: empty)", true, false, false, GuiTools.shadow);
+        LabelEx urlLabel1 = new LabelEx("Database (server) URL:", true, true, false, GuiTools.shadow);
+        LabelEx urlLabel2 = new LabelEx("\tmysql://", true, false, true, GuiTools.shadow);
+        LabelEx urlLabel3 = new LabelEx("/pubsearch", true, false, true, GuiTools.shadow);
+        LabelEx urlLabel4 = new LabelEx("(default: 'localhost:3306')", true, false, false, GuiTools.shadow);
+        LabelEx userLabel1 = new LabelEx("Username:", true, true, false, GuiTools.shadow);
+        LabelEx userLabel2 = new LabelEx("(default: 'root')", true, false, false, GuiTools.shadow);
+        LabelEx passwordLabel1 = new LabelEx("Password:", true, true, false, GuiTools.shadow);
+        LabelEx passwordLabel2 = new LabelEx("(default: empty)", true, false, false, GuiTools.shadow);
 
         EventHandler<ActionEvent> reInitAction = new EventHandler<ActionEvent>() {
 

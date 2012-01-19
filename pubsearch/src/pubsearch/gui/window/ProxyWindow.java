@@ -1,5 +1,7 @@
 package pubsearch.gui.window;
 
+import java.util.Iterator;
+import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -11,7 +13,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
 import pubsearch.Config;
 import pubsearch.gui.GuiTools;
-import pubsearch.gui.control.MyLabel;
+import pubsearch.gui.control.LabelEx;
 
 /**
  * A proxy lista beállításához használatos ablak.
@@ -32,9 +34,10 @@ public class ProxyWindow extends AWindow {
         setOnShowing(new EventHandler<WindowEvent>() {
 
             public void handle(WindowEvent event) {
-                String[] pl = Config.getProxyList();
+                List<String> pl = Config.getProxyList();
                 StringBuilder sb = new StringBuilder();
-                for (String pli : pl) {
+                for (Iterator<String> it = pl.iterator(); it.hasNext();) {
+                    String pli = it.next();
                     sb.append(pli);
                     sb.append("\n");
                 }
@@ -47,9 +50,9 @@ public class ProxyWindow extends AWindow {
      * @return A felépített ablaktartalom.
      */
     private Scene buildScene() {
-        MyLabel plzLabel = new MyLabel("Publication databases don't tolerate rare querying, so PubSearch uses proxies to reach them. Please specify a valid proxy list (IP:PORT).", true, false, false, GuiTools.shadow);
+        LabelEx plzLabel = new LabelEx("Publication databases don't tolerate rare querying, so PubSearch uses proxies to reach them. Please specify a valid proxy list (IP:PORT). Not working proxies will be removed, please refresh the list once in a while.", true, false, false, GuiTools.shadow);
         plzLabel.setWrapText(true);
-        
+
         proxyTA.setStyle("-fx-font-family:monospace;");
 
         Button saveButton = new Button("Save");

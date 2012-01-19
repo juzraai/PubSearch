@@ -6,7 +6,6 @@ package pubsearch.data;
  * @author Zsolt
  */
 public abstract class BaseEntity {
-    //TODO MEGOLDANI VALAHOL HOGY DUPLIKÁTOT NE TÖLTSÖN FEL!!! Pub:title,year PDB:name
 
     public void store() {
         try {
