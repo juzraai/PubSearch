@@ -1,7 +1,9 @@
 package pubsearch;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import pubsearch.data.Connection;
-import pubsearch.data.Link;
 import pubsearch.data.PDatabase;
 import pubsearch.data.Publication;
 
@@ -17,6 +19,7 @@ public class UploadTestData {
         Config.load();
         Connection.tryInit();
 
+
         /*
          * PDatabase db1 = new PDatabase();
          * db1.setName("CiteSeerX");
@@ -26,6 +29,7 @@ public class UploadTestData {
          * db1.setPubPageLinkPattern("href=\"/(viewdoc/summary.*?)\"");
          * db1.store();
          */
+
         // CiteSeerX: 10/0/start - default config
 
         /*
@@ -41,37 +45,101 @@ public class UploadTestData {
          * db2.store();
          */
 
-        PDatabase db3 = new PDatabase();
-        db3.setName("liinwww.ira.uka.de");
-        db3.setBaseUrl("http://liinwww.ira.uka.de/");
-        db3.setSubmitUrl("csbib");
-        db3.setSubmitParamsFormat("maxnum=100&query=+au:\"%s\"");
-        db3.setPubPageLinkPattern("<td class=\"biblinks\".*?\"/(.*?bibshow.*?)\"");
-        db3.setFirstIndex(1);
-        db3.setResultsPerPage(100);
-        db3.store();
+        /*
+         * PDatabase db3 = new PDatabase();
+         * //db3.setId(3L);
+         * db3.setName("liinwww.ira.uka.de");
+         * db3.setBaseUrl("http://liinwww.ira.uka.de/");
+         * db3.setSubmitUrl("csbib");
+         * db3.setSubmitParamsFormat("maxnum=100&query=+au:\"%s\"");
+         * db3.setPubPageLinkPattern("<td class=\"biblinks\".*?\"/(.*?bibshow.*?)\"");
+         * db3.setFirstIndex(1);
+         * db3.setResultsPerPage(100);
+         * Connection.getEm().getTransaction().begin();
+         * PDatabase p = Connection.getEm().find(PDatabase.class, db3.getName());
+         * if (null == p) {
+         * System.out.println("persist");
+         * Connection.getEm().persist(db3);
+         * }
+         * else {
+         *
+         * p.setBaseUrl("-NEW-0");
+         *
+         * }
+         * Connection.getEm().getTransaction().commit();
+         */
+
+        ///System.out.println(db3.getId());
+        //db3.store();
+        /*
+         * System.out.println(db3.getId());
+         * List<PDatabase> pl = Connection.getEm().createQuery("SELECT p FROM PDatabase p WHERE p.name=\""+db3.getName()+"\"").getResultList();
+         * if (!pl.isEmpty()) {
+         * System.out.println("rewrite");
+         * PDatabase p = pl.get(0);
+         *
+         * Connection.getEm().detach(p);
+         * Connection.getEm().merge(db3);
+         * }
+         */
 
 
         // DATA
+        Connection.getEm().getTransaction().begin();
+        /*
+         * Publication pub1 = Publication.getReferenceFor("title1", 2001);
+         * pub1.setAuthors("authors1");
+         *
+         * Publication pub2 = Publication.getReferenceFor("title2", 2002);
+         * pub2.setAuthors("authors2");
+         *
+         *
+         * pub2.addCitedBy(pub1);
+         *
+         *
+         * //Connection.getEm().persist(pub1); // felesleges
+         * Connection.getEm().persist(pub2);
+         */
+
+        PDatabase pdb1 = PDatabase.getReferenceFor("CiteSeerX");
+        pdb1.setBaseUrl("hello");
+        pdb1.setSubmitParamsFormat("k");
+        Connection.getEm().persist(pdb1);
+
+        Connection.getEm().getTransaction().commit();
+
+
 
         /*
          * Publication pub1 = new Publication("bibtex1", "authors1", "title1", 2001);
          * Publication pub2 = new Publication("bibtex2", "authors2", "title2", 2002);
          *
-         * Link link1 = new Link("link2pub1", pub1, db1);
-         *
+         * //Link link1 = new Link("link2pub1", pub1, db1);
+         * Link link1 = new Link();
+         * link1.setUrl("link2pub2");
+         * link1.setPublication(pub1);
          * pub1.getLinks().add(link1);
-         * db1.getLinks().add(link1);
+         * link1.store();
+         *
+         * //pub1.getLinks().add(link1);
+         * //db1.getLinks().add(link1);
          *
          * pub1.getCitedBy().add(pub2);
-         * pub2.getCites().add(pub1);
+         * //pub2.getCites().add(pub1);
          *
-         * link1.store();
-         * db1.store();
-         * pub1.storeWithUpdate();
-         * pub2.storeWithUpdate();
+         * Publication pub3 = new Publication("bibtex3", "a3", "t3", 2003);
+         * //pub3.getCitedBy().add(pub2);
+         * //pub2.getCites().add(pub3);
+         *
+         * //pub1.getCitedBy().add(pub3);
+         *
+         * //link1.store();
+         * //db1.store();
+         * Publication.store(pub1);
+         * //Publication.store(pub2);
+         * //Publication.store(pub3);
+         *
          */
-
 
         /*
          * Publication pub3 = new Publication("bibtex3", "NEW", "title1", 2001);

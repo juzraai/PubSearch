@@ -11,14 +11,11 @@ import javax.persistence.*;
  * @author Zsolt
  */
 @Entity
-public class PDatabase extends BaseEntity implements Serializable {
+public class PDatabase implements Serializable {
 
     private static final long serialVersionUID = 1L;
     // basic data
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    @Column(nullable = false, unique = true)
     private String name;
     @Column(nullable = false, unique = true)
     private String baseUrl;
@@ -50,35 +47,34 @@ public class PDatabase extends BaseEntity implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pdatabase")
     private List<Link> links = new ArrayList<Link>();
 
-    public PDatabase() {
+    protected PDatabase() {
     }
 
+    private PDatabase(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Az adatbázisokat a nevük azonosítja, ez a metódus megkeresi, hogy egy adott
+     * nevű adatbázis van-e már tárolva az adatbázisban, vagy nincs. Ha igen, lekéri
+     * az adatbázisból az objektumot, ha nem, akkor újat hoz létre a megadott névvel.
+     * @param name Adatbázist azonosító név.
+     * @return Referencia a PDatabase objektumra.
+     */
+    public static PDatabase getReferenceFor(String name) {
+        PDatabase pdb = Connection.getEm().find(PDatabase.class, name);
+        if (null == pdb) {
+            return new PDatabase(name);
+        } else {
+            return pdb;
+        }
+    }
+
+    /**
+     * @return Az összes PDatabase objektum, ami az adatbázisban van.
+     */
     public static List<PDatabase> getAll() {
         return Connection.getEm().createQuery("SELECT p FROM PDatabase p").getResultList();
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof PDatabase)) {
-            return false;
-        }
-        PDatabase other = (PDatabase) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "pubsearch.data.PDatabase[ id=" + id + " ]";
     }
 
     public String getAuthorsPattern() {
@@ -119,14 +115,6 @@ public class PDatabase extends BaseEntity implements Serializable {
 
     public void setFirstIndex(int firstIndex) {
         this.firstIndex = firstIndex;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public List<Link> getLinks() {
@@ -263,5 +251,29 @@ public class PDatabase extends BaseEntity implements Serializable {
 
     public void setYearPattern(String yearPattern) {
         this.yearPattern = yearPattern;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (name != null ? name.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof PDatabase)) {
+            return false;
+        }
+        PDatabase other = (PDatabase) object;
+        if ((this.name == null && other.name != null) || (this.name != null && !this.name.equals(other.name))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "pubsearch.data.PDatabase[ name=" + name + " ]";
     }
 }

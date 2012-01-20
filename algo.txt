@@ -14,14 +14,10 @@ Paramlista = String.format(SubmitParams2, Paramlista, title);
 Result List
 -----------
 
-kivágja a \n-eket a HTML-bõl
-
-kigyûjti a linkeket a PubPageLinkPattern alapján, majd
-ha van PubPageLinkMod, akkor kiegészíti azokat.
-
-a NextPageLinkPattern alapján lapoz.
-
+SCHOLAR: ALTERNATIVE ALG.
 ha nincs PubPageLinkPattern, akkor alternatív végrehajtás: (pl. G Scholar)
+	kigyûjti a PubDataBlockPattern alapján a találatokat
+	egyesével: Au/Ti/Ye -> Publication
 	Authors/Title/YearPattern alapján kigyûjti az adott oldalról
 	összerakja Publication-öknek
 	[illetve kigyûjti a RefPubListPageLinkPattern-eket is, az ugyanolyan oldalra visz (Scholar)...
@@ -34,6 +30,7 @@ Pub Page
 --------
 
 Ha van BibTexLinkPattern, akkor odamegy.
+
 Ha van BibTexPattern, akkor
 	szûkíti a kódot
 	kiveszi a &nbsp;-ket, HTML tag-eket
@@ -46,26 +43,22 @@ ELSE
 		elsõ találat, title-nél clean
 
 utána összepakolja Publication-be
+	FONTOS, HOGY GENERÁLJA LE AZ AUTHOR/TITLE/YEAR mezõket is a BIBTEX-bõl!!!
 
 
 RefBy
 -----
 
 ha van RefPubListPageLinkPattern, akkor odamegy.
+
 ha van RefPubListBlockPattern, akkor szûkít erre.
 
 innentõl kezdve a PubPageLinkPattern-t, és a PubPageLinkMod-ot használja, ahogy fent.
 ha volt RefPubListPageLinkPattern, akkor használja a NextPageLinkPattern-t és lapoz.
 
-ha nem talál PubPageLinkPattern-t, akkor
+ha NEM TALÁL PubPageLinkPattern-t, akkor
 	RefPubAuthor/Title/Year
 	összeset kiszedi, clean
 	összepakolja Publication-be
+	TODO: elõbb találat blokkokra kéne szedni és azokon iterálva a A/T/Y értékeket, hogy ne keveredjenek szét
 
-
-
-
----
-EXPORT
-	ha van BibTex-ünk, akkor azt, ellenben
-	felépítjük a 3 adatból

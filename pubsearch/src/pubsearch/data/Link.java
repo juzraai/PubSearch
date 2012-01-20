@@ -13,22 +13,39 @@ import javax.persistence.*;
  * @author Zsolt
  */
 @Entity
-public class Link extends BaseEntity implements Serializable {
+public class Link implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String url;
     private Publication publication;
     private PDatabase pDatabase;
 
-    public Link() {
+    protected Link() {
     }
 
-    public Link(String url, Publication publication, PDatabase pDatabase) {
+    private Link(String url) {
         this.url = url;
-        this.publication = publication;
-        this.pDatabase = pDatabase;
     }
 
+    /**
+     * A linkeket az URL-jük, ez a metódus megkeresi, hogy egy adott link van-e
+     * már tárolva az adatbázisban, vagy nincs. Ha igen, lekéri az adatbázisból
+     * az objektumot, ha nem, akkor újat hoz létre a megadott névvel.
+     * @param url A linket azonosító URL.
+     * @return Referencia a Link objektumra.
+     */
+    public static Link getReferenceFor(String url) {
+        Link l = Connection.getEm().find(Link.class, url);
+        if (null == l) {
+            return new Link(url);
+        } else {
+            return l;
+        }
+    }
+
+    /**
+     * @return A linkhez tartozó publikációs adatbázis (ahonnan származik) neve.
+     */
     @Transient
     public String getDbName() {
         return pDatabase.getName();
@@ -82,6 +99,6 @@ public class Link extends BaseEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "pubsearch.data.Link[ id=" + url + " ]";
+        return "pubsearch.data.Link[ url=" + url + " ]";
     }
 }

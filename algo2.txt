@@ -1,0 +1,46 @@
+1) while searching
+2) wanna store a new publication
+
+	url = from where we extracted data
+	bibtex,title,year,authors = extracted data
+	List<Publication> citedbypubslist = extracted data
+			1) while searchin
+			2) got bibtex,title,year,authors
+			3) build a Publication object but with getEntryFor() stuff!!!
+
+
+
+	p = Publication.getEntryFor(title,year)
+		if already in database
+			return reference
+		else
+			return new Publication()
+	begin
+
+	p.authors=authors (if authors>p.authors)
+	p.links.add(new Link(url, pubdb, p))
+	p.citedby.addall(citedbypubslist)
+
+	commit
+
+
+------------------------------------------------------------------------
+
+Crawl pub:
+	IF BIBTEX FOUND:
+		SAVE BIBTEX <- HTML
+		SAVE AUTHOR/TITLE/YEAR <- BIBTEX
+	ELSE:
+		SAVE AUTHOR/TITLE/YEAR <- HTML
+
+Store pub:
+	ALREADY_EXISTS = ( | PUBLICATIONS WITH SAME TITLE AND SAME YEAR | == 1 )
+
+	IF !ALREADY_EXISTS:
+		PERSIST
+	ELSE:
+		(THIS = PUBLICATION WE WANT TO STORE)
+		OTHER = ALREADY EXISTING PUBLICATION
+
+		IF THIS.BIBTEX!=NULL AND OTHER.BIBTEX!=NULL AND THIS.BIBTEX.LEN > OTHER.BIBTEX.LEN
+			

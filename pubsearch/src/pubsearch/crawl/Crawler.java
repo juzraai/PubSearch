@@ -3,7 +3,6 @@ package pubsearch.crawl;
 import com.sun.glass.ui.Application;
 import java.util.ArrayList;
 import java.util.List;
-import pubsearch.Config;
 import pubsearch.data.PDatabase;
 import pubsearch.gui.tab.MainTab;
 
@@ -31,8 +30,6 @@ public class Crawler extends Thread {
     public void run() { // TODO megoldani valahogy, hogy a programból leállítható legyen gombbal / kilépéskor
         System.out.println("Crawler thread started.");
         try {
-            //Thread.sleep(5000);
-            // TODO majd bent a szóközöket +-ra cseréli! vagy majd a Request-en belül... ?
             List<PDatabase> pDatabases = PDatabase.getAll();
             for (PDatabase pDatabase : pDatabases) {
                 System.out.println("\t" + pDatabase.getName());

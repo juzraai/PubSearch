@@ -16,7 +16,7 @@ import pubsearch.StringTools;
  * @author Zsolt
  */
 @Entity
-public class Publication extends BaseEntity implements Serializable {
+public class Publication implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -33,77 +33,30 @@ public class Publication extends BaseEntity implements Serializable {
     @JoinColumn(name = "PubID"), inverseJoinColumns =
     @JoinColumn(name = "CitedByPubID"))
     private List<Publication> citedBy = new ArrayList<Publication>();
-    @ManyToMany(mappedBy = "citedBy", cascade = CascadeType.ALL)
-    private List<Publication> cites = new ArrayList<Publication>();
 
-    public Publication() {
+    protected Publication() {
     }
 
-    public Publication(String bibtex, String authors, String title, int year) {
-        this.bibtex = bibtex;
-        this.authors = authors;
+    private Publication(String title, Integer year) {
         this.title = title;
         this.year = year;
     }
 
-    public Publication isAlreadyExists() {
+    /**
+     * Mivel 2 publikációt akkor tekintünk egyezőnek, ha a cím és az évszám azonos,
+     * feltöltés előtt meg kell nézni, hogy tároltunk-e már róla információkat. Ha
+     * igen, a program lekéri az adatbázisból a teljes objektumot, ha nem, akkor
+     * egy újat gyárt a megadott adatokkal.
+     * @param title A publikációt azonosító cím.
+     * @param year A publikációt azonosító év.
+     * @return Referencia a Publication objektumára.
+     */
+    public static Publication getReferenceFor(String title, int year) { // TODO WHERE LOWER(p.title)=LOWER( +title+ )
         List<Publication> pl = Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.title=\"" + title + "\" AND p.year=" + year).getResultList();
         if (pl.isEmpty()) {
-            return null;
+            return new Publication(title, year);
         } else {
             return pl.get(0);
-        }
-    }
-
-    /**
-     * Meghívja a BaseEntity-ben definiált store() metódust, ami kivételelnyeléssel
-     * kiadja a parancsot az objektum adatbázisba való feltöltésére.
-     * @deprecated Publikáció esetén nem érdemes használni, mert azonos című és
-     * évszámú publikációk többször bekerülnek így, ami felesleges. Használd inkább
-     * a storeWithUpdate() metódust.
-     */
-    @Override
-    public void store() {
-        super.store();
-        System.err.println("Please use storeWithUpdate() instead to avoid redundant publications in the database.");
-    }
-
-    /**
-     * Meghívja a BaseEntity-en definiált store() metódust, ami kivételelnyeléssel
-     * kiadja a parancsot az objektum adatbázisba való feltöltésére.
-     * Ezt a metódust csak akkor érdemes hívni, ha tudjuk, hogy a publikáció még
-     * nincs eltárolva az adatbázisban, különben többszöri előfordulást kapunk.
-     */
-    private void storeWithInsert() {
-        super.store();
-    }
-
-    /**
-     * Ellenőrzi, hogy az adott publikáció benne van-e már az adatbázisban, és ennek
-     * megfelelően végzi el a mentést. Ha még nincs fent, a storeWithInsert-et használja,
-     * ha már fent van, akkor pedig lekérdezi a fent lévőt, és azt frissíti.
-     */
-    public void storeWithUpdate() {
-        Publication p = isAlreadyExists();
-        if (null == p) {
-            storeWithInsert();
-        } else {
-            // update all fields except id/title/year
-            // TODO ÁTGONDOLNI !!!!!!
-            // TODO ALGORITMUS ALAPJÁN UPDATE, NEM ÉSZNÉLKÜL!!
-
-            /*if ((null == p.bibtex && null != bibtex)||(null != p.bibtex && null!=bibtex && p.bibtex.length()<bibtex.length())){
-                p.bibtex = bibtex;
-                p.authors = authors;
-            }
-
-
-
-            //itt még végig kéne állítani!!!!!!
-            p.getCitedBy().addAll(citedBy);
-            p.getCites().addAll(cites);
-            p.getLinks().addAll(links);
-            p.storeWithInsert();*/
         }
     }
 
@@ -119,10 +72,19 @@ public class Publication extends BaseEntity implements Serializable {
         return Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors LIKE '%" + filterAuthors + "%' AND p.title LIKE '%" + filterTitle + "%'").getResultList();
     }
 
-    public String getAuthors() {
-        if (authors == null && bibtex != null) {
-            return StringTools.findFirstMatch(bibtex, "author = {(.*?)}", 1); // TODO javítani a regex-et!
+    public void addCitedBy(Publication p) {
+        if (citedBy.indexOf(p) == -1) {
+            citedBy.add(p);
         }
+    }
+
+    public void addLink(Link l) {
+        if (links.indexOf(l) == -1) {
+            links.add(l);
+        }
+    }
+
+    public String getAuthors() {
         return authors;
     }
 
@@ -131,8 +93,7 @@ public class Publication extends BaseEntity implements Serializable {
     }
 
     public String getBibtex() {
-        // TODO if (bibtex==null) GENERÁL!!!
-        return (null != bibtex) ? bibtex : "N/A";
+        return bibtex;
     }
 
     public void setBibtex(String bibtex) {
@@ -145,14 +106,6 @@ public class Publication extends BaseEntity implements Serializable {
 
     public void setCitedBy(List<Publication> citedBy) {
         this.citedBy = citedBy;
-    }
-
-    public List<Publication> getCites() {
-        return cites;
-    }
-
-    public void setCites(List<Publication> cites) {
-        this.cites = cites;
     }
 
     public Long getId() {
@@ -172,9 +125,6 @@ public class Publication extends BaseEntity implements Serializable {
     }
 
     public String getTitle() {
-        if (title == null && bibtex != null) {
-            return StringTools.findFirstMatch(bibtex, "[^(book)]title = {(.*?)}", 1); // TODO javítani
-        }
         return title;
     }
 
@@ -183,9 +133,6 @@ public class Publication extends BaseEntity implements Serializable {
     }
 
     public Integer getYear() {
-        if (year == null && bibtex != null) {
-            return Integer.parseInt(StringTools.findFirstMatch(bibtex, "year = {(.*?)}", 1)); // TODO javítani
-        }
         return year;
     }
 
