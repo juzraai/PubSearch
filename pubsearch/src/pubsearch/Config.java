@@ -1,9 +1,7 @@
 package pubsearch;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -11,7 +9,9 @@ import java.util.List;
  */
 public class Config {
 
-    private static final String CONFIG_FILE = "pubsearch.cfg";
+    private static final String CONF_DIR = "conf";
+    private static final String MYSQL_FILE = CONF_DIR + "/mysql.cfg";
+    private static final String PROXY_FILE = CONF_DIR + "/proxy.lst";
     private static String jdbcUrl = "localhost:3306";
     private static String jdbcUser = "root";
     private static String jdbcPass = "root";
@@ -46,67 +46,20 @@ public class Config {
     }
 
     public static void setProxyList(List<String> proxyList) {
-        Config.proxyList = proxyList;
+        Config.proxyList = new LinkedList<String>(new HashSet<String>(proxyList));
+        // a Set-tel kiszűrjük a duplikátokat.
     }
 
-    public static void setProxyList(String[] proxyList) {
-        Config.proxyList.clear();
-        Collections.addAll(Config.proxyList, proxyList);
+    public static void setProxyList(String[] proxies) {
+        List<String> proxyList = new ArrayList<String>();
+        Collections.addAll(proxyList, proxies);
+        setProxyList(proxyList); // meghívjuk a List-es verziót, az kiszűri a duplikátokat
     }
 
     public static String getRandomProxy() {
         return proxyList.get((int) (Math.random() * proxyList.size()));
     }
 
-    public static void load() {
-        BufferedReader r = null;
-        try {
-            r = new BufferedReader(new FileReader(CONFIG_FILE));
-            setJdbcUrl(r.readLine());
-            setJdbcUser(r.readLine());
-            setJdbcPass(r.readLine());
-            proxyList.clear();
-            while (r.ready()) {
-                proxyList.add(r.readLine());
-            }
-        } catch (IOException e) {
-            System.out.println("ERROR WHILE LOADING CONFIG.");
-        } finally {
-            System.out.println("CONFIG LOADED.");
-            if (r != null) {
-                try {
-                    r.close();
-                } catch (IOException e) {
-                }
-            }
-        }
-    }
-
-    public static void save() {
-        BufferedWriter w = null;
-        try {
-            w = new BufferedWriter(new FileWriter(CONFIG_FILE));
-            w.write(jdbcUrl);
-            w.newLine();
-            w.write(jdbcUser);
-            w.newLine();
-            w.write(jdbcPass);
-            w.newLine();
-            for (String proxy : proxyList) {
-                w.write(proxy);
-                w.newLine();
-            }
-        } catch (IOException e) {
-        } finally {
-            //System.out.println("CONFIG SAVED.");
-            if (w != null) {
-                try {
-                    w.close();
-                } catch (IOException e) {
-                }
-            }
-        }
-    }
 
     /**
      * Törli a megadott proxy-t a listáról, és a változást rögzíti a konfig. fájlban is.
@@ -117,6 +70,102 @@ public class Config {
         if (proxyList.remove(proxy)) {
             System.out.println("Proxy " + proxy + " removed from the list.");
         }
-        save();
+        saveProxyList();
+    }
+
+    /**
+     * Betölti a MySQL kapcsolódási beállításokat.
+     */
+    public static void loadMySQLConfig() {
+        BufferedReader r = null;
+        try {
+            r = new BufferedReader(new FileReader(MYSQL_FILE));
+            setJdbcUrl(r.readLine());
+            setJdbcUser(r.readLine());
+            setJdbcPass(r.readLine());
+        } catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
+        } finally {
+            if (null != r) {
+                try {
+                    r.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Kimenti a MySQL kapcsolódási beállításokat.
+     */
+    public static void saveMySQLConfig() {
+        new File(CONF_DIR).mkdir();
+
+        BufferedWriter w = null;
+        try {
+            w = new BufferedWriter(new FileWriter(MYSQL_FILE));
+            w.write(getJdbcUrl());
+            w.newLine();
+            w.write(getJdbcUser());
+            w.newLine();
+            w.write(getJdbcPass());
+            w.newLine();
+        } catch (IOException e) {
+        } finally {
+            if (w != null) {
+                try {
+                    w.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Betölti a proxy listát.
+     */
+    public static void loadProxyList() {
+        BufferedReader r = null;
+        try {
+            r = new BufferedReader(new FileReader(PROXY_FILE));
+            List<String> proxies = new ArrayList<String>();
+            while (r.ready()) {
+                proxies.add(r.readLine());
+            }
+            setProxyList(proxies);
+        } catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
+        } finally {
+            if (null != r) {
+                try {
+                    r.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Kimenti a proxy listát.
+     */
+    public static void saveProxyList() {
+        new File(CONF_DIR).mkdir();
+
+        BufferedWriter w = null;
+        try {
+            w = new BufferedWriter(new FileWriter(PROXY_FILE));
+            for (String p : getProxyList()) {
+                w.write(p);
+                w.newLine();
+            }
+        } catch (IOException e) {
+        } finally {
+            if (w != null) {
+                try {
+                    w.close();
+                } catch (IOException e) {
+                }
+            }
+        }
     }
 }

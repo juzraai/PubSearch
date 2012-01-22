@@ -1,8 +1,12 @@
 package pubsearch.crawl;
 
 import com.sun.glass.ui.Application;
-import java.util.ArrayList;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import pubsearch.data.PDatabase;
 import pubsearch.gui.tab.MainTab;
 
@@ -31,67 +35,101 @@ public class Crawler extends Thread {
         System.out.println("Crawler thread started.");
         try {
             List<PDatabase> pDatabases = PDatabase.getAll();
-            for (PDatabase pDatabase : pDatabases) {
-                System.out.println("\t" + pDatabase.getName());
+            for (PDatabase pdb : pDatabases) {
+                if (!pdb.getName().equals("liinwww.ira.uka.de")) { //TODO JUST FOR TEST ONLY ONE PDB
+                    continue;
+                }
+                System.out.println("  " + pdb.getName());
 
-                List<String> resultURLs = new ArrayList<String>();
+                Set<String> resultURLs = new HashSet<String>();
 
                 /*
                  * Submit form, get result links
                  */
-                String url = pDatabase.getBaseUrl() + pDatabase.getSubmitUrl();
-                String qs = String.format(pDatabase.getSubmitParamsFormat(), authorFilter);
+                String url = pdb.getBaseUrl() + pdb.getSubmitUrl();
+                String qs = String.format(pdb.getSubmitParamsFormat(), authorFilter);
+
                 if (null != titleFilter) {
-                    qs = String.format(pDatabase.getSubmitParamsWithTitleFormat(), titleFilter);
+                    qs = String.format(pdb.getSubmitParamsWithTitleFormat(), titleFilter);
                 }
-                int rpp = pDatabase.getResultsPerPage();
-                int si = pDatabase.getFirstIndex();
-                int newResultsCount = 0;
+                byte rpp = pdb.getResultsPerPage();
+                byte si = pdb.getFirstIndex();
+                int newResultsCount;
                 int rlpi = 0;
-                boolean success = true;
                 do {
-                    String setStartField = "&" + pDatabase.getStartField() + "=" + si;
-                    System.out.println("\t\tresult page #" + rlpi++ + " URL: " + url + "?" + qs + setStartField);
-                    HTTPRequestEx req = new HTTPRequestEx(url, qs + setStartField, pDatabase.getSubmitMethod());
+                    newResultsCount = 0;
+                    // TODO a RLPnek kellene továbbadni a transLevet
+                    String setStartField = "&" + pdb.getStartField() + "=" + si;
+                    System.out.println("    result page #" + rlpi++ + " (" + url + "?" + qs + setStartField + ")");
+                    HTTPRequestEx req = new HTTPRequestEx(url, qs + setStartField, pdb.getSubmitMethod());
                     if (req.submit(3)) {
                         String html = req.getHtml();
-                        //System.out.println("--\n"+html+"\n--");
                         bytes += html.length();
-                        ResultListPage rlp = new ResultListPage(pDatabase, html);
+
+                        // <debug html output>
+                        /*
+                         * try {
+                         * BufferedWriter w = new BufferedWriter(new FileWriter(pdb.getName() + rlpi + ".html"));
+                         * w.write(html);
+                         * w.close();
+                         * } catch (IOException e) {
+                         * }
+                         */
+                        // </debug html output>
+
+                        ResultListPage rlp = new ResultListPage(pdb, html);
                         rlp.extractURLs();
                         List<String> newResults = rlp.getResultURLs();
+                        if (resultURLs.containsAll(newResults)) {
+                            System.err.println("Repeating result list page.");
+                            // újra megkaptunk egy korábbi találati lista oldalt, lelépünk erről az oldalról.
+                            break;
+                        }
                         newResultsCount = newResults.size();
-                        System.out.println("\t\t\t+ " + newResultsCount);
+                        System.out.println("      + " + newResultsCount);
                         resultURLs.addAll(newResults);
                         si += rpp;
                     }
-                } while (newResultsCount > 0 && success && rlpi < 2); // rlpi limit is for testing!
-                // lehetne newResultsCount==rpp is a feltétel a >0 helyett, viszont
-                // a liinwww.ira.uka.de összevonja a linkeket, ezért ott kiszállna
-                // az első oldalnál.
 
-                System.out.println("\t\t|links| = " + resultURLs.size());
+                    // <liinwww.ira.uka.de fix>
+                    if (pdb.getBaseUrl().equals("http://liinwww.ira.uka.de/") && 0 < newResultsCount) {
+                        System.err.println("Forced page advance.");
+                        newResultsCount = rpp;
+                        /*
+                         * Azért kell, mert a liinwww.ira.uka.de összevonja a linkeket, nem mindig pont rpp
+                         * db találat van az oldalon, így a newResultCount==rpp feltétellel kiszállna az első
+                         * oldalnál. A newResultCount>0 feltétel lenne neki jó, de így viszont minden más
+                         * adatbázis esetén +1 oldal letöltődne, ami pazarlás.
+                         */
+                    }
+                    // </liinwww.ira.uka.de fix>
+
+                } while (newResultsCount == rpp && rlpi < 2); // TODO rlpi limit is for testing!
+
+                //System.out.println("\t\t|links| = " + resultURLs.size());
                 for (String u : resultURLs) {
-                    System.out.println("\t\t\t" + u);
+                    System.out.println("      " + u);
                 }
-                System.out.println("\t\t|links| = " + resultURLs.size());
+                System.out.println("      = " + resultURLs.size());
 
                 /*
                  * Extract publication data (bibtex, authors, title, year)
                  */
 
-                /*for (String resultURL : resultURLs) {
-                    HTTPRequest req = new HTTPRequest(resultURL);
-                    req.setProxy(Config.getRandomProxy());
-                    req.submit();
-                    html = req.getHtml();
-                    bytes += html.length();
-
-                    PubPage pubPage = new PubPage(pDatabase, html);
-                    pubPage.extractData();
-                    // a pubPage-ben kéne valahogy a refPubs részt
-                    // és továbbadja rekurzívan magának a transLev-1-et.
-                }*/
+                /*
+                 * for (String resultURL : resultURLs) {
+                 * HTTPRequest req = new HTTPRequest(resultURL);
+                 * req.setProxy(Config.getRandomProxy());
+                 * req.submit();
+                 * html = req.getHtml();
+                 * bytes += html.length();
+                 *
+                 * PubPage pubPage = new PubPage(pdb, html);
+                 * pubPage.extractData();
+                 * // a pubPage-ben kéne valahogy a refPubs részt
+                 * // és továbbadja rekurzívan magának a transLev-1-et.
+                 * }
+                 */
 
 
                 // PubPage, extract, visszakapunk egy Publication-t és a linket a refPubListPage-re

@@ -1,9 +1,7 @@
 package pubsearch;
 
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
 import pubsearch.data.Connection;
+import pubsearch.data.Importer;
 import pubsearch.data.PDatabase;
 import pubsearch.data.Publication;
 
@@ -16,9 +14,12 @@ public class UploadTestData {
 
     public static void main(String[] args) {
 
-        Config.load();
+        Config.loadMySQLConfig();
         Connection.tryInit();
-
+        Importer.loadPDatabases();
+        if (true) {
+            return;
+        }
 
         /*
          * PDatabase db1 = new PDatabase();
@@ -101,11 +102,26 @@ public class UploadTestData {
          * Connection.getEm().persist(pub2);
          */
 
-        PDatabase pdb1 = PDatabase.getReferenceFor("CiteSeerX");
-        pdb1.setBaseUrl("hello");
-        pdb1.setSubmitParamsFormat("k");
-        Connection.getEm().persist(pdb1);
+        /*
+         * PDatabase pdb1 = PDatabase.getReferenceFor("CiteSeerX");
+         * pdb1.setBaseUrl("hello");
+         * pdb1.setSubmitParamsFormat("k");
+         * Connection.getEm().persist(pdb1);
+         */
 
+        PDatabase db1 = PDatabase.getReferenceFor("db1");
+        db1.setBaseUrl("bu1");
+        db1.setSubmitParamsFormat("none");
+
+        Publication p = Publication.getReferenceFor("authors", "title", 2000, db1);
+        Publication p2 = Publication.getReferenceFor("a\nb", "title2", -1, db1);
+
+        p.setBibtex("@INPROCEEDINGS{Porras97emerald:event,    author = {Phillip A. Porras and Peter G. Neumann},    title = {EMERALD: Event monitoring enabling responses to anomalous live disturbances},    booktitle = {In Proceedings of the 20th National Information Systems Security Conference},    year = {1997},    pages = {353--365}}");
+        p.addCitedBy(p2);
+
+        Connection.getEm().persist(db1);
+        Connection.getEm().persist(p);
+        Connection.getEm().persist(p2);
         Connection.getEm().getTransaction().commit();
 
 

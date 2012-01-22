@@ -74,30 +74,13 @@ public class Connection {
         props.put("javax.persistence.jdbc.url", "jdbc:mysql://" + Config.getJdbcUrl() + "/pubsearch");
         props.put("javax.persistence.jdbc.user", Config.getJdbcUser());
         props.put("javax.persistence.jdbc.password", Config.getJdbcPass());
-        //props.put("eclipselink.logging.level", "OFF");
+        props.put("eclipselink.logging.level", "OFF");
         emf = Persistence.createEntityManagerFactory("pubsearch", props);
         em = emf.createEntityManager();
         System.out.println("JPA CONNECTION BUILT.");
 
-        /*
-         * Feltöltjük a publikációs adatbázisok adatait. Ezt a CRAWL package-ben kéne már!!!
-         */
-        // TODO táblázat Excel -> CSV, beolvasót írni rá, ami felépít egy List<PubDb>-t, és egy ciklussal berántja JPA-ba
-        /*
-         * List<PubDb> pubdbs = new ArrayList<PubDb>();
-         * //(id, name, baseUrl, submitUrl, submitMethod, submitParametersFormat, pubPageLinkPattern, pubPageLinkModFormat, nextPageLinkPattern, authorsPattern, titlePattern, yearPattern, bibtexLinkPattern, bibtexPattern)
-         * pubdbs.add(new PubDb(1L, "CiteSeerX", "http://citeseerx.ist.psu.edu/", "search", "GET", "q=title%3A%s+AND+author%3A%s&sort=cite&t=doc", "href=\"/(viewdoc/summary(.*?))\"", null, "href=(.*?)>Next", null, "<p>(@(.*?))</p>", null, null, null));
-         * //pubdbs.add(new PubDb(2L, "ACM", "http://dl.acm.org/", "results.cfm"))
-         *
-         * for (PubDb pubdb : pubdbs) {
-         * try {
-         * pubdb.store();
-         * System.out.println("PubDB added: " + pubdb.getName());
-         * } catch (Throwable t) {
-         * }
-         * }
-         */
-        
+        Importer.loadPDatabases();
+
         System.out.println("INIT DONE.");
     }
 }

@@ -1,0 +1,8 @@
+name				CiteSeerX
+baseurl				http://citeseerx.ist.psu.edu/
+submiturl			search
+submitparamsformat		sort=cite&t=doc&q=author:"%s"
+submitparamswithtitleformat	%s+AND+title:%s
+pubpagelinkpattern		href="/(viewdoc/summary.*?)"
+bibtexpattern			<p>(@(.*?))</p>
+refpublistpagelinkpattern	Citations:.*?href="/(.*?)"

@@ -24,8 +24,8 @@ public class MainWindow extends AWindow {
         tabs.setTabMaxWidth(200);
         final MainTab mainTab = new MainTab(this);
         tabs.getTabs().add(mainTab);
-        
-        Scene scene = new Scene(tabs, 550, 400);
+
+        Scene scene = new Scene(tabs, 600, 400);
         setScene(scene);
         setCSS();
         setOnShown(new EventHandler<WindowEvent>(){
@@ -35,7 +35,7 @@ public class MainWindow extends AWindow {
             }
         });
     }
-    
+
     public TabPane getTabPane() {
         return tabs;
     }

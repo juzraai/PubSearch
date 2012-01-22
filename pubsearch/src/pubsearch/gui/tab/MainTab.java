@@ -1,12 +1,12 @@
 package pubsearch.gui.tab;
 
+import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -38,19 +38,21 @@ public class MainTab extends Tab {
     private BorderPane mainLayout;
     private BorderPane searchLayout;
     // Controls
+    private final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
     private final TextField authorField = new TextField();
     private final TextField titleField = new TextField();
     private final ChoiceBox transLevCombo = new ChoiceBox(FXCollections.observableArrayList("0", "1", "2"));
     private final CheckBox onlyLocalCheckBox = new CheckBox("Search only in the local database");
-    private final Button searchButton = new Button("Search!");
+    private final Button searchButton = new Button(texts.getString("searchButton"));
     private final PubTable resultsView;
     private final Label resultCountLabel = new Label();
     // Variables
     private long startTime;
 
     public MainTab(MainWindow mainWindow) {
-        super("Search");
         this.mainWindow = mainWindow;
+
+        setText(texts.getString("searchTab"));
         setClosable(false);
 
         EventHandler<ActionEvent> startSearchAction = new EventHandler<ActionEvent>() {
@@ -65,9 +67,9 @@ public class MainTab extends Tab {
         /*
          * Top
          */
-        Label authorLabel = new LabelEx("Search for author:", true, false, GuiTools.shadow);
-        Label titleLabel = new LabelEx("Filter by title:", false, false, GuiTools.shadow);
-        Label transLevLabel = new LabelEx("Transitivity level:", false, false, GuiTools.shadow);
+        Label authorLabel = new LabelEx(texts.getString("searchForAuthor"), true, false, GuiTools.shadow);
+        Label titleLabel = new LabelEx(texts.getString("filterByTitle"), false, false, GuiTools.shadow);
+        Label transLevLabel = new LabelEx(texts.getString("transitivityLevel"), false, false, GuiTools.shadow);
 
         authorField.setOnAction(startSearchAction);
         authorField.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -84,7 +86,7 @@ public class MainTab extends Tab {
         transLevCombo.getSelectionModel().selectFirst();
 
         onlyLocalCheckBox.setStyle("-fx-text-fill: #AFA");
-        onlyLocalCheckBox.setOnAction(new EventHandler<ActionEvent>(){
+        onlyLocalCheckBox.setOnAction(new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent arg0) {
                 transLevCombo.setDisable(onlyLocalCheckBox.selectedProperty().get());
@@ -98,8 +100,8 @@ public class MainTab extends Tab {
         searchButton.setOnAction(startSearchAction);
         searchButton.setEffect(GuiTools.reflection);
 
-        Button editProxiesButton = new Button("Proxy setup");
-        editProxiesButton.setPrefWidth(120);
+        Button editProxiesButton = new Button(texts.getString("proxySetup"));
+        editProxiesButton.setPrefWidth(150);
         editProxiesButton.setStyle("-fx-base: #D6F;");
         editProxiesButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -108,8 +110,8 @@ public class MainTab extends Tab {
             }
         });
 
-        Button editDBConnButton = new Button("Database setup");
-        editDBConnButton.setPrefWidth(120);
+        Button editDBConnButton = new Button(texts.getString("databaseSetup"));
+        editDBConnButton.setPrefWidth(150);
         editDBConnButton.setStyle("-fx-base: #D33;");
         editDBConnButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -118,8 +120,8 @@ public class MainTab extends Tab {
             }
         });
 
-        Button aboutButton = new Button("About PubSearch");
-        aboutButton.setPrefWidth(120);
+        Button aboutButton = new Button(texts.getString("aboutPubSearch"));
+        aboutButton.setPrefWidth(150);
         aboutButton.setStyle("-fx-base: #3D6");
         aboutButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -147,13 +149,6 @@ public class MainTab extends Tab {
         /*
          * Center
          */
-        TableColumn authorsCol = new TableColumn("Authors");
-        authorsCol.setPrefWidth(250);
-        authorsCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("authors")); // unsafe op.
-        TableColumn titleCol = new TableColumn("Title");
-        titleCol.setPrefWidth(250);
-        titleCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("title")); // unsafe op.
-
         resultsView = new PubTable(mainWindow);
         resultCountLabel.getStyleClass().addAll("white-text", "bold-text");
         resultCountLabel.setTextAlignment(TextAlignment.CENTER);
@@ -195,7 +190,7 @@ public class MainTab extends Tab {
             if (Config.getProxyList().isEmpty()) {
                 // nincs proxy, hibajelzés
                 proxyWindow.show();
-                AlertWindow.show("Please define a proxy list first.\nOr you can search only in the local database.");
+                AlertWindow.show(texts.getString("proxyListNeeded"));
             } else {
                 // van proxy, indul a crawl, külön szálon, majd ő értesít az eredmények megjelenítéséről
                 switchScene(false);
@@ -214,7 +209,7 @@ public class MainTab extends Tab {
      */
     public void switchScene(boolean toMain) {
         setContent((toMain) ? mainLayout : searchLayout);
-        setText((toMain) ? "Search" : "( . . . )");
+        setText((toMain) ? texts.getString("searchTab") : "( . . . )");
     }
 
     /**
@@ -225,10 +220,10 @@ public class MainTab extends Tab {
         try {
             resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(authorField.getText(), titleField.getText())));
         } catch (Throwable t) {
-            AlertWindow.show("Error while querying results. (JPA_ERROR).");
+            AlertWindow.show(texts.getString("errorWhileQueryingResults"));
         }
         long time = System.nanoTime() - startTime;
-        resultCountLabel.setText(String.format("%d results (time: %s, net traffic: %s)", resultsView.getItems().size(), StringTools.formatNanoTime(time, false, false), StringTools.formatDataSize(bytes)));
+        resultCountLabel.setText(String.format(texts.getString("resultInfos"), resultsView.getItems().size(), StringTools.formatNanoTime(time, false, false), StringTools.formatDataSize(bytes)));
         switchScene(true);
     }
 

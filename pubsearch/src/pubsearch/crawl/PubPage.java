@@ -32,12 +32,14 @@ public class PubPage {
         // TODO bibtex, authors, title, year
         // ha van bibtex link, akkor lekéri a HTML-t (byte hozzáadást megoldani a Crawler-hez!) - talán azt is át kéne adni konstruktorba/fieldbe
         // ha van bibtex block
-        //      lekéri azt
+        //      lekéri azt + levágja 4096 karakterre
         // ha nincs, akkor authors, title, year
 
         // ha semmilyen adat nem nyerhető ki (pl. bibtexnél kapcsolódási hiba), akkor publication=null; return;
 
         // összerak egy publication-t.
+
+        // VIGYÁZZUNK, HOGY A REFPUBS-OT NE AZ EXTERNAL BIBTEX OLDALON KERESSE, OTT NINCS !
 
         // ezt csak akkor, ha a transLev > 0 !
         /*refPubListPageURL = StringTools.findFirstMatch(html, pDatabase.getRefPubListPageLinkPattern(), 1);

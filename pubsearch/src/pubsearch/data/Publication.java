@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
-import pubsearch.StringTools;
 
 /**
  * Egy publikáció alapvető adatai.
@@ -19,42 +18,41 @@ import pubsearch.StringTools;
 public class Publication implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String bibtex;
     private String authors;
+    private String bibtex = "";
     private String title;
-    private Integer year;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "publication")
-    private List<Link> links = new ArrayList<Link>();
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "Citing", joinColumns =
-    @JoinColumn(name = "PubID"), inverseJoinColumns =
-    @JoinColumn(name = "CitedByPubID"))
+    private String url = "";
+    private Integer year = 1;
+    private PDatabase pdatabase;
     private List<Publication> citedBy = new ArrayList<Publication>();
 
     protected Publication() {
     }
 
-    private Publication(String title, Integer year) {
+    public Publication(String authors, String title, Integer year, PDatabase pdatabase) {
+        this.authors = authors;
         this.title = title;
         this.year = year;
+        this.pdatabase = pdatabase;
     }
 
     /**
-     * Mivel 2 publikációt akkor tekintünk egyezőnek, ha a cím és az évszám azonos,
-     * feltöltés előtt meg kell nézni, hogy tároltunk-e már róla információkat. Ha
-     * igen, a program lekéri az adatbázisból a teljes objektumot, ha nem, akkor
-     * egy újat gyárt a megadott adatokkal.
-     * @param title A publikációt azonosító cím.
-     * @param year A publikációt azonosító év.
-     * @return Referencia a Publication objektumára.
+     * Egy publikációt a szerzők, a cím és az évszám azonosít, valamint az adatbázis,
+     * ahol a program megtalálta. Az URL azért nem, mert bizonyos adatbázisokban a
+     * hivatkozó publikációkhoz nem rendelődik URL, így azok URL=null-lal tárolódnak.
+     * A metódus megnézi, tároltuk-e már a megadott publikációt az adatbázisban. Ha
+     * igen, akkor visszaad rá egy referenciát, ha nem, akkor újat hoz létre.
+     * @param authors
+     * @param title
+     * @param year
+     * @param pdb
+     * @return Referencia a Publication objektumra.
      */
-    public static Publication getReferenceFor(String title, int year) { // TODO WHERE LOWER(p.title)=LOWER( +title+ )
-        List<Publication> pl = Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.title=\"" + title + "\" AND p.year=" + year).getResultList();
+    public static Publication getReferenceFor(String authors, String title, int year, PDatabase pdb) {
+        List<Publication> pl = Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors=\"" + authors + "\" AND p.title=\"" + title + "\" AND p.year=" + year + " AND p.pdatabase.name=\"" + pdb.getName() + "\"").getResultList();
         if (pl.isEmpty()) {
-            return new Publication(title, year);
+            return new Publication(authors, title, year, pdb);
         } else {
             return pl.get(0);
         }
@@ -67,8 +65,8 @@ public class Publication implements Serializable {
      * @return A megfelelő publikációk listája.
      */
     public static List<Publication> searchResults(String filterAuthors, String filterTitle) {
-        filterAuthors = filterAuthors.replace(' ', '%');
-        filterTitle = filterTitle.replace(' ', '%');
+        filterAuthors = filterAuthors.replaceAll(" ", "% ");
+        filterTitle = filterTitle.replaceAll(" ", "%");
         return Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors LIKE '%" + filterAuthors + "%' AND p.title LIKE '%" + filterTitle + "%'").getResultList();
     }
 
@@ -78,10 +76,29 @@ public class Publication implements Serializable {
         }
     }
 
-    public void addLink(Link l) {
-        if (links.indexOf(l) == -1) {
-            links.add(l);
+    @Transient
+    public int getCitedByCount() {
+        return citedBy.size();
+    }
+
+    @Transient
+    public String getYearAsString() {
+        if (-1 == year) {
+            return "(N/A)";
+        } else {
+            return year.toString();
         }
+    }
+
+    /**
+     * @return Az adatbázis neve, ahol megtalálta ezt a publikációt.
+     */
+    @Transient
+    public String getDbName() {
+        if (null == pdatabase) {
+            return "(unknown)";
+        }
+        return pdatabase.getName();
     }
 
     public String getAuthors() {
@@ -92,6 +109,7 @@ public class Publication implements Serializable {
         this.authors = authors;
     }
 
+    @Column(length = 4096)
     public String getBibtex() {
         return bibtex;
     }
@@ -100,6 +118,10 @@ public class Publication implements Serializable {
         this.bibtex = bibtex;
     }
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "Citing", joinColumns =
+    @JoinColumn(name = "PubID"), inverseJoinColumns =
+    @JoinColumn(name = "CitedByPubID"))
     public List<Publication> getCitedBy() {
         return citedBy;
     }
@@ -108,6 +130,8 @@ public class Publication implements Serializable {
         this.citedBy = citedBy;
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public Long getId() {
         return id;
     }
@@ -116,12 +140,13 @@ public class Publication implements Serializable {
         this.id = id;
     }
 
-    public List<Link> getLinks() {
-        return links;
+    @ManyToOne(cascade = CascadeType.ALL)
+    public PDatabase getPdatabase() {
+        return pdatabase;
     }
 
-    public void setLinks(List<Link> links) {
-        this.links = links;
+    public void setPdatabase(PDatabase pdatabase) {
+        this.pdatabase = pdatabase;
     }
 
     public String getTitle() {
@@ -130,6 +155,14 @@ public class Publication implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public Integer getYear() {

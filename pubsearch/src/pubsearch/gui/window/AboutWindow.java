@@ -1,4 +1,4 @@
-package pubsearch.gui.window;
+package pubsearch.gui.window;//TODO i18n
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

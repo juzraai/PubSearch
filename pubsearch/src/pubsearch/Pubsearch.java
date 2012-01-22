@@ -1,6 +1,5 @@
 package pubsearch;
 
-import java.util.Locale;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import pubsearch.data.Connection;
@@ -31,7 +30,8 @@ public class Pubsearch extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        Config.load();
+        Config.loadMySQLConfig();
+        Config.loadProxyList();
 
         MainWindow stage = new MainWindow();
         if (Connection.tryInit()) {

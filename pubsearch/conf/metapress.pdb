@@ -1,0 +1,15 @@
+name				MetaPress
+baseurl				http://www.metapress.com/
+submiturl			content/
+submitparamsformat		k=author:"%s"
+submitparamswithtitleformat	%s+AND+title:(%s)
+pubpagelinkpattern		<div class="listItemName">.*?href="/(.*?/)\?.*?"
+startfield			o
+authorspattern			Authors</h5><div>(.*?)</div>
+titlepattern			<h2.*?>(.*?)</h2>
+yearpattern			<td class="labelName">Copyright</td>.*?([0-9]{4})
+refpublistblockpattern		Referenced by.*?<div class="sidebarBody">.*?<ol(.*?)</ol>
+refpubblockpattern		<li>(.*?)</li>
+refpubauthorspattern		>(.*?) \([0-9]{4}
+refpubtitlepattern		\([0-9]{4}\)(.*?)\.
+refpubyearpattern		\(([0-9]{4})\)

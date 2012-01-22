@@ -1,4 +1,4 @@
-package pubsearch.gui.tab;
+package pubsearch.gui.tab;//TODO i18n
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,15 +12,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
-import javafx.util.Callback;
-import pubsearch.data.Link;
 import pubsearch.data.Publication;
 import pubsearch.gui.GuiTools;
 import pubsearch.gui.control.PubTable;
@@ -41,13 +37,14 @@ public class PubTab extends Tab {
         this.mainWindow = mainWindow;
         this.p = p;
 
-
         /*
          * Details
          */
         Label authorsLabel1 = new Label("Authors");
         Label titleLabel1 = new Label("Title");
         Label yearLabel1 = new Label("Year");
+        Label dbLabel1 = new Label("Database");
+        Label urlLabel1 = new Label("URL");
 
         Label authorsLabel2 = new Label(p.getAuthors());
         authorsLabel2.setWrapText(true);
@@ -59,8 +56,11 @@ public class PubTab extends Tab {
         String ys = (null == y) ? "(ismeretlen)" : y.toString();
         Label yearLabel2 = new Label(ys);
 
-        GuiTools.addStyleClassToNodes("bold-text", authorsLabel1, titleLabel1, yearLabel1);
-        GuiTools.addStyleClassToNodes("italic-text", authorsLabel2, titleLabel2, yearLabel2);
+        Label dbLabel2 = new Label(p.getDbName());
+        Label urlLabel2 = new Label(p.getUrl());
+
+        GuiTools.addStyleClassToNodes("bold-text", authorsLabel1, titleLabel1, yearLabel1, dbLabel1, urlLabel1);
+        GuiTools.addStyleClassToNodes("italic-text", authorsLabel2, titleLabel2, yearLabel2, dbLabel2, urlLabel2);
 
         GridPane detailsGrid = new GridPane();
         detailsGrid.setPadding(new Insets(12));
@@ -73,6 +73,10 @@ public class PubTab extends Tab {
         detailsGrid.add(titleLabel2, 1, 1);
         detailsGrid.add(yearLabel1, 0, 2);
         detailsGrid.add(yearLabel2, 1, 2);
+        detailsGrid.add(dbLabel1, 0, 3);
+        detailsGrid.add(dbLabel2, 1, 3);
+        detailsGrid.add(urlLabel1, 0, 4);
+        detailsGrid.add(urlLabel2, 1, 4);
         GridPane.setValignment(authorsLabel1, VPos.TOP);
         GridPane.setValignment(titleLabel1, VPos.TOP);
 
@@ -92,7 +96,7 @@ public class PubTab extends Tab {
          */
         final TextArea bibtexTA = new TextArea(p.getBibtex());
         bibtexTA.setEditable(false);
-        bibtexTA.setStyle("-fx-font-family:monospace;");
+        bibtexTA.setStyle("-fx-font-family:monospace;-fx-font-size:14px;");
 
         Button copyButton = new Button("Másolás");
         copyButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -145,50 +149,6 @@ public class PubTab extends Tab {
         Tab bibtexTab = new Tab("BibTeX");
         bibtexTab.setContent(bibtexTabLayout);
         tabs.getTabs().add(bibtexTab);
-
-        /*
-         * Links
-         */
-        ObservableList<Link> links = FXCollections.observableArrayList(p.getLinks());
-        if (links.size() > 0) {
-            TableView<Link> linksView = new TableView<Link>();
-
-            TableColumn dbNameCol = new TableColumn("Database");
-            dbNameCol.setPrefWidth(125);
-            dbNameCol.setCellValueFactory(new PropertyValueFactory<Link, String>("dbName")); // unsafe op.
-
-            TableColumn linkCol = new TableColumn("URL");
-            linkCol.setPrefWidth(250);
-            linkCol.setCellValueFactory(new PropertyValueFactory<Link, String>("url"));
-            final Callback<TableColumn<Link, String>, TableCell<Link, String>> cf = linkCol.getCellFactory();
-            linkCol.setCellFactory(new Callback<TableColumn<Link, String>, TableCell<Link, String>>() {
-
-                public TableCell<Link, String> call(TableColumn<Link, String> param) {
-                    final TableCell<Link, String> cell = cf.call(param);
-                    cell.setStyle("-fx-text-fill: blue; -fx-underline: true");
-                    cell.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-                        public void handle(MouseEvent event) {
-                            if (event.getClickCount() > 1) {
-                                //TODO open link (cell.getText()) in new browser window (dupla
-                                //System.out.println("LINK: " + cell.getText());
-                            }
-                        }
-                    });
-                    return cell;
-                }
-            });
-            linksView.getColumns().addAll(dbNameCol, linkCol);
-            linksView.setItems(links);
-
-            BorderPane linksLayout = new BorderPane();
-            linksLayout.setCenter(linksView);
-            BorderPane.setMargin(linksView, new Insets(10));
-
-            Tab linksTab = new Tab("Links (" + links.size() + ")");
-            linksTab.setContent(linksLayout);
-            tabs.getTabs().add(linksTab);
-        }
 
         /*
          * Cites tab

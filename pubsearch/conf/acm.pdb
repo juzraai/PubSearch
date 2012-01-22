@@ -1,0 +1,12 @@
+name				ACM
+baseurl				http://dl.acm.org/
+submiturl			results.cfm
+submitparamsformat		adv=1&COLL=DL&DL=ACM&termzone=all&peoplezone=Author&people="%s"&peoplehow=and&short=1
+submitparamswithtitleformat	%s&termzone=Title&allofem=%s
+pubpagelinkpattern		<td colspan="3">.*?<a href="(citation.cfm\?.*?)"
+pubpagelinkmodformat		%s&preflayout=flat
+resultsperpage			50
+firstindex			1
+bibtexlinkpattern		ColdFusion.navigate\('(exportformats.cfm.*?bibtex.*?)'
+bibtexpattern			<pre .*?>(.*?)</pre>
+refpublistblockpattern		Citations</p>(.*?)<h1

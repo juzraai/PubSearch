@@ -1,4 +1,4 @@
-package pubsearch.gui.window;
+package pubsearch.gui.window;//TODO i18n
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,6 +12,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.WindowEvent;
 import pubsearch.Config;
 import pubsearch.data.Connection;
@@ -63,6 +64,7 @@ public class ConfigWindow extends AWindow {
      */
     private Scene buildScene() {
         LabelEx plzLabel = new LabelEx("PubSearch needs a MySQL database to store the gathered informations. Please specify the parameters.", true, false, false, GuiTools.shadow);
+        plzLabel.setTextAlignment(TextAlignment.JUSTIFY);
         plzLabel.setWrapText(true);
         LabelEx urlLabel1 = new LabelEx("Database (server) URL:", true, true, false, GuiTools.shadow);
         LabelEx urlLabel2 = new LabelEx("\tmysql://", true, false, true, GuiTools.shadow);
@@ -132,7 +134,7 @@ public class ConfigWindow extends AWindow {
 
             configIsOK = Connection.tryInit();
             if (configIsOK) {
-                Config.save();
+                Config.saveMySQLConfig();
             } else {
                 msgLabel.setText("Can't connect to database.");
             }

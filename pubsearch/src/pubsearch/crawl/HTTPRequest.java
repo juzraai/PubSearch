@@ -33,10 +33,11 @@ public class HTTPRequest {
     }
 
     public HTTPRequest(String url, String queryString, String method) {
-        //System.out.println("URL = " + url + "?" + queryString);
         this.url = (null != url) ? url : "";
         this.queryString = (null != queryString) ? queryString : "";
         this.method = (null != method && method.toUpperCase().equals("POST")) ? "POST" : "GET";
+
+        this.queryString = this.queryString.replaceAll(" ", "%20").replaceAll("\"", "%22");
     }
 
     /**
@@ -55,7 +56,10 @@ public class HTTPRequest {
      * @param proxyIPPORT IP:PORT formátumú string, pl. "127.0.0.1:8080"
      */
     public void setProxy(String proxyIPPORT) {
-        String[] p = proxyIPPORT.split(":");
+        String[] p = proxyIPPORT.split(":", 2);
+        if (2 != p.length) {
+            return;
+        }
         int port;
         try {
             port = Integer.parseInt(p[1]);
@@ -77,10 +81,9 @@ public class HTTPRequest {
             int statusCode = client.executeMethod(methodModel);
 
             if (statusCode != HttpStatus.SC_OK) {
-                System.err.println("Method failed: " + methodModel.getStatusLine());
+                throw new Exception("Method failed: " + methodModel.getStatusLine());
             }
 
-            //html = methodModel.getResponseBodyAsString();
             InputStream instream = methodModel.getResponseBodyAsStream();
             StringBuilder sb = new StringBuilder();
             byte[] buffer = new byte[4096];
@@ -90,13 +93,14 @@ public class HTTPRequest {
                 sb.append(s);
             }
             html = sb.toString();
-
-            //System.out.println("HTTPREQ: " + html.length());
+            //System.out.println("--\n"+html+"\n--");
+            //System.err.println("HTTPREQ: " + html.length());
             success = true;
         } catch (HttpException e) {
             //System.err.println("Fatal protocol violation: " + e.getMessage());
         } catch (IOException e) {
             //System.err.println("Fatal transport error: " + e.getMessage() + " (" + url + ")");
+        } catch (Exception e) {
         } finally {
             methodModel.releaseConnection();
             return success;
@@ -107,7 +111,7 @@ public class HTTPRequest {
         return html;
     }
 
-    private HttpMethodBase buildMethod() {
+    private HttpMethodBase buildMethod() { // TODO TRY parse helyett setQueryString POSTMETHOD-nál is! :)
         HttpMethodBase m;
         if (method.equals("GET")) {
             m = new GetMethod(url + "?" + queryString);
@@ -116,13 +120,15 @@ public class HTTPRequest {
 
             String[] params = queryString.split("&");
             for (String param : params) {
-                String[] p = param.split("=");
-                ((PostMethod) m).addParameter(p[0], p[1]);
+                String[] p = param.split("=", 2);
+                if (2 == p.length) {
+                    ((PostMethod) m).addParameter(p[0], p[1]);
+                }
             }
         }
         m.getParams().setParameter(HttpMethodParams.USER_AGENT, "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
         m.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0, false));
-        m.getParams().setParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1024 * 1024);
+        m.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 30 * 1000);
         return m;
     }
 }

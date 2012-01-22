@@ -1,9 +1,10 @@
 package pubsearch.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * Egy publikációs adatbázis jellemzői (feldolgozáshoz).
@@ -29,8 +30,8 @@ public class PDatabase implements Serializable {
     private String pubPageLinkPattern;          // regex
     private String pubPageLinkModFormat = "%s"; // formatstring, %s:link before mod
     private String startField = "start";
-    private Integer firstIndex = 0;                 // 0 / 1
-    private Integer resultsPerPage = 10;
+    private Byte firstIndex = 0;                 // 0 / 1
+    private Byte resultsPerPage = 10;
     // pub page
     private String bibtexLinkPattern;           // regex
     private String bibtexPattern;               // regex
@@ -40,12 +41,10 @@ public class PDatabase implements Serializable {
     private String refPubListPageLinkPattern;   // regex
     // ref pub list
     private String refPubListBlockPattern;      // regex
+    private String refPubBlockPattern;          // regex
     private String refPubAuthorsPattern;        // regex
     private String refPubTitlePattern;          // regex
     private String refPubYearPattern;           // regex
-    // links
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "pdatabase")
-    private List<Link> links = new ArrayList<Link>();
 
     protected PDatabase() {
     }
@@ -109,20 +108,14 @@ public class PDatabase implements Serializable {
         this.bibtexLinkPattern = bibtexLinkPattern;
     }
 
-    public int getFirstIndex() {
+    public Byte getFirstIndex() {
         return firstIndex;
     }
 
-    public void setFirstIndex(int firstIndex) {
-        this.firstIndex = firstIndex;
-    }
-
-    public List<Link> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<Link> links) {
-        this.links = links;
+    public void setFirstIndex(Byte firstIndex) {
+        if (null != firstIndex) {
+            this.firstIndex = firstIndex;
+        }
     }
 
     public String getName() {
@@ -138,7 +131,9 @@ public class PDatabase implements Serializable {
     }
 
     public void setPubPageLinkModFormat(String pubPageLinkModFormat) {
-        this.pubPageLinkModFormat = pubPageLinkModFormat;
+        if (null != pubPageLinkModFormat) {
+            this.pubPageLinkModFormat = pubPageLinkModFormat;
+        }
     }
 
     public String getPubPageLinkPattern() {
@@ -155,6 +150,14 @@ public class PDatabase implements Serializable {
 
     public void setRefPubAuthorsPattern(String refPubAuthorsPattern) {
         this.refPubAuthorsPattern = refPubAuthorsPattern;
+    }
+
+    public String getRefPubBlockPattern() {
+        return refPubBlockPattern;
+    }
+
+    public void setRefPubBlockPattern(String refPubBlockPattern) {
+        this.refPubBlockPattern = refPubBlockPattern;
     }
 
     public String getRefPubListBlockPattern() {
@@ -189,12 +192,14 @@ public class PDatabase implements Serializable {
         this.refPubYearPattern = refPubYearPattern;
     }
 
-    public int getResultsPerPage() {
+    public Byte getResultsPerPage() {
         return resultsPerPage;
     }
 
-    public void setResultsPerPage(int resultsPerPage) {
-        this.resultsPerPage = resultsPerPage;
+    public void setResultsPerPage(Byte resultsPerPage) {
+        if (null != resultsPerPage) {
+            this.resultsPerPage = resultsPerPage;
+        }
     }
 
     public String getStartField() {
@@ -202,7 +207,9 @@ public class PDatabase implements Serializable {
     }
 
     public void setStartField(String startField) {
-        this.startField = startField;
+        if (null != startField) {
+            this.startField = startField;
+        }
     }
 
     public String getSubmitMethod() {
@@ -226,7 +233,9 @@ public class PDatabase implements Serializable {
     }
 
     public void setSubmitParamsWithTitleFormat(String submitParamsWithTitleFormat) {
-        this.submitParamsWithTitleFormat = submitParamsWithTitleFormat;
+        if (null != submitParamsWithTitleFormat) {
+            this.submitParamsWithTitleFormat = submitParamsWithTitleFormat;
+        }
     }
 
     public String getSubmitUrl() {
@@ -234,7 +243,9 @@ public class PDatabase implements Serializable {
     }
 
     public void setSubmitUrl(String submitUrl) {
-        this.submitUrl = submitUrl;
+        if (null != submitUrl) {
+            this.submitUrl = submitUrl;
+        }
     }
 
     public String getTitlePattern() {

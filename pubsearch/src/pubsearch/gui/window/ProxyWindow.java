@@ -1,4 +1,4 @@
-package pubsearch.gui.window;
+package pubsearch.gui.window; //TODO i18n
 
 import java.util.Iterator;
 import java.util.List;
@@ -10,8 +10,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.WindowEvent;
 import pubsearch.Config;
+import pubsearch.GetProxyList;
 import pubsearch.gui.GuiTools;
 import pubsearch.gui.control.LabelEx;
 
@@ -50,31 +53,57 @@ public class ProxyWindow extends AWindow {
      * @return A felépített ablaktartalom.
      */
     private Scene buildScene() {
-        LabelEx plzLabel = new LabelEx("Publication databases don't tolerate rare querying, so PubSearch uses proxies to reach them. Please specify a valid proxy list (IP:PORT). Not working proxies will be removed, please refresh the list once in a while.", true, false, false, GuiTools.shadow);
+        LabelEx plzLabel = new LabelEx("Publication databases don't tolerate rare querying, so PubSearch uses proxies to reach them. Please specify a valid proxy list (IP:PORT).\nNot working proxies will be removed, please refresh the list once in a while.", true, false, false, GuiTools.shadow);
+        plzLabel.setTextAlignment(TextAlignment.JUSTIFY);
         plzLabel.setWrapText(true);
 
         proxyTA.setStyle("-fx-font-family:monospace;");
+        proxyTA.setPrefWidth(200);
+
+        Button getButton = new Button("Download proxies\nand extend list");
+        getButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent arg0) {
+                List<String> pl = GetProxyList.getProxyList();
+                String ta = proxyTA.getText().trim();
+                if (0 != ta.length()) ta += "\n";
+                for (String p : pl) {
+                    ta += p + "\n";
+                }
+                proxyTA.setText(ta);
+                proxyTA.end();
+            }
+        });
 
         Button saveButton = new Button("Save");
-        saveButton.setPrefWidth(100);
         saveButton.setPrefHeight(32);
         saveButton.setOnAction(new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent event) {
                 Config.setProxyList(proxyTA.getText().split("\n"));
-                Config.save();
+                Config.saveProxyList();
                 ProxyWindow.this.hide();
             }
         });
 
-        BorderPane layout = new BorderPane();
-        layout.setPadding(new Insets(12));
-        layout.setTop(plzLabel);
-        layout.setCenter(proxyTA);
-        layout.setBottom(saveButton);
-        BorderPane.setMargin(proxyTA, new Insets(10, 0, 10, 0));
-        BorderPane.setAlignment(saveButton, Pos.CENTER);
+        VBox buttons = new VBox(10);
+        buttons.setPadding(new Insets(10));
+        getButton.setMaxWidth(Double.MAX_VALUE);
+        saveButton.setMaxWidth(Double.MAX_VALUE);
+        buttons.getChildren().addAll(getButton, saveButton);
+        buttons.setAlignment(Pos.CENTER);
 
-        return new Scene(layout, 320, 340);
+        BorderPane center = new BorderPane();
+        center.setPadding(new Insets(0, 10, 10, 0));
+        center.setCenter(plzLabel);
+        center.setBottom(buttons);
+        BorderPane.setAlignment(plzLabel, Pos.TOP_CENTER);
+
+        BorderPane layout = new BorderPane();
+        layout.setPadding(new Insets(10));
+        layout.setCenter(center);
+        layout.setRight(proxyTA);
+
+        return new Scene(layout, 420, 320);
     }
 }

@@ -1,13 +1,17 @@
 package pubsearch.gui.control;
 
+import java.util.ResourceBundle;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
 import pubsearch.data.Publication;
 import pubsearch.gui.tab.PubTab;
 import pubsearch.gui.window.MainWindow;
@@ -21,18 +25,50 @@ import pubsearch.gui.window.MainWindow;
 public class PubTable extends TableView<Publication> {
 
     private final MainWindow mainWindow;
+    private final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
 
     public PubTable(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
-        TableColumn authorsCol = new TableColumn("Authors");
-        authorsCol.setPrefWidth(250);
+
+        TableColumn dbCol = new TableColumn(texts.getString("database"));
+        dbCol.setPrefWidth(100);
+        dbCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("dbName")); // unsafe op.
+
+        TableColumn authorsCol = new TableColumn(texts.getString("authors"));
+        authorsCol.setPrefWidth(200);
         authorsCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("authors")); // unsafe op.
 
-        TableColumn titleCol = new TableColumn("Title");
+        TableColumn titleCol = new TableColumn(texts.getString("title"));
         titleCol.setPrefWidth(250);
         titleCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("title")); // unsafe op.
 
-        getColumns().addAll(authorsCol, titleCol);
+        TableColumn yearCol = new TableColumn(texts.getString("year"));
+        yearCol.setPrefWidth(50);
+        yearCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("yearAsString")); // unsafe op.
+        final Callback<TableColumn<Publication, String>, TableCell<Publication, String>> yearCellFactory = yearCol.getCellFactory();
+        yearCol.setCellFactory(new Callback<TableColumn<Publication, String>, TableCell<Publication, String>>() {
+
+            public TableCell<Publication, String> call(TableColumn<Publication, String> param) {
+                final TableCell<Publication, String> cell = yearCellFactory.call(param);
+                cell.setAlignment(Pos.CENTER);
+                return cell;
+            }
+        });
+
+        TableColumn cbCol = new TableColumn(texts.getString("citedBy"));
+        cbCol.setPrefWidth(75);
+        cbCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("citedByCount")); // unsafe op.
+        final Callback<TableColumn<Publication, String>, TableCell<Publication, String>> cbCellFactory = cbCol.getCellFactory();
+        cbCol.setCellFactory(new Callback<TableColumn<Publication, String>, TableCell<Publication, String>>() {
+
+            public TableCell<Publication, String> call(TableColumn<Publication, String> param) {
+                final TableCell<Publication, String> cell = cbCellFactory.call(param);
+                cell.setAlignment(Pos.CENTER);
+                return cell;
+            }
+        });
+
+        getColumns().addAll(dbCol, authorsCol, titleCol, yearCol, cbCol);
         setEditable(false);
         setPlaceholder(new Label(""));
 
@@ -40,7 +76,7 @@ public class PubTable extends TableView<Publication> {
 
             public void handle(KeyEvent event) {
                 if (event.getCode() == KeyCode.ENTER) {
-                    showPubWindow();
+                    showDetails();
                 }
             }
         });
@@ -48,16 +84,17 @@ public class PubTable extends TableView<Publication> {
 
             public void handle(MouseEvent event) {
                 if (event.getClickCount() > 1) {
-                    showPubWindow();
+                    showDetails();
                 }
             }
         });
     }
 
     /**
-     * Eseménykezelő. Esemény: duplakattintás/ENTER a találati listában. Tevékenység: betölti a hivatkozó publikációkat.
+     * Eseménykezelő. Esemény: duplakattintás/ENTER a találati listában.
+     * Tevékenység: megjeleníti a kiválaszott publikáció adatait.
      */
-    private void showPubWindow() {
+    private void showDetails() {
         if (getSelectionModel().getSelectedIndex() > -1) {
             mainWindow.getTabPane().getTabs().add(new PubTab(mainWindow, getSelectionModel().getSelectedItem()));
             mainWindow.getTabPane().getSelectionModel().selectLast();
