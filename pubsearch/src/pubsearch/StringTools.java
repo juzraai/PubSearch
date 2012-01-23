@@ -20,7 +20,7 @@ public class StringTools {
      * @return A megtisztított szöveg.
      */
     public static String clean(String s) {
-        return s.trim().replaceAll("<.*?>", " ").replaceAll("  ", " ");
+        return (null != s) ? s.trim().replaceAll("<.*?>", " ").replaceAll("&nbsp;", " ").replaceAll(" +", " ") : null;
     }
 
     /**

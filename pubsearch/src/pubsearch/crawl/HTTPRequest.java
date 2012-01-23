@@ -1,8 +1,10 @@
 package pubsearch.crawl;
 
-import java.io.IOException;
 import java.io.InputStream;
-import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -23,6 +25,7 @@ public class HTTPRequest {
     private int proxyPort;
     // out
     private String html;
+    protected String error;
 
     public HTTPRequest(String url) {
         this(url, null, null);
@@ -37,7 +40,7 @@ public class HTTPRequest {
         this.queryString = (null != queryString) ? queryString : "";
         this.method = (null != method && method.toUpperCase().equals("POST")) ? "POST" : "GET";
 
-        this.queryString = this.queryString.replaceAll(" ", "%20").replaceAll("\"", "%22");
+        this.queryString = this.queryString.replaceAll(" ", "%20").replaceAll("\"", "%22").replaceAll("\\+", "%2b");
     }
 
     /**
@@ -71,6 +74,8 @@ public class HTTPRequest {
 
     public boolean submit() {
         boolean success = false;
+        error = null;
+
         HttpClient client = new HttpClient();
         if (null != proxyIP) {
             client.getHostConfiguration().setProxy(proxyIP, proxyPort);
@@ -93,14 +98,17 @@ public class HTTPRequest {
                 sb.append(s);
             }
             html = sb.toString();
-            //System.out.println("--\n"+html+"\n--");
-            //System.err.println("HTTPREQ: " + html.length());
+
             success = true;
-        } catch (HttpException e) {
-            //System.err.println("Fatal protocol violation: " + e.getMessage());
-        } catch (IOException e) {
-            //System.err.println("Fatal transport error: " + e.getMessage() + " (" + url + ")");
+            /*
+             * } catch (HttpException e) {
+             * //System.err.println("Fatal protocol violation: " + e.getMessage());
+             * } catch (IOException e) {
+             * //System.err.println("Fatal transport error: " + e.getMessage() + " (" + url + ")");
+             */
         } catch (Exception e) {
+            error = e.getMessage();
+            //System.err.println("HTTP Status failure");
         } finally {
             methodModel.releaseConnection();
             return success;
@@ -114,7 +122,11 @@ public class HTTPRequest {
     private HttpMethodBase buildMethod() { // TODO TRY parse helyett setQueryString POSTMETHOD-nál is! :)
         HttpMethodBase m;
         if (method.equals("GET")) {
-            m = new GetMethod(url + "?" + queryString);
+            String u = url;
+            if (0 < queryString.length()) {
+                u = url + "?" + queryString;
+            }
+            m = new GetMethod(u);
         } else {
             m = new PostMethod(url);
 
@@ -128,7 +140,7 @@ public class HTTPRequest {
         }
         m.getParams().setParameter(HttpMethodParams.USER_AGENT, "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
         m.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0, false));
-        m.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 30 * 1000);
+        m.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 15 * 1000);
         return m;
     }
 }

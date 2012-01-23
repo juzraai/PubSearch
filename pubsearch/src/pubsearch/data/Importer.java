@@ -88,6 +88,7 @@ public class Importer {
             }
 
             pdb.setStartField(fields.get("startfield"));
+            pdb.setNoResultsTextPattern(fields.get("noresultstextpattern"));
             pdb.setBibtexLinkPattern(fields.get("bibtexlinkpattern"));
             pdb.setBibtexPattern(fields.get("bibtexpattern"));
             pdb.setAuthorsPattern(fields.get("authorspattern"));

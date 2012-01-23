@@ -30,8 +30,9 @@ public class PDatabase implements Serializable {
     private String pubPageLinkPattern;          // regex
     private String pubPageLinkModFormat = "%s"; // formatstring, %s:link before mod
     private String startField = "start";
-    private Byte firstIndex = 0;                 // 0 / 1
+    private Byte firstIndex = 0;                // 0 / 1
     private Byte resultsPerPage = 10;
+    private String noResultsTextPattern;        // regex // TODO NOT NEEDED ! REMOVE IT !
     // pub page
     private String bibtexLinkPattern;           // regex
     private String bibtexPattern;               // regex
@@ -124,6 +125,14 @@ public class PDatabase implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNoResultsTextPattern() {
+        return noResultsTextPattern;
+    }
+
+    public void setNoResultsTextPattern(String noResultsTextPattern) {
+        this.noResultsTextPattern = noResultsTextPattern;
     }
 
     public String getPubPageLinkModFormat() {

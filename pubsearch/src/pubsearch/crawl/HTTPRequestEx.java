@@ -32,7 +32,14 @@ public class HTTPRequestEx extends HTTPRequest {
             success = super.submit();
 
             if (!success) {
-                Config.delProxy(proxy);
+                if (error.matches(".*Circular.*")) {
+                    // ACM fix: ha nincs találat, akkor circular redirect-be megy,
+                    // ez nem a proxy hibája, ezért ezesetben nem töröljük.
+                    System.err.println("Circular redirect detected.");
+                    return false;
+                } else {
+                    Config.delProxy(proxy);
+                }
             }
 
             tries--;

@@ -1,9 +1,6 @@
 package pubsearch.crawl;
 
 import com.sun.glass.ui.Application;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +33,7 @@ public class Crawler extends Thread {
         try {
             List<PDatabase> pDatabases = PDatabase.getAll();
             for (PDatabase pdb : pDatabases) {
-                if (!pdb.getName().equals("liinwww.ira.uka.de")) { //TODO JUST FOR TEST ONLY ONE PDB
+                if (!pdb.getName().equals("ACM")) { //TODO JUST FOR TEST ONLY ONE PDB
                     continue;
                 }
                 System.out.println("  " + pdb.getName());
@@ -50,7 +47,7 @@ public class Crawler extends Thread {
                 String qs = String.format(pdb.getSubmitParamsFormat(), authorFilter);
 
                 if (null != titleFilter) {
-                    qs = String.format(pdb.getSubmitParamsWithTitleFormat(), titleFilter);
+                    qs = String.format(pdb.getSubmitParamsWithTitleFormat(), qs, titleFilter);
                 }
                 byte rpp = pdb.getResultsPerPage();
                 byte si = pdb.getFirstIndex();
@@ -106,33 +103,22 @@ public class Crawler extends Thread {
 
                 } while (newResultsCount == rpp && rlpi < 2); // TODO rlpi limit is for testing!
 
-                //System.out.println("\t\t|links| = " + resultURLs.size());
-                for (String u : resultURLs) {
-                    System.out.println("      " + u);
-                }
-                System.out.println("      = " + resultURLs.size());
+                System.out.println("    " + resultURLs.size() + " results");
 
                 /*
                  * Extract publication data (bibtex, authors, title, year)
                  */
-
-                /*
-                 * for (String resultURL : resultURLs) {
-                 * HTTPRequest req = new HTTPRequest(resultURL);
-                 * req.setProxy(Config.getRandomProxy());
-                 * req.submit();
-                 * html = req.getHtml();
-                 * bytes += html.length();
-                 *
-                 * PubPage pubPage = new PubPage(pdb, html);
-                 * pubPage.extractData();
-                 * // a pubPage-ben kéne valahogy a refPubs részt
-                 * // és továbbadja rekurzívan magának a transLev-1-et.
-                 * }
-                 */
+                for (String resultURL : resultURLs) {
+                    //resultURL = resultURL.replaceAll(";jsessionid=.*?\\?", "?");
+                    System.out.println("    crawling pubpage (" + resultURL + ")");
+                    PubPageCrawler pubPageCrawler = new PubPageCrawler(pdb, resultURL, transLev);
+                    pubPageCrawler.crawl();
+                    bytes += pubPageCrawler.getBytes();
+                }
 
 
-                // PubPage, extract, visszakapunk egy Publication-t és a linket a refPubListPage-re
+
+                // PubPageCrawler, extract, visszakapunk egy Publication-t és a linket a refPubListPage-re
                 // utóbbit egy RefPubListPage-el járjuk be,
                 //  ha van link, akkor letöltjük a HTML-t, ha nincs, akkor a pubpage HTML megy oda is
 

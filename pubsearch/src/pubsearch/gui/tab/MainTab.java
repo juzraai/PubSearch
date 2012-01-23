@@ -79,6 +79,8 @@ public class MainTab extends Tab {
                 titleField.setDisable(authorField.getText().length() == 0);
             }
         });
+        Tooltip authorTooltip = new Tooltip("Például: R Legendi\nErre keres: \"R Legendi\"\nEz megtalálja: R. Legendi, Richard Legendi, Legendi Richard változatokat is.\nAdatbázisban levők szűrése: Legendi");
+        authorField.setTooltip(authorTooltip);
 
         titleField.setOnAction(startSearchAction);
         titleField.setDisable(true);
@@ -218,7 +220,14 @@ public class MainTab extends Tab {
      */
     public void showResults(long bytes) {
         try {
-            resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(authorField.getText(), titleField.getText())));
+            String aup[] = authorField.getText().split(" ");
+            String au = "";
+            for (String p : aup) {
+                if (p.length() > au.length()) {
+                    au = p;
+                }
+            }
+            resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(au, titleField.getText())));
         } catch (Throwable t) {
             AlertWindow.show(texts.getString("errorWhileQueryingResults"));
         }

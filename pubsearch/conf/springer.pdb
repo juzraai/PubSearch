@@ -7,7 +7,7 @@ pubpagelinkpattern		<li class="primitive.*?<a href="/(content/.*?/)">
 pubpagelinkmodformat		%sabout/
 firstindex			1
 startfield			o
-authorspattern			<li class="contributor".*?<a href.*?>(.*?)</a>
+authorspattern			<p class="authors">(.*?)</p>
 titlepattern			<div class="text">.*?<h1.*?>(.*?)</h1>
 yearpattern			(?:<div class="secondary">.*?, |<dt>Copyright Year.*?)([0-9]{4})
 refpublistpagelinkpattern	<a href="/(.*?)".*?Cited by

@@ -94,61 +94,63 @@ public class PubTab extends Tab {
         /*
          * BibTeX tab
          */
-        final TextArea bibtexTA = new TextArea(p.getBibtex());
-        bibtexTA.setEditable(false);
-        bibtexTA.setStyle("-fx-font-family:monospace;-fx-font-size:14px;");
+        if (null != p.getBibtex()) {
+            final TextArea bibtexTA = new TextArea(p.getBibtex());
+            bibtexTA.setEditable(false);
+            bibtexTA.setStyle("-fx-font-family:monospace;-fx-font-size:14px;");
 
-        Button copyButton = new Button("Másolás");
-        copyButton.setOnAction(new EventHandler<ActionEvent>() {
+            Button copyButton = new Button("Másolás");
+            copyButton.setOnAction(new EventHandler<ActionEvent>() {
 
-            public void handle(ActionEvent event) {
-                bibtexTA.selectAll();
-                bibtexTA.copy();
-                bibtexTA.deselect();
-            }
-        });
+                public void handle(ActionEvent event) {
+                    bibtexTA.selectAll();
+                    bibtexTA.copy();
+                    bibtexTA.deselect();
+                }
+            });
 
-        Button saveButton = new Button("Fájlba mentés...");
-        saveButton.setOnAction(new EventHandler<ActionEvent>() {
+            Button saveButton = new Button("Fájlba mentés...");
+            saveButton.setOnAction(new EventHandler<ActionEvent>() {
 
-            public void handle(ActionEvent event) {
-                FileChooser fc = new FileChooser();
-                fc.setTitle("BibTeX exportálása...");
-                fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Minden fájl (*.*)", "*.*"));
+                public void handle(ActionEvent event) {
+                    FileChooser fc = new FileChooser();
+                    fc.setTitle("BibTeX exportálása...");
+                    fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Minden fájl (*.*)", "*.*"));
 
-                File f = fc.showSaveDialog(PubTab.this.mainWindow);
+                    File f = fc.showSaveDialog(PubTab.this.mainWindow);
 
-                BufferedWriter w = null;
-                try {
-                    w = new BufferedWriter(new FileWriter(f));
-                    w.write(bibtexTA.getText());
-                    w.newLine();
-                } catch (IOException e) {
-                } finally {
-                    System.out.println("BIBTEX EXPORTED.");
-                    if (w != null) {
-                        try {
-                            w.close();
-                        } catch (IOException e) {
+                    BufferedWriter w = null;
+                    try {
+                        w = new BufferedWriter(new FileWriter(f));
+                        w.write(bibtexTA.getText());
+                        w.newLine();
+                    } catch (IOException e) {
+                    } finally {
+                        System.out.println("BIBTEX EXPORTED.");
+                        if (w != null) {
+                            try {
+                                w.close();
+                            } catch (IOException e) {
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
 
-        HBox buttons = new HBox(10);
-        buttons.setAlignment(Pos.CENTER_RIGHT);
-        buttons.setPadding(new Insets(12));
-        buttons.getChildren().addAll(copyButton, saveButton);
+            HBox buttons = new HBox(10);
+            buttons.setAlignment(Pos.CENTER_RIGHT);
+            buttons.setPadding(new Insets(12));
+            buttons.getChildren().addAll(copyButton, saveButton);
 
-        BorderPane bibtexTabLayout = new BorderPane();
-        bibtexTabLayout.setTop(buttons);
-        bibtexTabLayout.setCenter(bibtexTA);
-        BorderPane.setMargin(bibtexTA, new Insets(0, 10, 10, 10));
+            BorderPane bibtexTabLayout = new BorderPane();
+            bibtexTabLayout.setTop(buttons);
+            bibtexTabLayout.setCenter(bibtexTA);
+            BorderPane.setMargin(bibtexTA, new Insets(0, 10, 10, 10));
 
-        Tab bibtexTab = new Tab("BibTeX");
-        bibtexTab.setContent(bibtexTabLayout);
-        tabs.getTabs().add(bibtexTab);
+            Tab bibtexTab = new Tab("BibTeX");
+            bibtexTab.setContent(bibtexTabLayout);
+            tabs.getTabs().add(bibtexTab);
+        }
 
         /*
          * Cites tab
