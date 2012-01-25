@@ -1,6 +1,7 @@
 package pubsearch;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import pubsearch.data.Connection;
 import pubsearch.gui.window.AlertWindow;

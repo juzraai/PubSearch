@@ -1,9 +1,10 @@
-package pubsearch.gui.tab;//TODO i18n
+package pubsearch.gui.tab;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -31,6 +32,7 @@ public class PubTab extends Tab {
 
     private MainWindow mainWindow;
     private Publication p;
+    private final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
 
     public PubTab(MainWindow mainWindow, Publication p) {
         super(p.getTitle());
@@ -40,11 +42,13 @@ public class PubTab extends Tab {
         /*
          * Details
          */
-        Label authorsLabel1 = new Label("Authors");
-        Label titleLabel1 = new Label("Title");
-        Label yearLabel1 = new Label("Year");
-        Label dbLabel1 = new Label("Database");
-        Label urlLabel1 = new Label("URL");
+        Label authorsLabel1 = new Label(texts.getString("authorLabel"));
+        Label titleLabel1 = new Label(texts.getString("titleLabel"));
+        Label yearLabel1 = new Label(texts.getString("yearLabel"));
+        Label dbLabel1 = new Label(texts.getString("databaseLabel"));
+        Label urlLabel1 = new Label(texts.getString("urlLabel"));
+
+        dbLabel1.setMinWidth(75);
 
         Label authorsLabel2 = new Label(p.getAuthors());
         authorsLabel2.setWrapText(true);
@@ -53,7 +57,7 @@ public class PubTab extends Tab {
         titleLabel2.setWrapText(true);
 
         Integer y = p.getYear();
-        String ys = (null == y) ? "(ismeretlen)" : y.toString();
+        String ys = (null == y) ? texts.getString("unknownYear") : y.toString();
         Label yearLabel2 = new Label(ys);
 
         Label dbLabel2 = new Label(p.getDbName());
@@ -62,21 +66,21 @@ public class PubTab extends Tab {
         GuiTools.addStyleClassToNodes("bold-text", authorsLabel1, titleLabel1, yearLabel1, dbLabel1, urlLabel1);
         GuiTools.addStyleClassToNodes("italic-text", authorsLabel2, titleLabel2, yearLabel2, dbLabel2, urlLabel2);
 
-        GridPane detailsGrid = new GridPane();
-        detailsGrid.setPadding(new Insets(12));
-        detailsGrid.setHgap(20);
-        detailsGrid.setVgap(20);
-        detailsGrid.setManaged(true);
-        detailsGrid.add(authorsLabel1, 0, 0);
-        detailsGrid.add(authorsLabel2, 1, 0);
-        detailsGrid.add(titleLabel1, 0, 1);
-        detailsGrid.add(titleLabel2, 1, 1);
-        detailsGrid.add(yearLabel1, 0, 2);
-        detailsGrid.add(yearLabel2, 1, 2);
-        detailsGrid.add(dbLabel1, 0, 3);
-        detailsGrid.add(dbLabel2, 1, 3);
-        detailsGrid.add(urlLabel1, 0, 4);
-        detailsGrid.add(urlLabel2, 1, 4);
+        GridPane details = new GridPane();
+        details.setPadding(new Insets(12));
+        details.setHgap(20);
+        details.setVgap(20);
+        details.setManaged(true);
+        details.add(authorsLabel1, 0, 0);
+        details.add(authorsLabel2, 1, 0);
+        details.add(titleLabel1, 0, 1);
+        details.add(titleLabel2, 1, 1);
+        details.add(yearLabel1, 0, 2);
+        details.add(yearLabel2, 1, 2);
+        details.add(dbLabel1, 0, 3);
+        details.add(dbLabel2, 1, 3);
+        details.add(urlLabel1, 0, 4);
+        details.add(urlLabel2, 1, 4);
         GridPane.setValignment(authorsLabel1, VPos.TOP);
         GridPane.setValignment(titleLabel1, VPos.TOP);
 
@@ -94,12 +98,13 @@ public class PubTab extends Tab {
         /*
          * BibTeX tab
          */
+        // TODO uniformize somehow...
         if (null != p.getBibtex()) {
             final TextArea bibtexTA = new TextArea(p.getBibtex());
             bibtexTA.setEditable(false);
             bibtexTA.setStyle("-fx-font-family:monospace;-fx-font-size:14px;");
 
-            Button copyButton = new Button("Másolás");
+            Button copyButton = new Button(texts.getString("copyToClipboard"));
             copyButton.setOnAction(new EventHandler<ActionEvent>() {
 
                 public void handle(ActionEvent event) {
@@ -109,13 +114,13 @@ public class PubTab extends Tab {
                 }
             });
 
-            Button saveButton = new Button("Fájlba mentés...");
+            Button saveButton = new Button(texts.getString("exportToFile"));
             saveButton.setOnAction(new EventHandler<ActionEvent>() {
 
                 public void handle(ActionEvent event) {
                     FileChooser fc = new FileChooser();
-                    fc.setTitle("BibTeX exportálása...");
-                    fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Minden fájl (*.*)", "*.*"));
+                    fc.setTitle(texts.getString("saveDialogTitle"));
+                    fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(texts.getString("allFiles") + " (*.*)", "*.*"));
 
                     File f = fc.showSaveDialog(PubTab.this.mainWindow);
 
@@ -164,7 +169,7 @@ public class PubTab extends Tab {
             citesLayout.setCenter(citesView);
             BorderPane.setMargin(citesView, new Insets(10));
 
-            Tab citesTab = new Tab("Cited by (" + cites.size() + ")");
+            Tab citesTab = new Tab(texts.getString("citedByTab") + " (" + cites.size() + ")");
             citesTab.setContent(citesLayout);
             tabs.getTabs().add(citesTab);
         }
@@ -173,7 +178,7 @@ public class PubTab extends Tab {
          * Build
          */
         BorderPane layout = new BorderPane();
-        layout.setTop(detailsGrid);
+        layout.setTop(details);
         layout.setCenter(tabs);
         BorderPane.setMargin(tabs, new Insets(10));
         setContent(layout);

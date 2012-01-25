@@ -1,6 +1,10 @@
 package pubsearch.crawl;
 
 import com.sun.glass.ui.Application;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,15 +29,19 @@ public class Crawler extends Thread {
         this.authorFilter = authorFilter;
         this.titleFilter = (titleFilter != null && titleFilter.trim().length() > 0) ? titleFilter : null;
         this.transLev = transLev;
+        setDaemon(true); // ha a főprogram leáll, akkor ez is :-)
     }
 
     @Override
-    public void run() { // TODO megoldani valahogy, hogy a programból leállítható legyen gombbal / kilépéskor
+    public void run() {
         System.out.println("Crawler thread started.");
+
+        List<PubPageCrawler> pubPageCrawlers = new ArrayList<PubPageCrawler>();
+
         try {
-            List<PDatabase> pDatabases = PDatabase.getAll();
-            for (PDatabase pdb : pDatabases) {
-                if (!pdb.getName().equals("ACM")) { //TODO JUST FOR TEST ONLY ONE PDB
+            List<PDatabase> pdbs = PDatabase.getAll();
+            for (PDatabase pdb : pdbs) {
+                if (!pdb.getName().equals("liinwww.ira.uka.de")) { //XXX just for testing
                     continue;
                 }
                 System.out.println("  " + pdb.getName());
@@ -54,24 +62,26 @@ public class Crawler extends Thread {
                 int newResultsCount;
                 int rlpi = 0;
                 do {
+
+                    if (isInterrupted()) {
+                        throw new InterruptedException();
+                    }
+
                     newResultsCount = 0;
-                    // TODO a RLPnek kellene továbbadni a transLevet
                     String setStartField = "&" + pdb.getStartField() + "=" + si;
-                    System.out.println("    result page #" + rlpi++ + " (" + url + "?" + qs + setStartField + ")");
+                    System.out.println("    result list page #" + rlpi++ + " (" + url + "?" + qs + setStartField + ")");
                     HTTPRequestEx req = new HTTPRequestEx(url, qs + setStartField, pdb.getSubmitMethod());
                     if (req.submit(3)) {
                         String html = req.getHtml();
                         bytes += html.length();
 
                         // <debug html output>
-                        /*
-                         * try {
-                         * BufferedWriter w = new BufferedWriter(new FileWriter(pdb.getName() + rlpi + ".html"));
-                         * w.write(html);
-                         * w.close();
-                         * } catch (IOException e) {
-                         * }
-                         */
+                        try {
+                            BufferedWriter w = new BufferedWriter(new FileWriter(pdb.getName() + rlpi + ".html"));
+                            w.write(html);
+                            w.close();
+                        } catch (IOException e) {
+                        }
                         // </debug html output>
 
                         ResultListPage rlp = new ResultListPage(pdb, html);
@@ -101,34 +111,56 @@ public class Crawler extends Thread {
                     }
                     // </liinwww.ira.uka.de fix>
 
-                } while (newResultsCount == rpp && rlpi < 2); // TODO rlpi limit is for testing!
+                } while (newResultsCount == rpp && rlpi < 2); // XXX rlpi limit is just for testing
 
                 System.out.println("    " + resultURLs.size() + " results");
 
                 /*
-                 * Extract publication data (bibtex, authors, title, year)
+                 * Start pub page crawler threads
                  */
                 for (String resultURL : resultURLs) {
-                    //resultURL = resultURL.replaceAll(";jsessionid=.*?\\?", "?");
-                    System.out.println("    crawling pubpage (" + resultURL + ")");
+
+                    if (isInterrupted()) {
+                        throw new InterruptedException();
+                    }
+
+                    System.out.println(" pubpage crawler starts (" + resultURL + ")");
                     PubPageCrawler pubPageCrawler = new PubPageCrawler(pdb, resultURL, transLev);
-                    pubPageCrawler.crawl();
-                    bytes += pubPageCrawler.getBytes();
+                    pubPageCrawlers.add(pubPageCrawler);
+                    pubPageCrawler.start();
+                }
+            }
+
+            /*
+             * Wait for pubpage crawler threads to finish
+             */
+            boolean done = false;
+            while (!done) {
+
+                if (isInterrupted()) {
+                    throw new InterruptedException();
                 }
 
-
-
-                // PubPageCrawler, extract, visszakapunk egy Publication-t és a linket a refPubListPage-re
-                // utóbbit egy RefPubListPage-el járjuk be,
-                //  ha van link, akkor letöltjük a HTML-t, ha nincs, akkor a pubpage HTML megy oda is
-
-
-                // vigyázzunk, hogy a link-pub, link-db, pub-pub kapcsolatoknál MINDKÉT irányba állítsuk be!!!!!!!
-
+                done = true;
+                for (int i = 0; i < pubPageCrawlers.size() && done; i++) {
+                    done = !pubPageCrawlers.get(i).isAlive();
+                }
             }
-        } catch (Throwable t) {
-            System.err.println("Crawler thread caught exception.");
-            t.printStackTrace();
+            System.out.println("CRAWLER: ALL DONE !");
+            for (PubPageCrawler ppc : pubPageCrawlers) {
+                bytes += ppc.getBytes();
+            }
+
+        } catch (InterruptedException ie) {
+            System.err.println("Crawler thread interrupted.");
+
+            for (PubPageCrawler ppc : pubPageCrawlers) {
+                ppc.interrupt();
+            }
+
+            notifyCaller();
+        } catch (Exception e) {
+            System.err.println("Crawler thread caught exception: " + e.getMessage());
         } finally {
             System.out.println("Crawler thread stops.");
             notifyCaller();

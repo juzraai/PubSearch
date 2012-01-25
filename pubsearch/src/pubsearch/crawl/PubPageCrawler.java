@@ -1,8 +1,5 @@
 package pubsearch.crawl;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import pubsearch.StringTools;
 import pubsearch.data.Connection;
 import pubsearch.data.PDatabase;
@@ -13,7 +10,7 @@ import pubsearch.data.Publication;
  *
  * @author Zsolt
  */
-public class PubPageCrawler {
+public class PubPageCrawler extends Thread {
 
     //in
     private PDatabase pdb;
@@ -29,31 +26,15 @@ public class PubPageCrawler {
         this.transLev = transLev;
     }
 
+    @Override
+    public void run() {
+        crawl();
+    }
+
     /**
      * Begyűjt minden adatot a publikációról, majd feltölti az adatbázisba.
      */
     public void crawl() {
-        // TODO bibtex, authors, title, year
-        // ha van bibtex link, akkor lekéri a HTML-t (byte hozzáadást megoldani a Crawler-hez!) - talán azt is át kéne adni konstruktorba/fieldbe
-        // ha van bibtex block
-        //      lekéri azt + levágja 4096 karakterre
-        // ha nincs, akkor authors, title, year
-
-        // ha semmilyen adat nem nyerhető ki (pl. bibtexnél kapcsolódási hiba), akkor publication=null; return;
-
-        // összerak egy publication-t.
-
-        // VIGYÁZZUNK, HOGY A REFPUBS-OT NE AZ EXTERNAL BIBTEX OLDALON KERESSE, OTT NINCS !
-
-        // ezt csak akkor, ha a transLev > 0 !
-        /*
-         * refPubListPageURL = StringTools.findFirstMatch(html, pdb.getRefPubListPageLinkPattern(), 1);
-         * if (null != refPubListPageURL) {
-         * refPubListPageURL = pdb.getBaseUrl() + refPubListPageURL;
-         * }
-         */
-
-        // -------------------------------------------
         HTTPRequestEx req = new HTTPRequestEx(url);
         if (req.submit(3)) {
             String html = req.getHtml();
@@ -67,16 +48,6 @@ public class PubPageCrawler {
                 if (bibreq.submit(3)) {
                     String bibhtml = bibreq.getHtml();
                     bytes += bibhtml.length();
-
-                    // <debug html output>
-                    try {
-                        BufferedWriter w = new BufferedWriter(new FileWriter("bib.html"));
-                        w.write(bibhtml);
-                        w.close();
-                    } catch (IOException e) {
-                    }
-                    // </debug html output>
-
                     bibtex = StringTools.findFirstMatch(bibhtml, pdb.getBibtexPattern(), 1);
                 }
             } else {
@@ -91,13 +62,18 @@ public class PubPageCrawler {
                 bibtex = StringTools.clean(bibtex);
 
                 authors = StringTools.findFirstMatch(bibtex, "author.*?=.*?(?:\"|\\{)(.*?)(?:\"|\\}),", 1);
-                if (null != authors) {
-                    authors = authors.trim().replaceAll("\\\\'\\{|\\}", ""); // kiszedjuk az ekezetes betuk BibTeX jelölését \'{a} -> a
-                }
+                /*
+                 * if (null != authors) {
+                 * authors = authors.replaceAll("\\\\'\\{", "").replaceAll("\\}", ""); // kiszedjuk az ekezetes betuk BibTeX jelölését \'{a} -> a
+                 * authors = authors.replaceAll("\n", " ").replaceAll("\t", " ");
+                 * authors = StringTools.clean(authors).trim();
+                 * }
+                 */
 
-                title = StringTools.findFirstMatch(bibtex, "[^(book)]title.*?=.*?(?:\"|\\{)(.*?)(?:\"|\\}),", 1);
-                if (null != title) {
-                    title = title.trim();
+                String titlePattern = "[^k]title.*?=.*?\"(.*?)\",|[^k]title.*?=.*?\\{(.*?)\\},";
+                title = StringTools.findFirstMatch(bibtex, titlePattern, 1);
+                if (null == title) {
+                    title = StringTools.findFirstMatch(bibtex, titlePattern, 2);
                 }
 
                 try {
@@ -106,15 +82,14 @@ public class PubPageCrawler {
                 }
             } else {
                 authors = StringTools.findFirstMatch(html, pdb.getAuthorsPattern(), 1);
-                if (null != authors) {
-                    authors = authors.replaceAll("[0-9]{1,2}", "");
-                    authors = StringTools.clean(authors).replaceAll(" , ", " and ").trim();
-                }
+                /*
+                 * if (null != authors) {
+                 * authors = authors.replaceAll("[0-9]{1,2}", "");
+                 * authors = StringTools.clean(authors).replaceAll(" , ", " and ").trim();
+                 * }
+                 */
 
                 title = StringTools.findFirstMatch(html, pdb.getTitlePattern(), 1);
-                if (null != title) {
-                    title = title.trim();
-                }
 
                 try {
                     year = Integer.parseInt(StringTools.findFirstMatch(html, pdb.getYearPattern(), 1));
@@ -122,11 +97,34 @@ public class PubPageCrawler {
                 }
             }
 
-            // TODO valahol itt a refPub crawl
+            if (null != authors) {
+                authors = authors.replaceAll("\\\\'\\{", "").replaceAll("\\{\\\\'", "").replaceAll("\\}", "");
+                authors = authors.replaceAll("[0-9]{1,2}", "");
+                authors = authors.replaceAll("\n", " ").replaceAll("\t", " ");
+                authors = StringTools.clean(authors).trim();
+                authors = authors.replaceAll(" , ", " and ").trim();
+            }
+            if (null != title) {
+                title = title.replaceAll("\n", " ").replaceAll("\t", " ");
+                title = StringTools.clean(title).trim();
+            }
 
-            System.out.println("      a = " + authors);
+            if (transLev > 0) {
+                // TODO valahol itt a refPub crawl, transLev-re vigyázni
+                // kiszedi a listát és a PubPageCrawlereket    transLev-1  -el indítja!
+                // + vigyázni arra, hogy a bytes-ot mindig szedjük ki!!!
+                // TODO a ciklusokban figyelni az isInterrupted()-et!!!!
+                /*
+                 * refPubListPageURL = StringTools.findFirstMatch(html, pdb.getRefPubListPageLinkPattern(), 1);
+                 * if (null != refPubListPageURL) {
+                 * refPubListPageURL = pdb.getBaseUrl() + refPubListPageURL;
+                 * } else { b módszer: block-olós }
+                 */
+            }
+
+            /*System.out.println("      a = " + authors);
             System.out.println("      t = " + title);
-            System.out.println("      y = " + year);
+            System.out.println("      y = " + year);*/
             if (null != authors && null != title) {
                 Connection.getEm().getTransaction().begin();
                 Publication pub = Publication.getReferenceFor(authors, title, year, pdb);
@@ -136,25 +134,6 @@ public class PubPageCrawler {
                 Connection.getEm().getTransaction().commit();
             }
         }
-
-        /*
-         * String bibtex = html;
-         * String bibtexLink = StringTools.findFirstMatch(html, pdb.getBibtexLinkPattern(), 1);
-         * if (null != bibtexLink) {
-         * HTTPRequestEx req = new HTTPRequestEx(pdb.getBaseUrl() + bibtexLink);
-         * if (req.submit(3)) {
-         * bibtex = req.getHtml();
-         * bytes += bibtex.length();
-         * }
-         * }
-         * String bibtexPattern = pdb.getBibtexPattern();
-         * if (null != bibtexPattern) {
-         * bibtex = StringTools.findFirstMatch(bibtex, bibtexPattern, 1);
-         *
-         * }
-         */
-
-
     }
 
     public Publication getPublication() {

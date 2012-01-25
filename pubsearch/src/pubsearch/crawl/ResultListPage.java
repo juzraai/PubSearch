@@ -5,7 +5,7 @@ import pubsearch.StringTools;
 import pubsearch.data.PDatabase;
 
 /**
- * Egy találati lista oldalt kezel le.
+ * Egy találati lista oldalt elemez.
  *
  * @author Zsolt
  */
@@ -27,12 +27,19 @@ public class ResultListPage {
      */
     public void extractURLs() {
         resultURLs = StringTools.findAllMatch(html, pDatabase.getPubPageLinkPattern(), 1);
-        String modFormat;
-        if (null != (modFormat = pDatabase.getPubPageLinkModFormat())) {
-            for (int i = 0; i < resultURLs.size(); i++) {
-                resultURLs.set(i, pDatabase.getBaseUrl() + String.format(modFormat, resultURLs.get(i)));
+        String modFormat = pDatabase.getPubPageLinkModFormat();
+        for (int i = 0; i < resultURLs.size(); i++) {
+            String url = resultURLs.get(i);
+            if (modFormat.matches(".*%s.*")) {
+                url = String.format(modFormat, resultURLs.get(i));
             }
+            if (!url.startsWith("http:")) {
+                url = pDatabase.getBaseUrl() + url;
+            }
+            url = url.replaceAll("&amp;", "&"); // liinwww.ira.uka.de fix
+            resultURLs.set(i, url);
         }
+
     }
 
     /**

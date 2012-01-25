@@ -2,7 +2,7 @@ name				MetaPress
 baseurl				http://www.metapress.com/
 submiturl			content/
 submitparamsformat		k=author:"%s"
-submitparamswithtitleformat	%s+AND+title:(%s)
+submitparamswithtitleformat	%s+AND+title:"%s"
 pubpagelinkpattern		<div class="listItemName">.*?href="/(.*?/)\?.*?"
 startfield			o
 authorspattern			Authors.*?</h5>.*?<div>(.*?)</div>

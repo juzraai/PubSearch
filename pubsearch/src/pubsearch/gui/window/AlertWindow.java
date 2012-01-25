@@ -1,6 +1,5 @@
 package pubsearch.gui.window;
 
-import com.sun.glass.ui.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -15,7 +14,6 @@ import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.WindowEvent;
 import pubsearch.gui.GuiTools;
 import pubsearch.gui.control.LabelEx;
 

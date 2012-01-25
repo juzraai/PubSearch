@@ -23,7 +23,7 @@ public class Connection {
     public static final int SQL_ERROR = 1;
     public static final int JPA_ERROR = 2;
 
-    public static EntityManager getEm() {
+    public static synchronized EntityManager getEm() { // TODO TESZTELNI, HOGY "synchronized" tényleg megoldja-e a gondot!!!
         return em;
     }
 

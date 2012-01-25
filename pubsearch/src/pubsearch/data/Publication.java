@@ -101,6 +101,7 @@ public class Publication implements Serializable {
         return pdatabase.getName();
     }
 
+    @Column(nullable = false)
     public String getAuthors() {
         return authors;
     }
@@ -149,6 +150,7 @@ public class Publication implements Serializable {
         this.pdatabase = pdatabase;
     }
 
+    @Column(nullable = false)
     public String getTitle() {
         return title;
     }

@@ -1,5 +1,6 @@
 package pubsearch.gui.window;
 
+import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -13,11 +14,16 @@ import pubsearch.gui.GuiTools;
  */
 public abstract class AWindow extends Stage {
 
+    protected final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
     protected static final String CSS_FILE = "pubsearch/gui/style.css";
 
     public AWindow(String title, boolean resizable, boolean modal) {
         super();
-        setTitle(title);
+        try {
+            setTitle(texts.getString(title));
+        } catch (Exception e) {
+            setTitle(title);
+        }
         setResizable(resizable);
         if (modal) {
             initModality(Modality.APPLICATION_MODAL);

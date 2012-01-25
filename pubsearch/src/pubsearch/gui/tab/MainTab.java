@@ -42,11 +42,12 @@ public class MainTab extends Tab {
     private final TextField authorField = new TextField();
     private final TextField titleField = new TextField();
     private final ChoiceBox transLevCombo = new ChoiceBox(FXCollections.observableArrayList("0", "1", "2"));
-    private final CheckBox onlyLocalCheckBox = new CheckBox("Search only in the local database");
+    private final CheckBox onlyLocalCheckBox = new CheckBox(texts.getString("onlyLocalSearch"));
     private final Button searchButton = new Button(texts.getString("searchButton"));
     private final PubTable resultsView;
     private final Label resultCountLabel = new Label();
     // Variables
+    private Crawler crawler;
     private long startTime;
 
     public MainTab(MainWindow mainWindow) {
@@ -79,11 +80,11 @@ public class MainTab extends Tab {
                 titleField.setDisable(authorField.getText().length() == 0);
             }
         });
-        Tooltip authorTooltip = new Tooltip("Például: R Legendi\nErre keres: \"R Legendi\"\nEz megtalálja: R. Legendi, Richard Legendi, Legendi Richard változatokat is.\nAdatbázisban levők szűrése: Legendi");
-        authorField.setTooltip(authorTooltip);
+        authorField.setTooltip(new Tooltip(texts.getString("authorFieldTooltip")));
 
         titleField.setOnAction(startSearchAction);
         titleField.setDisable(true);
+        titleField.setTooltip(new Tooltip(texts.getString("titleFieldTooltip")));
 
         transLevCombo.getSelectionModel().selectFirst();
 
@@ -174,8 +175,20 @@ public class MainTab extends Tab {
         progressBar.setPrefSize(250, 25);
         progressBar.setEffect(GuiTools.reflection);
 
+        Button abortButton = new Button(texts.getString("abort"));
+        abortButton.setStyle("-fx-base: #822;");
+        abortButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent arg0) {
+                kill();
+            }
+        });
+
         searchLayout = new BorderPane();
         searchLayout.setCenter(progressBar);
+        searchLayout.setBottom(abortButton);
+        BorderPane.setAlignment(abortButton, Pos.CENTER);
+        BorderPane.setMargin(abortButton, new Insets(10));
 
         // ---
         setContent(mainLayout);
@@ -196,7 +209,7 @@ public class MainTab extends Tab {
             } else {
                 // van proxy, indul a crawl, külön szálon, majd ő értesít az eredmények megjelenítéséről
                 switchScene(false);
-                final Crawler crawler = new Crawler(this, authorField.getText(), titleField.getText(), transLevCombo.getSelectionModel().getSelectedIndex());
+                crawler = new Crawler(this, authorField.getText(), titleField.getText(), transLevCombo.getSelectionModel().getSelectedIndex());
                 crawler.start();
             }
         } else {
@@ -211,7 +224,7 @@ public class MainTab extends Tab {
      */
     public void switchScene(boolean toMain) {
         setContent((toMain) ? mainLayout : searchLayout);
-        setText((toMain) ? texts.getString("searchTab") : "( . . . )");
+        setText((toMain) ? texts.getString("searchTab") : texts.getString("searchInProgress"));
     }
 
     /**
@@ -238,5 +251,13 @@ public class MainTab extends Tab {
 
     public void focusAuthorField() {
         authorField.requestFocus();
+    }
+
+    public void kill() {
+        if (null != crawler) {
+            System.err.println("Killing crawler thread.");
+            crawler.interrupt(); // SLOW
+            while (crawler.isAlive()); // WAIT (FREEZE) UNTIL CRAWLER HALTS
+        }
     }
 }

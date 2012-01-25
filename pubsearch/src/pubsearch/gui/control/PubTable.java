@@ -30,19 +30,19 @@ public class PubTable extends TableView<Publication> {
     public PubTable(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
 
-        TableColumn dbCol = new TableColumn(texts.getString("database"));
+        TableColumn dbCol = new TableColumn(texts.getString("databaseColumn"));
         dbCol.setPrefWidth(100);
         dbCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("dbName")); // unsafe op.
 
-        TableColumn authorsCol = new TableColumn(texts.getString("authors"));
+        TableColumn authorsCol = new TableColumn(texts.getString("authorsColumn"));
         authorsCol.setPrefWidth(200);
         authorsCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("authors")); // unsafe op.
 
-        TableColumn titleCol = new TableColumn(texts.getString("title"));
+        TableColumn titleCol = new TableColumn(texts.getString("titleColumn"));
         titleCol.setPrefWidth(250);
         titleCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("title")); // unsafe op.
 
-        TableColumn yearCol = new TableColumn(texts.getString("year"));
+        TableColumn yearCol = new TableColumn(texts.getString("yearColumn"));
         yearCol.setPrefWidth(50);
         yearCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("yearAsString")); // unsafe op.
         final Callback<TableColumn<Publication, String>, TableCell<Publication, String>> yearCellFactory = yearCol.getCellFactory();
@@ -55,7 +55,7 @@ public class PubTable extends TableView<Publication> {
             }
         });
 
-        TableColumn cbCol = new TableColumn(texts.getString("citedBy"));
+        TableColumn cbCol = new TableColumn(texts.getString("citedByColumn"));
         cbCol.setPrefWidth(75);
         cbCol.setCellValueFactory(new PropertyValueFactory<Publication, String>("citedByCount")); // unsafe op.
         final Callback<TableColumn<Publication, String>, TableCell<Publication, String>> cbCellFactory = cbCol.getCellFactory();

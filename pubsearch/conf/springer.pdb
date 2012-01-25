@@ -2,7 +2,7 @@ name				SpringerLink
 baseurl				http://www.springerlink.com/
 submiturl			content/
 submitparamsformat		k=au:"%s"
-submitparamswithtitleformat	%s+ti:(%s)
+submitparamswithtitleformat	%s+ti:"%s"
 pubpagelinkpattern		<li class="primitive.*?<a href="/(content/.*?/)">
 pubpagelinkmodformat		%sabout/
 firstindex			1

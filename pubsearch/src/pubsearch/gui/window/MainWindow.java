@@ -14,6 +14,7 @@ import pubsearch.gui.tab.MainTab;
 public class MainWindow extends AWindow {
 
     public final ConfigWindow configWindow = new ConfigWindow(this);
+    private final MainTab mainTab = new MainTab(this);
     private TabPane tabs = new TabPane();
 
     public MainWindow() {
@@ -22,18 +23,17 @@ public class MainWindow extends AWindow {
         tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         tabs.setTabMinWidth(50);
         tabs.setTabMaxWidth(200);
-        final MainTab mainTab = new MainTab(this);
         tabs.getTabs().add(mainTab);
 
         Scene scene = new Scene(tabs, 600, 400);
         setScene(scene);
         setCSS();
-        setOnShown(new EventHandler<WindowEvent>(){
+    }
 
-            public void handle(WindowEvent event) {
-                mainTab.focusAuthorField();
-            }
-        });
+    @Override
+    protected void onShownAction(WindowEvent event) {
+        super.onShownAction(event);
+        mainTab.focusAuthorField();
     }
 
     public TabPane getTabPane() {
