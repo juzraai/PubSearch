@@ -39,6 +39,17 @@ public class Publication implements Serializable {
     }
 
     /**
+     * Eltárol egy publikációt. A szinkronizáltság biztosítja, hogy a tranzakciót
+     * egyszerre csak egyetlen szál hívja.
+     * @param p
+     */
+    public static synchronized void store(Publication p) {
+        Connection.getEm().getTransaction().begin();
+        Connection.getEm().persist(p);
+        Connection.getEm().getTransaction().commit();
+    }
+
+    /**
      * Egy publikációt a szerzők, a cím és az évszám azonosít, valamint az adatbázis,
      * ahol a program megtalálta. Az URL azért nem, mert bizonyos adatbázisokban a
      * hivatkozó publikációkhoz nem rendelődik URL, így azok URL=null-lal tárolódnak.
@@ -50,14 +61,16 @@ public class Publication implements Serializable {
      * @param pdb
      * @return Referencia a Publication objektumra.
      */
-    public static Publication getReferenceFor(String authors, String title, int year, PDatabase pdb) {
+    public static synchronized Publication getReferenceFor(String authors, String title, int year, PDatabase pdb) {
         Query q = Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors=:au AND p.title=:ti AND p.year=" + year + " AND p.pdatabase.name=:pdbn");
         q.setParameter("au", authors);
         q.setParameter("ti", title);
         q.setParameter("pdbn", pdb.getName());
-        List<Publication> pl = q.getResultList();//Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors=\"" + authors + "\" AND p.title=\"" + title + "\" AND p.year=" + year + " AND p.pdatabase.name=\"" + pdb.getName() + "\"").getResultList();
+        List<Publication> pl = q.getResultList();
         if (pl.isEmpty()) {
-            return new Publication(authors, title, year, pdb);
+            Publication p = new Publication(authors, title, year, pdb);
+            store(p); // eltároljuk, hogy kapjunk ID-t
+            return p;
         } else {
             return pl.get(0);
         }
@@ -76,9 +89,11 @@ public class Publication implements Serializable {
     }
 
     public void addCitedBy(Publication p) {
-        /*if (citedBy.indexOf(p) == -1) {
-            citedBy.add(p);
-        }*/
+        /*
+         * if (citedBy.indexOf(p) == -1) {
+         * citedBy.add(p);
+         * }
+         */
         citedBy.add(p);
     }
 

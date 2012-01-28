@@ -1,12 +1,9 @@
 package pubsearch.crawl;
 
 import com.sun.glass.ui.Application;
-import java.util.ArrayList;
 import java.util.List;
 import pubsearch.StringTools;
-import pubsearch.data.Connection;
 import pubsearch.data.PDatabase;
-import pubsearch.data.Publication;
 import pubsearch.gui.tab.MainTab;
 
 /**
@@ -74,24 +71,11 @@ public class Crawler extends ACrawler {
         /*
          * Get results
          */
-        List<Publication> pubs = new ArrayList<Publication>();
         for (ACrawler c : crawlers) {
             bytes += c.getBytes();
             ResultListCrawler rlc = (ResultListCrawler) c;
-            pubs.addAll(rlc.getPublications());
         }
 
-        /*
-         * Store results
-         */
-        for (Publication p : pubs) {
-            Connection.getEm().getTransaction().begin();
-            Connection.getEm().persist(p);
-            try {
-                Connection.getEm().getTransaction().commit();
-            } catch (Exception e) {
-            }
-        }
         notifyCaller();
     }
 

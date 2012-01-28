@@ -28,14 +28,6 @@ public class Connection {
         return em;
     }
 
-    public static synchronized boolean getTransactionIsAliveSync() {
-        return em.getTransaction().isActive();
-    }
-
-    public static synchronized EntityTransaction getTransactionSync() {
-        return em.getTransaction();
-    }
-
     public static int getLastError() {
         return lastError;
     }

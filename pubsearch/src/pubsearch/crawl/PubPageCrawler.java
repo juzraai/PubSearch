@@ -1,13 +1,8 @@
 package pubsearch.crawl;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.EntityTransaction;
 import pubsearch.StringTools;
-import pubsearch.data.Connection;
 import pubsearch.data.PDatabase;
 import pubsearch.data.Publication;
 
@@ -131,8 +126,6 @@ public class PubPageCrawler extends ACrawler {
                             rlc.crawl();
                             bytes += rlc.getBytes();
                             citedBy.addAll(rlc.getPublications());
-                        } else {
-                            System.out.println("no citedby link");
                         }
                     } else if (null != pdb.getRefPubListBlockPattern()) {
                         // ha van link, letölti a html-t, azt elemzi tovább
@@ -155,6 +148,7 @@ public class PubPageCrawler extends ACrawler {
                     publication.setBibtex(bibtex);
                     publication.setUrl(url);
                     publication.getCitedBy().addAll(citedBy);
+                    Publication.store(publication);
                 } else {
                     System.err.println("Invalid pubpage or download error: " + url);
                 }

@@ -1,8 +1,5 @@
 package pubsearch.crawl;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,7 +45,7 @@ public class ResultListCrawler extends ACrawler {
     protected void crawl() {
         crawlers.clear();
         publications.clear();
-        Set<String> alreadyCrawling = new HashSet<String>();
+        Set<String> alreadyCrawled = new HashSet<String>(); // találati listán belüli duplikátokra (pl. liinwww page1=page2)
         int startIndex = pdb.getFirstIndex();
         int resultsPerPage = pdb.getResultsPerPage();
         int resultPageNo = 0;
@@ -83,15 +80,17 @@ public class ResultListCrawler extends ACrawler {
                  */
                 List<String> current = extractURLs(html);
                 for (String u : current) {
-                    if (!alreadyCrawling.contains(u)) {
-                        alreadyCrawling.add(u);
+                    if (!alreadyCrawled.contains(u)) {
+                        alreadyCrawled.add(u);
                         newResultCount++;
 
                         PubPageCrawler ppc = new PubPageCrawler(pdb, u, transLev);
                         crawlers.add((ACrawler) ppc);
                         ppc.start();
                         //ppc.crawl();
-                    }
+                        //XXX (multi-single threaded switch)
+                    } else
+                        System.err.println("ALREADY CRAWLED: " + u);
                 }
 
                 System.out.println(StringTools.rpad(pdb.getName(), 20, ' ') + "+" + newResultCount);
