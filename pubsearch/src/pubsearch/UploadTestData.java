@@ -56,7 +56,7 @@ public class UploadTestData {
          * db3.setPubPageLinkPattern("<td class=\"biblinks\".*?\"/(.*?bibshow.*?)\"");
          * db3.setFirstIndex(1);
          * db3.setResultsPerPage(100);
-         * Connection.getEm().getTransaction().begin();
+         * Connection.getEm().getTransactionSync().begin();
          * PDatabase p = Connection.getEm().find(PDatabase.class, db3.getName());
          * if (null == p) {
          * System.out.println("persist");
@@ -67,7 +67,7 @@ public class UploadTestData {
          * p.setBaseUrl("-NEW-0");
          *
          * }
-         * Connection.getEm().getTransaction().commit();
+         * Connection.getEm().getTransactionSync().commit();
          */
 
         ///System.out.println(db3.getId());

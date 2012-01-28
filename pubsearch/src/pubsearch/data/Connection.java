@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import pubsearch.Config;
 
@@ -23,8 +24,16 @@ public class Connection {
     public static final int SQL_ERROR = 1;
     public static final int JPA_ERROR = 2;
 
-    public static synchronized EntityManager getEm() { // TODO TESZTELNI, HOGY "synchronized" tényleg megoldja-e a gondot!!!
+    public static synchronized EntityManager getEm() {
         return em;
+    }
+
+    public static synchronized boolean getTransactionIsAliveSync() {
+        return em.getTransaction().isActive();
+    }
+
+    public static synchronized EntityTransaction getTransactionSync() {
+        return em.getTransaction();
     }
 
     public static int getLastError() {
@@ -74,7 +83,7 @@ public class Connection {
         props.put("javax.persistence.jdbc.url", "jdbc:mysql://" + Config.getJdbcUrl() + "/pubsearch");
         props.put("javax.persistence.jdbc.user", Config.getJdbcUser());
         props.put("javax.persistence.jdbc.password", Config.getJdbcPass());
-        props.put("eclipselink.logging.level", "OFF");
+        //props.put("eclipselink.logging.level", "OFF");
         emf = Persistence.createEntityManagerFactory("pubsearch", props);
         em = emf.createEntityManager();
         System.out.println("JPA CONNECTION BUILT.");

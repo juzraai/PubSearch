@@ -1,9 +1,9 @@
 name				liinwww.ira.uka.de
 baseurl				http://liinwww.ira.uka.de/
 submiturl			csbib
-submitparamsformat		maxnum=100&query=+au:"%s"
-submitparamswithtitleformat	%s+ti:"%s"
-pubpagelinkpattern		<td class="biblinks".*?"/(.*?bibshow.*?)"
+submitparamsformat		maxnum=100&query=%2bau:"%s"
+submitparamswithtitleformat	%s%2bti:"%s"
+pubpagelinkpattern		biblinks.*?"/(.*?bibshow.*?)"
 resultsperpage			100
 firstindex			1
 bibtexpattern			<pre class="bibtex">(.*?)</pre>

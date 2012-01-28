@@ -20,6 +20,7 @@ public class GetProxyList {
     }
 
     public static List<String> getProxyList() {
+        System.out.println("Downloading proxy list...");
         String url = "http://www.ip-adress.com/proxy_list/?k=time&d=desc";
         HTTPRequest r = new HTTPRequest(url);
         if (r.submit()) {

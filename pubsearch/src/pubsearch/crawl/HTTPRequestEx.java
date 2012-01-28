@@ -1,6 +1,7 @@
 package pubsearch.crawl;
 
 import pubsearch.Config;
+import pubsearch.StringTools;
 
 /**
  * HTTPRequest osztály kiegészítése a program követelményeihez.
@@ -23,6 +24,11 @@ public class HTTPRequestEx extends HTTPRequest {
         super(url);
     }
 
+    @Override
+    public boolean submit() {
+        return submit(5); // 5 retries
+    }
+
     public boolean submit(int tries) {
         boolean success;
         do {
@@ -32,7 +38,7 @@ public class HTTPRequestEx extends HTTPRequest {
             success = super.submit();
 
             if (!success) {
-                if (error.matches(".*Circular.*")) {
+                if (null != StringTools.findFirstMatch(error, "Circular", 0)) {
                     // ACM fix: ha nincs találat, akkor circular redirect-be megy,
                     // ez nem a proxy hibája, ezért ezesetben nem töröljük.
                     System.err.println("Circular redirect detected.");

@@ -30,7 +30,7 @@ public class Pubsearch extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-
+        
         Config.loadMySQLConfig();
         Config.loadProxyList();
 

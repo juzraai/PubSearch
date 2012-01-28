@@ -139,4 +139,19 @@ public class StringTools {
         }
         return s;
     }
+
+    /**
+     * Jobbról kiegészít egy szöveget a megadott hosszúságúra, a megadott karakterrel.
+     * Ha a szöveg hosszabb, akkor nem módosít rajta.
+     * @param s A kiindulási szöveg.
+     * @param n A célhossz.
+     * @param c A kitöltő karakter.
+     * @return A kiegészített szöveg.
+     */
+    public static String rpad(String s, int n, char c) {
+        while (s.length() < n) {
+            s += c;
+        }
+        return s;
+    }
 }

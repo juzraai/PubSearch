@@ -51,12 +51,15 @@ public class Config {
     }
 
     public static void setProxyList(String[] proxies) {
-        List<String> proxyList = new ArrayList<String>();
-        Collections.addAll(proxyList, proxies);
-        setProxyList(proxyList); // meghívjuk a List-es verziót, az kiszűri a duplikátokat
+        List<String> pl = new ArrayList<String>();
+        Collections.addAll(pl, proxies);
+        setProxyList(pl); // meghívjuk a List-es verziót, az kiszűri a duplikátokat
     }
 
-    public static String getRandomProxy() {
+    public static synchronized String getRandomProxy() {
+        if (proxyList.isEmpty()) {
+            setProxyList(GetProxyList.getProxyList());
+        }
         return proxyList.get((int) (Math.random() * proxyList.size()));
     }
 
@@ -112,7 +115,7 @@ public class Config {
             w.newLine();
         } catch (IOException e) {
         } finally {
-            if (w != null) {
+            if (null != w) {
                 try {
                     w.close();
                 } catch (IOException e) {
@@ -160,7 +163,7 @@ public class Config {
             }
         } catch (IOException e) {
         } finally {
-            if (w != null) {
+            if (null != w) {
                 try {
                     w.close();
                 } catch (IOException e) {

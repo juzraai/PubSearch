@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,7 +43,7 @@ public class PubTab extends Tab {
         /*
          * Details
          */
-        Label authorsLabel1 = new Label(texts.getString("authorLabel"));
+        Label authorsLabel1 = new Label(texts.getString("authorsLabel"));
         Label titleLabel1 = new Label(texts.getString("titleLabel"));
         Label yearLabel1 = new Label(texts.getString("yearLabel"));
         Label dbLabel1 = new Label(texts.getString("databaseLabel"));
@@ -57,7 +58,7 @@ public class PubTab extends Tab {
         titleLabel2.setWrapText(true);
 
         Integer y = p.getYear();
-        String ys = (null == y) ? texts.getString("unknownYear") : y.toString();
+        String ys = (null == y || -1 == y) ? texts.getString("unknownYear") : y.toString();
         Label yearLabel2 = new Label(ys);
 
         Label dbLabel2 = new Label(p.getDbName());
@@ -160,7 +161,7 @@ public class PubTab extends Tab {
         /*
          * Cites tab
          */
-        ObservableList<Publication> cites = FXCollections.observableArrayList(p.getCitedBy());
+        ObservableList<Publication> cites = FXCollections.observableArrayList(new ArrayList<Publication>(p.getCitedBy()));
         if (cites.size() > 0) {
             PubTable citesView = new PubTable(mainWindow);
             citesView.setItems(cites);

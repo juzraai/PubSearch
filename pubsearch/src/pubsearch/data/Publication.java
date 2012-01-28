@@ -5,8 +5,9 @@
 package pubsearch.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 
 /**
@@ -25,7 +26,7 @@ public class Publication implements Serializable {
     private String url = "";
     private Integer year = 1;
     private PDatabase pdatabase;
-    private List<Publication> citedBy = new ArrayList<Publication>();
+    private Set<Publication> citedBy = new HashSet<Publication>();
 
     protected Publication() {
     }
@@ -50,7 +51,11 @@ public class Publication implements Serializable {
      * @return Referencia a Publication objektumra.
      */
     public static Publication getReferenceFor(String authors, String title, int year, PDatabase pdb) {
-        List<Publication> pl = Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors=\"" + authors + "\" AND p.title=\"" + title + "\" AND p.year=" + year + " AND p.pdatabase.name=\"" + pdb.getName() + "\"").getResultList();
+        Query q = Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors=:au AND p.title=:ti AND p.year=" + year + " AND p.pdatabase.name=:pdbn");
+        q.setParameter("au", authors);
+        q.setParameter("ti", title);
+        q.setParameter("pdbn", pdb.getName());
+        List<Publication> pl = q.getResultList();//Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors=\"" + authors + "\" AND p.title=\"" + title + "\" AND p.year=" + year + " AND p.pdatabase.name=\"" + pdb.getName() + "\"").getResultList();
         if (pl.isEmpty()) {
             return new Publication(authors, title, year, pdb);
         } else {
@@ -71,9 +76,10 @@ public class Publication implements Serializable {
     }
 
     public void addCitedBy(Publication p) {
-        if (citedBy.indexOf(p) == -1) {
+        /*if (citedBy.indexOf(p) == -1) {
             citedBy.add(p);
-        }
+        }*/
+        citedBy.add(p);
     }
 
     @Transient
@@ -123,11 +129,11 @@ public class Publication implements Serializable {
     @JoinTable(name = "Citing", joinColumns =
     @JoinColumn(name = "PubID"), inverseJoinColumns =
     @JoinColumn(name = "CitedByPubID"))
-    public List<Publication> getCitedBy() {
+    public Set<Publication> getCitedBy() {
         return citedBy;
     }
 
-    public void setCitedBy(List<Publication> citedBy) {
+    public void setCitedBy(Set<Publication> citedBy) {
         this.citedBy = citedBy;
     }
 

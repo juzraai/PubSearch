@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -86,7 +87,8 @@ public class MainTab extends Tab {
         titleField.setDisable(true);
         titleField.setTooltip(new Tooltip(texts.getString("titleFieldTooltip")));
 
-        transLevCombo.getSelectionModel().selectFirst();
+        //transLevCombo.getSelectionModel().selectFirst();
+        transLevCombo.getSelectionModel().select(1); // TODO
 
         onlyLocalCheckBox.setStyle("-fx-text-fill: #AFA");
         onlyLocalCheckBox.setOnAction(new EventHandler<ActionEvent>() {
@@ -187,6 +189,7 @@ public class MainTab extends Tab {
         searchLayout = new BorderPane();
         searchLayout.setCenter(progressBar);
         searchLayout.setBottom(abortButton);
+        searchLayout.setCursor(Cursor.WAIT);
         BorderPane.setAlignment(abortButton, Pos.CENTER);
         BorderPane.setMargin(abortButton, new Insets(10));
 
@@ -240,6 +243,7 @@ public class MainTab extends Tab {
                     au = p;
                 }
             }
+            resultsView.getSelectionModel().clearSelection(); //TODO teszt, megoldja-e az xception áradatot...
             resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(au, titleField.getText())));
         } catch (Throwable t) {
             AlertWindow.show(texts.getString("errorWhileQueryingResults"));

@@ -3,6 +3,6 @@ baseurl				http://citeseerx.ist.psu.edu/
 submiturl			search
 submitparamsformat		sort=cite&t=doc&q=author:"%s"
 submitparamswithtitleformat	%s+AND+title:"%s"
-pubpagelinkpattern		href="/(viewdoc/summary.*?)"
+pubpagelinkpattern		<h3>.*?href="/(viewdoc/summary.*?\?doi=.*?)".*?</h3>
 bibtexpattern			<p>(@(.*?))</p>
 refpublistpagelinkpattern	Citations:.*?href="/(.*?)"

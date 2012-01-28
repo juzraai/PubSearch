@@ -1,13 +1,14 @@
 package pubsearch.crawl;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import pubsearch.StringTools;
 
 /**
  * HTTP kérést végrehajtó osztály. Használható egy oldal letöltésére, GET/POST
@@ -23,8 +24,11 @@ public class HTTPRequest {
     private String method;
     private String proxyIP;
     private int proxyPort;
+    //inside
+    private static HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
     // out
     private String html;
+    private long bytes;
     protected String error;
 
     public HTTPRequest(String url) {
@@ -40,7 +44,7 @@ public class HTTPRequest {
         this.queryString = (null != queryString) ? queryString : "";
         this.method = (null != method && method.toUpperCase().equals("POST")) ? "POST" : "GET";
 
-        this.queryString = this.queryString.replaceAll(" ", "%20").replaceAll("\"", "%22").replaceAll("\\+", "%2b");
+        this.queryString = this.queryString.replaceAll(" ", "%20").replaceAll("\"", "%22");//.replaceAll("\\+", "%2b");
     }
 
     /**
@@ -74,9 +78,8 @@ public class HTTPRequest {
 
     public boolean submit() {
         boolean success = false;
-        error = null;
+        error = "";
 
-        HttpClient client = new HttpClient();
         if (null != proxyIP) {
             client.getHostConfiguration().setProxy(proxyIP, proxyPort);
         }
@@ -89,6 +92,8 @@ public class HTTPRequest {
                 throw new Exception("Method failed: " + methodModel.getStatusLine());
             }
 
+            // TODO should detect if content-length header is present or not - if not, throw new Exception("Unknown content length.")
+
             InputStream instream = methodModel.getResponseBodyAsStream();
             StringBuilder sb = new StringBuilder();
             byte[] buffer = new byte[4096];
@@ -98,6 +103,20 @@ public class HTTPRequest {
                 sb.append(s);
             }
             html = sb.toString();
+            bytes += html.length();
+
+            if (null == StringTools.findFirstMatch(html, "<.*?>", 0)) { // a bit buggy detection :-)
+                System.err.println("not a HTML");
+                // <debug html output>
+                try {
+                    BufferedWriter w = new BufferedWriter(new FileWriter(System.currentTimeMillis() + ".html"));
+                    w.write(html);
+                    w.close();
+                } catch (IOException e) {
+                }
+                // </debug html output>
+                throw new Exception("Not a HTML file.");
+            }
 
             success = true;
             /*
@@ -115,6 +134,10 @@ public class HTTPRequest {
         }
     }
 
+    public long getBytes() {
+        return bytes;
+    }
+
     public String getHtml() {
         return html;
     }
@@ -124,7 +147,11 @@ public class HTTPRequest {
         if (method.equals("GET")) {
             String u = url;
             if (0 < queryString.length()) {
-                u = url + "?" + queryString;
+                if (url.contains("?")) {
+                    u = url + "&" + queryString;
+                } else {
+                    u = url + "?" + queryString;
+                }
             }
             m = new GetMethod(u);
         } else {
@@ -138,9 +165,10 @@ public class HTTPRequest {
                 }
             }
         }
+
         m.getParams().setParameter(HttpMethodParams.USER_AGENT, "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
         m.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0, false));
-        m.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 15 * 1000);
+        m.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 10 * 1000);
         return m;
     }
 }
