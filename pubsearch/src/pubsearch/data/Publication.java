@@ -46,7 +46,11 @@ public class Publication implements Serializable {
     public static synchronized void store(Publication p) {
         Connection.getEm().getTransaction().begin();
         Connection.getEm().persist(p);
-        Connection.getEm().getTransaction().commit();
+        try {
+            Connection.getEm().getTransaction().commit();
+        } catch (Exception e) {
+            System.err.println("Exception on commit.");
+        }
     }
 
     /**

@@ -10,9 +10,9 @@ startfield			o
 authorspattern			<p class="authors">(.*?)</p>
 titlepattern			<div class="text">.*?<h1.*?>(.*?)</h1>
 yearpattern			(?:<div class="secondary">.*?, |<dt>Copyright Year.*?)([0-9]{4})
-refpublistpagelinkpattern	<a href="/(.*?)".*?Cited by
+refpublistpagelinkpattern	<li><a href="/(content/.{16}/referrers/)"
 refpublistblockpattern		<ol class="citations">(.*?)</ol>
-refpubblockpattern		<li>(.*?)</li>
+refpubblockpattern		<li>(.*?)(?:<ul>.*?</ul>)?</li>
 refpubauthorspattern		^(.*?)\(
 refpubtitlepattern		\([0-9]{4}\)(.*?)\.
 refpubyearpattern		\(([0-9]{4})\)

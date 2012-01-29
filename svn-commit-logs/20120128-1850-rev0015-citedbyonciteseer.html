@@ -1,0 +1,376 @@
+<html>
+<head>Log</head>
+<body>
+<ul>
+<li>
+			r<b>15</b>
+			(2012-01-28 17:46:55)
+			by <b>juzraai</b>: Picit tisztogattam, CiteSeerX-en működik a citedBy lista, rekurzívan is. Szép gyors. :) A fagyás dolog még mindig megvan, viszont ütemezőhöz teljesen át kéne strukturálni az egészet, egyelőre ezzel nem foglalkozom, folytatom a citedBy lista kinyerését a többi oldalon.<ul>
+<li>/pubsearch/src/pubsearch/crawl/Crawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/PubPageCrawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/ResultListCrawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Connection.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Publication.java (<i>modified</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>14</b>
+			(2012-01-28 16:01:19)
+			by <b>juzraai</b>: Multithreading: resultlist-ek és pubpage-ek is párhuzamosan, ez szépen működik. Elkezdtem a citedBy feldolgozást, a CiteSeer típusú oldalakhoz már megírtam, viszont gond: sok szálnál elkezdi nagyon belassítani a progit - lehet, hogy valami ütemező kellene...<ul>
+<li>/algo3multith.txt (<i>added</i>)</li>
+<li>/pubsearch/conf/acm.pdb (<i>modified</i>)</li>
+<li>/pubsearch/conf/citeseerx.pdb (<i>modified</i>)</li>
+<li>/pubsearch/conf/liinwww.pdb (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/Config.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/GetProxyList.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/Pubsearch.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/StringTools.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/UploadTestData.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/ACrawler.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/Crawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/HTTPRequest.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/HTTPRequestEx.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/PubPageCrawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/ResultListCrawler.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Connection.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Publication.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/MainTab.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/PubTab.java (<i>modified</i>)</li>
+<li>/svn-commit-logs/20120123-1236-rev0011-pubdata.html (<i>added</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>13</b>
+			(2012-01-25 14:42:35)
+			by <b>juzraai</b>: Folytattam az i18n-t, már csak 2 ablak van hátra. Ezen kívül megoldottam a pubpage-ek párhuzamos feldolgozását, jelentős sebességnövekedést értem el. :D Hátra van: ezt továbbfejleszteni, hogy az adatbázisokat is párhuzamosan járja be, illetve a citedBy bejárás.<ul>
+<li>/pubsearch/conf/acm.pdb (<i>modified</i>)</li>
+<li>/pubsearch/conf/citeseerx.pdb (<i>modified</i>)</li>
+<li>/pubsearch/conf/liinwww.pdb (<i>modified</i>)</li>
+<li>/pubsearch/conf/metapress.pdb (<i>modified</i>)</li>
+<li>/pubsearch/conf/proxy.lst (<i>modified</i>)</li>
+<li>/pubsearch/conf/springer.pdb (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/Pubsearch.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/Crawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/PubPageCrawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/ResultListPage.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Connection.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Publication.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/control/PubTable.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/MainTab.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/PubTab.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/texts/texts.properties (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/texts/texts_hu_HU.properties (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/AWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/AlertWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/MainWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/ProxyWindow.java (<i>modified</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>12</b>
+			(2012-01-23 17:19:40)
+			by <b>juzraai</b>: Megpróbálom kitörölni a config mappát...<ul>
+<li>/pubsearch/src/pubsearch/config/ (<i>deleted</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>11</b>
+			(2012-01-23 11:27:12)
+			by <b>juzraai</b>: Volt egy bug az ACM result list-tel, megoldottam, a liinwww még furcsa, azt még ki kell vizsgálni. MŰKÖDIK: a publikációk adatainak (authors, title, year, bibtex) kinyerése, adatbázisba feltöltése! (A liinwww kivételével mindegyik (4db) adatbázis tesztelve.) :-D<ul>
+<li>/pubsearch/conf/metapress.pdb (<i>modified</i>)</li>
+<li>/pubsearch/conf/springer.pdb (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/Config.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/StringTools.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/Crawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/HTTPRequest.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/HTTPRequestEx.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/PubPage.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/PubPageCrawler.java (<i>copied from /pubsearch/src/pubsearch/crawl/PubPage.java@10</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Importer.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/PDatabase.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/MainTab.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/PubTab.java (<i>modified</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>10</b>
+			(2012-01-22 13:59:53)
+			by <b>juzraai</b>: Átálltam 1cikk=1adatbázisbanelőfordulás szemléletre, elkezdtem az i18n-t, és a találati linkek lekérése már működik 5 site-on: CiteSeerX, ACM, liinwww.ira.uka.de, SpringerLink, MetaPress. Ezen kívül pedig picit átszerveztem a konfig fájlokat, és már működik az adatbázisok adatainak beimportálása fájlból.<ul>
+<li>/pubsearch/conf/ (<i>added</i>)</li>
+<li>/pubsearch/conf/acm.pdb (<i>added</i>)</li>
+<li>/pubsearch/conf/citeseerx.pdb (<i>added</i>)</li>
+<li>/pubsearch/conf/liinwww.pdb (<i>added</i>)</li>
+<li>/pubsearch/conf/metapress.pdb (<i>added</i>)</li>
+<li>/pubsearch/conf/mysql.cfg (<i>added</i>)</li>
+<li>/pubsearch/conf/proxy.lst (<i>added</i>)</li>
+<li>/pubsearch/conf/springer.pdb (<i>added</i>)</li>
+<li>/pubsearch/src/META-INF/persistence.xml (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/Config.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/GetProxyList.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/Pubsearch.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/UploadTestData.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/Crawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/HTTPRequest.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/PubPage.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/Request.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Connection.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Importer.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Link.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/data/PDatabase.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Publication.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/control/PubTable.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/MainTab.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/PubTab.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/texts/ (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/texts/texts.properties (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/texts/texts_hu_HU.properties (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/AboutWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/ConfigWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/MainWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/ProxyWindow.java (<i>modified</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>9</b>
+			(2012-01-20 09:16:37)
+			by <b>juzraai</b>: Kidolgoztam az update módszert az entitásokhoz. Itt még 1 cikk ~ N link modell van. A következőkben áttérek 1 cikk ~ 1 link modellre, és redundáns tárolásra. :S<ul>
+<li>/!oldcodes.txt (<i>modified</i>)</li>
+<li>/algo.txt (<i>modified</i>)</li>
+<li>/algo2.txt (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/Pubsearch.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/UploadTestData.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/Crawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/BaseEntity.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Link.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/PDatabase.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Publication.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/PubTab.java (<i>modified</i>)</li>
+<li>/svn-commit-logs/20120119-1124-rev0008-resultlinks.html (<i>added</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>8</b>
+			(2012-01-19 10:14:48)
+			by <b>juzraai</b>: Találati linkek lekérése már működik (új módszerrel), elkezdtem egy storeWithUpdate mechanizmus megírását a Publication-höz, de még át kell gondolni az update mikéntjét.<ul>
+<li>/pubsearch/src/pubsearch/Config.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/Pubsearch.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/StringTools.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/UploadTestData.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/Crawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/HTTPRequest.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/HTTPRequestEx.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/PubPage.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/ResultListPage.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/BaseEntity.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Link.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/PDatabase.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Publication.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/control/LabelEx.java (<i>copied from /pubsearch/src/pubsearch/gui/control/MyLabel.java@6</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/control/MyLabel.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/MainTab.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/PubTab.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/AlertWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/ConfigWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/ProxyWindow.java (<i>modified</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>7</b>
+			(2012-01-17 10:27:14)
+			by <b>juzraai</b>: Entity kapcsolatok immáron JPA annotációkkal megoldva, engine alakulgat, találati linkek lekérdezésén dolgozom, hibakezelés kéne bele, illetve újra kell analizálni az oldalakat és átdolgozni az algoritmust, mert a nextpage linkek nem működnek (az első oldalt adják vissza...talán cookie/session infó hiányában).<ul>
+<li>/pubsearch/nbproject/project.properties (<i>modified</i>)</li>
+<li>/pubsearch/src/META-INF/persistence.xml (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/Pubsearch.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/StringTools.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/UploadTestData.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/Crawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/HTTPRequest.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/PubPage.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/ResultListPage.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/BaseEntity.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Cite.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Connection.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Link.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/PDatabase.java (<i>copied from /pubsearch/src/pubsearch/data/PubDb.java@6</i>)</li>
+<li>/pubsearch/src/pubsearch/data/PubDb.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Publication.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/control/PubTable.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/MainTab.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/PubTab.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/AboutWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/AlertWindow.java (<i>modified</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>6</b>
+			(2012-01-13 17:08:37)
+			by <b>juzraai</b>: GUI átépítve: MainWindow és PubWindow összegyúrva; valamint átálltam angol nyelvre.<ul>
+<li>/algo.txt (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/Config.java (<i>copied from /pubsearch/src/pubsearch/config/ConfigModel.java@5</i>)</li>
+<li>/pubsearch/src/pubsearch/Pubsearch.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/StringTools.java (<i>copied from /pubsearch/src/pubsearch/Tools.java@5</i>)</li>
+<li>/pubsearch/src/pubsearch/Tools.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/Crawler.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/Request.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/ResultListPage.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Cite.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Connection.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/PubDb.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Publication.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/AWindow.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/AboutWindow.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/AlertWindow.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/ConfigWindow.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/GuiTools.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/MainWindow.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/MyLabel.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/ProxyWindow.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/PubTable.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/PubWindow.java (<i>deleted</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/control/ (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/control/MyLabel.java (<i>copied from /pubsearch/src/pubsearch/gui/MyLabel.java@5</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/control/PubTable.java (<i>copied from /pubsearch/src/pubsearch/gui/PubTable.java@5</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/style.css (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/ (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/MainTab.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/tab/PubTab.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/ (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/AWindow.java (<i>copied from /pubsearch/src/pubsearch/gui/AWindow.java@5</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/AboutWindow.java (<i>copied from /pubsearch/src/pubsearch/gui/AboutWindow.java@5</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/AlertWindow.java (<i>copied from /pubsearch/src/pubsearch/gui/AlertWindow.java@5</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/ConfigWindow.java (<i>copied from /pubsearch/src/pubsearch/gui/ConfigWindow.java@5</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/MainWindow.java (<i>copied from /pubsearch/src/pubsearch/gui/MainWindow.java@5</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/window/ProxyWindow.java (<i>copied from /pubsearch/src/pubsearch/gui/ProxyWindow.java@5</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>5</b>
+			(2012-01-12 10:08:11)
+			by <b>juzraai</b>: GUI teljesen kész, működik. Megoldottam egy "keresés folyamatban" szerű dolgot is kifagyás nélkül. A motor van hátra csak.<ul>
+<li>/pubsearch/src/pubsearch/Pubsearch.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/Tools.java (<i>copied from /pubsearch/src/pubsearch/gui/Tools.java@4</i>)</li>
+<li>/pubsearch/src/pubsearch/config/ConfigModel.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/ (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/Crawler.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/Request.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/crawl/ResultListPage.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Cite.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/PubDb.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Publication.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/AWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/AboutWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/AlertWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/ConfigWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/MainWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/MyLabel.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/ProxyWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/PubTable.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/PubWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/Tools.java (<i>deleted</i>)</li>
+<li>/svn-commit-logs/20120110-1720-rev0004-pubwin.html (<i>added</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>4</b>
+			(2012-01-10 16:15:57)
+			by <b>juzraai</b>: Befejeztem a PubWindow-t, minden funkciója működik. Elkezdtem egy AboutWindow-t. Persistence osztályok nagyjából készek, bár a PubDb módosulhat még az analízis során.<ul>
+<li>/algo.txt (<i>modified</i>)</li>
+<li>/pubsearch/src/META-INF/persistence.xml (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/Pubsearch.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/config/ConfigModel.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Cite.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Connection.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Link.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/PubDb.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Publication.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/AboutWindow.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/AlertWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/MainWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/PubTable.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/PubWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/Tools.java (<i>modified</i>)</li>
+<li>/screenshot001.png (<i>modified</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>3</b>
+			(2012-01-08 14:32:45)
+			by <b>juzraai</b>: Config fájl I/O megvan, csináltam egy elegáns AlertWindow-t és kiemeltem egy absztrakt ablak osztályt.<ul>
+<li>/pubsearch/src/pubsearch/Pubsearch.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/config/ConfigModel.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/AWindow.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/AlertWindow.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/ConfigWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/MainWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/ProxyWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/PubWindow.java (<i>modified</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>2</b>
+			(2012-01-08 10:04:07)
+			by <b>juzraai</b>: Proxylista ablak kész, Config ablak bugmentesítve, alakul a PubDb entity (közben vizsgálom a pubdb-ket).<ul>
+<li>/!oldcodes.txt (<i>added</i>)</li>
+<li>/algo.txt (<i>added</i>)</li>
+<li>/gui_terv.vsd (<i>added</i>)</li>
+<li>/proxy-list.txt (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/Pubsearch.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/config/ (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/config/ConfigModel.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/data/BaseEntity.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Connection.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Link.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/PubDb.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Publication.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/ConfigWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/MainWindow.java (<i>modified</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/ProxyWindow.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/PubWindow.java (<i>modified</i>)</li>
+<li>/screenshot001.png (<i>added</i>)</li>
+<li>/svn-commit-logs/20120106-2230-rev0001-move-in.html (<i>added</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>1</b>
+			(2012-01-06 21:20:38)
+			by <b>juzraai</b>: Mivel a régi tárhelynek még csak kezdetleges neve volt ("jzs-szakdoli"), létrehoztam egy új tárhelyet ("pubsearch"), és most ide feltöltöm, hol tartok. Az előző tárhelyen a 7. revíziónál. Az ott készített utolsó commit logot is most feltöltöm.<ul>
+<li>/pubsearch/ (<i>added</i>)</li>
+<li>/pubsearch/nbproject/ (<i>added</i>)</li>
+<li>/pubsearch/nbproject/build-impl.xml (<i>added</i>)</li>
+<li>/pubsearch/nbproject/genfiles.properties (<i>added</i>)</li>
+<li>/pubsearch/nbproject/jfx-impl-callbacks.xmlinc (<i>added</i>)</li>
+<li>/pubsearch/nbproject/jfx-impl-parameters.xmlinc (<i>added</i>)</li>
+<li>/pubsearch/nbproject/jfx-impl-platform.xmlinc (<i>added</i>)</li>
+<li>/pubsearch/nbproject/jfx-impl.xml (<i>added</i>)</li>
+<li>/pubsearch/nbproject/private/ (<i>added</i>)</li>
+<li>/pubsearch/nbproject/private/private.properties (<i>added</i>)</li>
+<li>/pubsearch/nbproject/private/private.xml (<i>added</i>)</li>
+<li>/pubsearch/nbproject/project.properties (<i>added</i>)</li>
+<li>/pubsearch/nbproject/project.xml (<i>added</i>)</li>
+<li>/pubsearch/src/ (<i>added</i>)</li>
+<li>/pubsearch/src/META-INF/ (<i>added</i>)</li>
+<li>/pubsearch/src/META-INF/persistence.xml (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/ (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/Pubsearch.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/data/ (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Connection.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Link.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/data/PubDb.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/data/Publication.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/ (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/ConfigWindow.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/MainWindow.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/PubWindow.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/Tools.java (<i>added</i>)</li>
+<li>/pubsearch/src/pubsearch/gui/style.css (<i>added</i>)</li>
+<li>/svn-commit-logs/ (<i>added</i>)</li>
+<li>/svn-commit-logs/20120106-2146-rev0007-old-repo.html (<i>added</i>)</li>
+</ul>
+</li>
+<li>
+			r<b>0</b>
+			(2012-01-06 20:35:03)
+			by <b/>: &lt;No Message&gt;</li>
+</ul>
+</body>
+</html>

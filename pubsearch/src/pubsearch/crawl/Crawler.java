@@ -45,7 +45,7 @@ public class Crawler extends ACrawler {
          */
         List<PDatabase> pdbs = PDatabase.getAll();
         for (PDatabase pdb : pdbs) {
-            if (!pdb.getName().equals("CiteSeerX")) { //XXX just for testing
+            if (!pdb.getName().equals("MetaPress")) { //XXX just for testing
                 continue;
             }
 
@@ -73,7 +73,6 @@ public class Crawler extends ACrawler {
          */
         for (ACrawler c : crawlers) {
             bytes += c.getBytes();
-            ResultListCrawler rlc = (ResultListCrawler) c;
         }
 
         notifyCaller();

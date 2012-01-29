@@ -64,7 +64,7 @@ public class ResultListCrawler extends ACrawler {
              * Download result list page
              */
             String startModifier = String.format("&%s=%d", pdb.getStartField(), startIndex);
-            System.out.println(StringTools.rpad(pdb.getName(), 20, ' ') + "Result page #" + resultPageNo + " " + url + "?" + queryString + startModifier);
+            System.out.println(pdb.getName() + "\tResult page #" + resultPageNo + " " + url + "?" + queryString + startModifier);
             HTTPRequestEx req = new HTTPRequestEx(url, queryString + startModifier, method);
             if (req.submit()) {
 
@@ -78,7 +78,7 @@ public class ResultListCrawler extends ACrawler {
                 /*
                  * Start crawler threads
                  */
-                List<String> current = extractURLs(html);
+                List<String> current = new Parser(html, pdb).extractPubPageURLs();
                 for (String u : current) {
                     if (!alreadyCrawled.contains(u)) {
                         alreadyCrawled.add(u);
@@ -89,15 +89,14 @@ public class ResultListCrawler extends ACrawler {
                         ppc.start();
                         //ppc.crawl();
                         //XXX (multi-single threaded switch)
-                    } else
-                        System.err.println("ALREADY CRAWLED: " + u);
+                    }
                 }
 
-                System.out.println(StringTools.rpad(pdb.getName(), 20, ' ') + "+" + newResultCount);
+                System.out.println(pdb.getName() + "\t+" + newResultCount);
 
                 // <liinwww.ira.uka.de fix>
                 if (pdb.getBaseUrl().equals("http://liinwww.ira.uka.de/") && 0 < newResultCount) {
-                    System.out.println(StringTools.rpad(pdb.getName(), 20, ' ') + "Force page advance.");
+                    System.out.println(pdb.getName() + "\t" + "Force page advance.");
                     newResultCount = resultsPerPage;
                     /*
                      * Azért kell, mert a liinwww.ira.uka.de összevonja a linkeket, nem mindig pont rpp
@@ -115,7 +114,7 @@ public class ResultListCrawler extends ACrawler {
         /*
          * Wait for threads to finish
          */
-        waitForCrawlers(StringTools.rpad(pdb.getName(), 20, ' ') + "Interrupted.");
+        waitForCrawlers(pdb.getName() + "\tInterrupted.");
 
         /*
          * Get results
@@ -135,7 +134,7 @@ public class ResultListCrawler extends ACrawler {
      * @param html A feldolgozandó HTML.
      * @return A kinyert linkek listája.
      */
-    private List<String> extractURLs(String html) {
+    /*protected List<String> extractURLs(String html) {
         List<String> resultURLs = StringTools.findAllMatch(html, pdb.getPubPageLinkPattern(), 1);
         String modFormat = pdb.getPubPageLinkModFormat();
         for (int i = 0; i < resultURLs.size(); i++) {
@@ -153,5 +152,5 @@ public class ResultListCrawler extends ACrawler {
             resultURLs.set(i, u);
         }
         return resultURLs;
-    }
+    }*/
 }
