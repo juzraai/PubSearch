@@ -1,9 +1,7 @@
 package pubsearch.crawl;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -27,8 +25,8 @@ public class HTTPRequest {
     //inside
     private static HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
     // out
+    private static long bytes;
     private String html;
-    private long bytes;
     protected String error;
 
     public HTTPRequest(String url) {
@@ -43,8 +41,13 @@ public class HTTPRequest {
         this.url = (null != url) ? url : "";
         this.queryString = (null != queryString) ? queryString : "";
         this.method = (null != method && method.toUpperCase().equals("POST")) ? "POST" : "GET";
+        this.queryString = this.queryString.replaceAll(" ", "%20").replaceAll("\"", "%22");
 
-        this.queryString = this.queryString.replaceAll(" ", "%20").replaceAll("\"", "%22");//.replaceAll("\\+", "%2b");
+        if (this.url.contains("?")) {
+            String[] urlParts = this.url.split("\\?");
+            this.url = urlParts[0];
+            this.queryString = urlParts[1] + "&" + this.queryString;
+        }
     }
 
     /**
@@ -67,15 +70,20 @@ public class HTTPRequest {
         if (2 != p.length) {
             return;
         }
-        int port;
+        int port = 8080;
         try {
             port = Integer.parseInt(p[1]);
         } catch (NumberFormatException e) {
-            port = 8080;
         }
         setProxy(p[0], port);
     }
 
+    /**
+     * Elküldi a beállított kérést, majd letölti a válasz HTML oldalt. A méretét
+     * hozzáadja a statikus bájtszámlálóhoz. Ha a művelet nem volt sikeres, a
+     * hibaüzenetet eltárolja.
+     * @return Sikerült-e HTML oldalt visszakapni.
+     */
     public boolean submit() {
         boolean success = false;
         error = "";
@@ -86,86 +94,74 @@ public class HTTPRequest {
 
         HttpMethodBase methodModel = buildMethod();
         try {
-            int statusCode = client.executeMethod(methodModel);
-
-            if (statusCode != HttpStatus.SC_OK) {
+            if (client.executeMethod(methodModel) != HttpStatus.SC_OK) {
                 throw new Exception("Method failed: " + methodModel.getStatusLine());
             }
 
             // TODO should detect if content-length header is present or not - if not, throw new Exception("Unknown content length.")
-
             InputStream instream = methodModel.getResponseBodyAsStream();
-            StringBuilder sb = new StringBuilder();
             byte[] buffer = new byte[4096];
+            byte[] htmlBytes = new byte[0];
             int len;
             while ((len = instream.read(buffer)) > 0) {
-                String s = new String(buffer, 0, len);
-                sb.append(s);
+                byte[] b = new byte[htmlBytes.length + len];
+                System.arraycopy(htmlBytes, 0, b, 0, htmlBytes.length);
+                System.arraycopy(buffer, 0, b, htmlBytes.length, len);
+                htmlBytes = b;
             }
-            html = sb.toString();
-            bytes += html.length();
+            html = new String(htmlBytes, Charset.forName("UTF-8"));
+            bytes += htmlBytes.length;
 
             if (null == StringTools.findFirstMatch(html, "<.*?>", 0)) { // a bit buggy detection :-)
                 System.err.println("not a HTML");
-                // <debug html output>
-                try {
-                    BufferedWriter w = new BufferedWriter(new FileWriter(System.currentTimeMillis() + ".html"));
-                    w.write(html);
-                    w.close();
-                } catch (IOException e) {
-                }
-                // </debug html output>
                 throw new Exception("Not a HTML file.");
             }
 
             success = true;
-            /*
-             * } catch (HttpException e) {
-             * //System.err.println("Fatal protocol violation: " + e.getMessage());
-             * } catch (IOException e) {
-             * //System.err.println("Fatal transport error: " + e.getMessage() + " (" + url + ")");
-             */
         } catch (Exception e) {
             error = e.getMessage();
-            //System.err.println("HTTP Status failure");
         } finally {
             methodModel.releaseConnection();
             return success;
         }
     }
 
-    public long getBytes() {
+    /**
+     * Szinkronizáltan növeli a statikus bájtszámláló értékét.
+     * @param b Hozzáadandó érték.
+     */
+    private static synchronized void addBytes(long b) {
+        bytes += b;
+    }
+
+    /**
+     * @return A statikus bájtszámláló értéke.
+     */
+    public static long getBytes() {
         return bytes;
     }
 
+    /**
+     * Lenullázza a statikus bájtszámlálót.
+     */
+    public static void zeroBytes() {
+        bytes = 0;
+    }
+
+    /**
+     * @return A letöltött válasz HTML oldal.
+     */
     public String getHtml() {
         return html;
     }
 
-    private HttpMethodBase buildMethod() { // TODO TRY parse helyett setQueryString POSTMETHOD-nál is! :)
-        HttpMethodBase m;
-        if (method.equals("GET")) {
-            String u = url;
-            if (0 < queryString.length()) {
-                if (url.contains("?")) {
-                    u = url + "&" + queryString;
-                } else {
-                    u = url + "?" + queryString;
-                }
-            }
-            m = new GetMethod(u);
-        } else {
-            m = new PostMethod(url);
-
-            String[] params = queryString.split("&");
-            for (String param : params) {
-                String[] p = param.split("=", 2);
-                if (2 == p.length) {
-                    ((PostMethod) m).addParameter(p[0], p[1]);
-                }
-            }
-        }
-
+    /**
+     * A konstruktorban kapott paraméterek alapján felépíti a kérés modelljét.
+     * @return A kérés modellje.
+     */
+    private HttpMethodBase buildMethod() { //TODO try setQueryString with POST ! :)
+        HttpMethodBase m = (method.equals("POST")) ? new PostMethod(url) : new GetMethod(url);
+        m.setQueryString(queryString);
         m.getParams().setParameter(HttpMethodParams.USER_AGENT, "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
         m.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0, false));
         m.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 10 * 1000);

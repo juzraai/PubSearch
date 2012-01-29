@@ -12,9 +12,7 @@ import pubsearch.data.Publication;
  */
 public class UploadTestData {
 
-    public static void main(String[] args) {
-
-        Config.loadMySQLConfig();
+    public static void main(String[] args) {Config.loadMySQLConfig();
         Connection.tryInit();
         Importer.loadPDatabases();
 

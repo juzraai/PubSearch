@@ -1,7 +1,7 @@
 package pubsearch;
 
+import java.nio.charset.Charset;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.stage.Stage;
 import pubsearch.data.Connection;
 import pubsearch.gui.window.AlertWindow;
@@ -30,7 +30,7 @@ public class Pubsearch extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        
+
         Config.loadMySQLConfig();
         Config.loadProxyList();
 

@@ -24,11 +24,26 @@ public class HTTPRequestEx extends HTTPRequest {
         super(url);
     }
 
+    /**
+     * Elküldi a beállított kérést, majd letölti a válasz HTML oldalt és növeli
+     * a statikus bájtszámlálót. 5-ször újrapróbálkozik, mindig más, proxy-val,
+     * melyet véletlenszerűen választ a listából. Ha egy proxy-n keresztül nem
+     * sikerült csatlakozni, azt törli a listából.
+     * @return Sikerült-e HTML oldalt visszakapni.
+     */
     @Override
     public boolean submit() {
         return submit(5); // 5 retries
     }
 
+    /**
+     * Elküldi a beállított kérést, majd letölti a válasz HTML oldalt és növeli
+     * a statikus bájtszámlálót. Újrapróbálkozik, mindig más, proxy-val, melyet
+     * véletlenszerűen választ a listából. Ha egy proxy-n keresztül nem sikerült
+     * csatlakozni, azt törli a listából.
+     * @param tries Újrapróbálkozások száma.
+     * @return Sikerült-e HTML oldalt visszakapni.
+     */
     public boolean submit(int tries) {
         boolean success;
         do {

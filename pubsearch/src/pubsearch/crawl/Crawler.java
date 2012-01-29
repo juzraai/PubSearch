@@ -24,20 +24,19 @@ public class Crawler extends ACrawler {
         this.authorFilter = authorFilter;
         this.titleFilter = (titleFilter != null && titleFilter.trim().length() > 0) ? titleFilter : null;
         this.transLev = transLev;
-        setDaemon(true); // ha a főprogram leáll, akkor ez is :-)
         setName("Crawler");
     }
 
     @Override
     public void run() {
         super.run();
-        System.out.println("Crawler thread ended. time = " + StringTools.formatNanoTime(time, true, true) + ", bytes = " + bytes + " B (= " + StringTools.formatDataSize(bytes) + ")\n~~~\n");
+        System.out.println("Crawler thread ended. time = " + StringTools.formatNanoTime(time, true, true) + ", bytes = " + HTTPRequest.getBytes() + " B (= " + StringTools.formatDataSize(HTTPRequest.getBytes()) + ")\n~~~\n");
     }
 
     protected void crawl() {
         System.out.println("~~~\nCrawler thread started. (au:" + authorFilter + "; ti:" + titleFilter + ")");
 
-        bytes = 0;
+        HTTPRequest.zeroBytes();
         crawlers.clear();
 
         /*
@@ -45,14 +44,13 @@ public class Crawler extends ACrawler {
          */
         List<PDatabase> pdbs = PDatabase.getAll();
         for (PDatabase pdb : pdbs) {
-            if (!pdb.getName().equals("MetaPress")) { //XXX just for testing
+            if (!pdb.getName().equals("liinwww.ira.uka.de")) { //XXX just for testing
                 continue;
             }
 
             String url = pdb.getBaseUrl() + pdb.getSubmitUrl();
             String qs = pdb.getSubmitParamsFormat().replaceFirst("%s", authorFilter);
             if (null != titleFilter) {
-                //qs = String.format(pdb.getSubmitParamsWithTitleFormat(), qs, titleFilter);
                 qs = pdb.getSubmitParamsWithTitleFormat().replaceFirst("%s", qs).replaceFirst("%s", titleFilter);
             }
 
@@ -68,13 +66,6 @@ public class Crawler extends ACrawler {
          */
         waitForCrawlers("Crawler thread interrupted.");
 
-        /*
-         * Get results
-         */
-        for (ACrawler c : crawlers) {
-            bytes += c.getBytes();
-        }
-
         notifyCaller();
     }
 
@@ -85,7 +76,7 @@ public class Crawler extends ACrawler {
         Application.invokeLater(new Runnable() {
 
             public void run() {
-                caller.showResults(bytes);
+                caller.showResults(HTTPRequest.getBytes());
             }
         });
     }

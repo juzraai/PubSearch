@@ -1,8 +1,5 @@
 package pubsearch.crawl;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +41,6 @@ public class PubPageCrawler extends ACrawler {
             HTTPRequestEx req = new HTTPRequestEx(url);
             if (req.submit()) {
                 String html = req.getHtml();
-                bytes += req.getBytes();
 
                 // bibtex
                 String bibtex = null;
@@ -58,7 +54,6 @@ public class PubPageCrawler extends ACrawler {
                     HTTPRequestEx bibreq = new HTTPRequestEx(pdb.getBaseUrl() + bibtexLink);
                     if (bibreq.submit()) {
                         String bibhtml = bibreq.getHtml();
-                        bytes += bibreq.getBytes();
                         bibtex = StringTools.findFirstMatch(bibhtml, pdb.getBibtexPattern(), 1);
                     }
                 } else {
@@ -99,7 +94,6 @@ public class PubPageCrawler extends ACrawler {
                     }
 
                     if (null != refPubListURL && null == pdb.getRefPubListBlockPattern()) {
-                        System.out.println("external result list");
                         // külső oldal, formailag egyezik a ResultList-tel (CiteSeerX)
                         String[] up = refPubListURL.split("\\?");
                         refPubListURL = up[0];
@@ -110,7 +104,6 @@ public class PubPageCrawler extends ACrawler {
                         ResultListCrawler rlc = new ResultListCrawler(pdb, refPubListURL, qs, "GET", transLev - 1);
                         crawlers.add(rlc);
                         rlc.crawl();
-                        bytes += rlc.getBytes();
                         citedBy.addAll(rlc.getPublications());
 
                     } else if (null != pdb.getRefPubListBlockPattern()) {
@@ -119,11 +112,9 @@ public class PubPageCrawler extends ACrawler {
                         // külső oldal? (Springer)
                         String refPubHTML = html;
                         if (null != refPubListURL) {
-                            System.out.println("external page: " + refPubListURL);
                             HTTPRequestEx refPubReq = new HTTPRequestEx(refPubListURL);
                             if (refPubReq.submit()) {
                                 refPubHTML = refPubReq.getHtml();
-                                bytes += refPubReq.getBytes();
                             }
                         }
 
@@ -136,13 +127,12 @@ public class PubPageCrawler extends ACrawler {
                                 for (String refPubURL : refPubURLs) {
                                     PubPageCrawler ppc = new PubPageCrawler(pdb, refPubURL, transLev - 1);
                                     ppc.crawl();
-                                    bytes += ppc.bytes;
                                     citedBy.add(ppc.getPublication());
                                 }
                             } else {
                                 // nincsenek linkek, listaelemblokkonkénti parszolás (Springer, MetaPress)
                                 List<String> refPubBlocks = StringTools.findAllMatch(refPubListBlock, pdb.getRefPubBlockPattern(), 1);
-                                if (refPubBlocks.size() > 0) {
+                                if (null != refPubBlocks) {
                                     for (String refPubBlock : refPubBlocks) {
                                         String refPubAuthor = extractAuthors(refPubBlock, pdb.getRefPubAuthorsPattern());
                                         String refPubTitle = extractAuthors(refPubBlock, pdb.getRefPubTitlePattern());
@@ -166,11 +156,10 @@ public class PubPageCrawler extends ACrawler {
                     publication.setUrl(url);
                     publication.getCitedBy().addAll(citedBy);
                     Publication.store(publication);
-                } else {
                 }
             }
         } catch (InterruptedException e) {
-            System.err.println(StringTools.rpad(pdb.getName(), 25, ' ') + url);
+            System.err.println(pdb.getName() + "\t" + url);
         }
     }
 

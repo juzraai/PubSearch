@@ -13,10 +13,10 @@ public abstract class ACrawler extends Thread {
     //inside
     protected List<ACrawler> crawlers = new ArrayList<ACrawler>();
     //out
-    protected long bytes;
     protected long time;
 
     public ACrawler() {
+        setDaemon(true); // ha a főprogram leáll, akkor ez is :-)
         setName(getClass().getSimpleName() + " " + getId());
     }
 
@@ -25,10 +25,6 @@ public abstract class ACrawler extends Thread {
         time = System.nanoTime();
         crawl();
         time = System.nanoTime() - time;
-    }
-
-    public long getBytes() {
-        return bytes;
     }
 
     protected abstract void crawl();

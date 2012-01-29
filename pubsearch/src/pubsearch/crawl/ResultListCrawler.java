@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import pubsearch.StringTools;
 import pubsearch.data.PDatabase;
 import pubsearch.data.Publication;
 
@@ -59,17 +58,14 @@ public class ResultListCrawler extends ACrawler {
             resultPageNo++;
             newResultCount = 0;
 
-
             /*
              * Download result list page
              */
             String startModifier = String.format("&%s=%d", pdb.getStartField(), startIndex);
-            System.out.println(pdb.getName() + "\tResult page #" + resultPageNo + " " + url + "?" + queryString + startModifier);
+            System.out.println(pdb.getName() + " RLC page=" + resultPageNo + " " + url + "?" + queryString + startModifier); //XXX bugos a "?"
             HTTPRequestEx req = new HTTPRequestEx(url, queryString + startModifier, method);
             if (req.submit()) {
-
                 String html = req.getHtml();
-                bytes += req.getBytes();
 
                 if (isInterrupted()) {
                     break;
@@ -120,37 +116,10 @@ public class ResultListCrawler extends ACrawler {
          * Get results
          */
         for (ACrawler c : crawlers) {
-            bytes += c.getBytes();
             PubPageCrawler ppc = (PubPageCrawler) c;
             if (null != ppc.getPublication()) {
                 publications.add(ppc.getPublication());
             }
         }
-        //System.out.println(StringTools.rpad(pdb.getName(), 20, ' ') + "Stops.");
     }
-
-    /**
-     * Kiszedi a HTML kódból a találatokra mutató URL-eket.
-     * @param html A feldolgozandó HTML.
-     * @return A kinyert linkek listája.
-     */
-    /*protected List<String> extractURLs(String html) {
-        List<String> resultURLs = StringTools.findAllMatch(html, pdb.getPubPageLinkPattern(), 1);
-        String modFormat = pdb.getPubPageLinkModFormat();
-        for (int i = 0; i < resultURLs.size(); i++) {
-            String u = resultURLs.get(i);
-            if (modFormat.matches(".*%s.*")) {
-                u = String.format(modFormat, resultURLs.get(i));
-            }
-            if (!u.startsWith("http:")) {
-                u = pdb.getBaseUrl() + u;
-            }
-
-            u = u.replaceAll("&amp;", "&"); // liinwww.ira.uka.de bug fix
-            u = u.replaceFirst(";jsessionid=.*?\\?", "?"); // citeseerx bug fix
-
-            resultURLs.set(i, u);
-        }
-        return resultURLs;
-    }*/
 }
