@@ -37,7 +37,7 @@ public class PubPageCrawler extends ACrawler {
      */
     protected void crawl() {
         try {
-            System.out.println(pdb.getName() + "\t" + url);
+            System.out.println(pdb.getName() + " " + url);
             HTTPRequestEx req = new HTTPRequestEx(url);
             if (req.submit()) {
                 String html = req.getHtml();
@@ -159,7 +159,6 @@ public class PubPageCrawler extends ACrawler {
                 }
             }
         } catch (InterruptedException e) {
-            System.err.println(pdb.getName() + "\t" + url);
         }
     }
 

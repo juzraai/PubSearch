@@ -17,8 +17,8 @@ import pubsearch.StringTools;
 public class HTTPRequest {
 
     // in
-    private String url;
-    private String queryString;
+    protected String url;
+    protected String queryString;
     private String method;
     private String proxyIP;
     private int proxyPort;
@@ -26,7 +26,7 @@ public class HTTPRequest {
     private static HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
     // out
     private static long bytes;
-    private String html;
+    protected String html;
     protected String error;
 
     public HTTPRequest(String url) {

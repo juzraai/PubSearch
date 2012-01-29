@@ -1,16 +1,21 @@
 package pubsearch.crawl;
 
+import java.util.HashMap;
+import java.util.Map;
 import pubsearch.Config;
 import pubsearch.StringTools;
 
 /**
  * HTTPRequest osztály kiegészítése a program követelményeihez.
  * Beállítja a proxy-t, és az újrapróbálkozásokat is egy véletlenszerű proxy-n
- * keresztül végzi.
+ * keresztül végzi. Emellett egy cache-ben tárolja az (URL,HTML) párokat, hogy
+ * egy oldalt csak egyszer töltsön le.
  *
  * @author Zsolt
  */
 public class HTTPRequestEx extends HTTPRequest {
+
+    private static Map<String, String> cache = new HashMap<String, String>();
 
     public HTTPRequestEx(String url, String queryString, String method) {
         super(url, queryString, method);
@@ -25,10 +30,7 @@ public class HTTPRequestEx extends HTTPRequest {
     }
 
     /**
-     * Elküldi a beállított kérést, majd letölti a válasz HTML oldalt és növeli
-     * a statikus bájtszámlálót. 5-ször újrapróbálkozik, mindig más, proxy-val,
-     * melyet véletlenszerűen választ a listából. Ha egy proxy-n keresztül nem
-     * sikerült csatlakozni, azt törli a listából.
+     * Meghívja a submit(5)-öt.
      * @return Sikerült-e HTML oldalt visszakapni.
      */
     @Override
@@ -40,11 +42,18 @@ public class HTTPRequestEx extends HTTPRequest {
      * Elküldi a beállított kérést, majd letölti a válasz HTML oldalt és növeli
      * a statikus bájtszámlálót. Újrapróbálkozik, mindig más, proxy-val, melyet
      * véletlenszerűen választ a listából. Ha egy proxy-n keresztül nem sikerült
-     * csatlakozni, azt törli a listából.
+     * csatlakozni, azt törli a listából. Ezen felül a már letöltött oldalakat
+     * elmenti, így egy későbbi kérésnél már a memóriából olvassa ki ismételt
+     * letöltés helyett.
      * @param tries Újrapróbálkozások száma.
      * @return Sikerült-e HTML oldalt visszakapni.
      */
     public boolean submit(int tries) {
+        if (null != (html = getHTMLFromCache(url + "?" + queryString))) {
+            System.out.println("Used cache for " + url + "?" + queryString);
+            return true;
+        }
+
         boolean success;
         do {
             String proxy = Config.getRandomProxy();
@@ -65,6 +74,19 @@ public class HTTPRequestEx extends HTTPRequest {
 
             tries--;
         } while (!success && tries > 0);
+
+        if (success) {
+            addToCache(url + "?" + queryString, html);
+        }
+
         return success;
+    }
+
+    private static synchronized String getHTMLFromCache(String url) {
+        return cache.get(url);
+    }
+
+    private static synchronized void addToCache(String url, String html) {
+        cache.put(url, html);
     }
 }

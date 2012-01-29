@@ -62,7 +62,7 @@ public class ResultListCrawler extends ACrawler {
              * Download result list page
              */
             String startModifier = String.format("&%s=%d", pdb.getStartField(), startIndex);
-            System.out.println(pdb.getName() + " RLC page=" + resultPageNo + " " + url + "?" + queryString + startModifier); //XXX bugos a "?"
+            System.out.println(pdb.getName() + " RLC page=" + resultPageNo);
             HTTPRequestEx req = new HTTPRequestEx(url, queryString + startModifier, method);
             if (req.submit()) {
                 String html = req.getHtml();
@@ -88,11 +88,9 @@ public class ResultListCrawler extends ACrawler {
                     }
                 }
 
-                System.out.println(pdb.getName() + "\t+" + newResultCount);
-
                 // <liinwww.ira.uka.de fix>
                 if (pdb.getBaseUrl().equals("http://liinwww.ira.uka.de/") && 0 < newResultCount) {
-                    System.out.println(pdb.getName() + "\t" + "Force page advance.");
+                    System.out.println(pdb.getName() + " " + "Force page advance.");
                     newResultCount = resultsPerPage;
                     /*
                      * Azért kell, mert a liinwww.ira.uka.de összevonja a linkeket, nem mindig pont rpp
@@ -110,7 +108,7 @@ public class ResultListCrawler extends ACrawler {
         /*
          * Wait for threads to finish
          */
-        waitForCrawlers(pdb.getName() + "\tInterrupted.");
+        waitForCrawlers(pdb.getName() + " Interrupted.");
 
         /*
          * Get results
