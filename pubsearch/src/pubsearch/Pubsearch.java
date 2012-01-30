@@ -1,6 +1,7 @@
 package pubsearch;
 
 import java.nio.charset.Charset;
+import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import pubsearch.data.Connection;
@@ -38,11 +39,12 @@ public class Pubsearch extends Application {
         if (Connection.tryInit()) {
             stage.show();
         } else {
+            ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
             if (Connection.getLastError() == Connection.SQL_ERROR) {
                 ((MainWindow) stage).configWindow.show();
-                AlertWindow.show("Nem sikerült csatlakozni a MySQL adatbázishoz, kérlek add meg a megfelelő paramétereket!");
+                AlertWindow.show(texts.getString("mysqlError"));
             } else if (Connection.getLastError() == Connection.JPA_ERROR) {
-                AlertWindow.show("Hiba történt az adatbáziskapcsolat felépítésekor (JPA_ERROR).");
+                AlertWindow.show(texts.getString("jpaError"));
             }
         }
     }

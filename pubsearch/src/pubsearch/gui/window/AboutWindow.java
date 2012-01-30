@@ -1,4 +1,4 @@
-package pubsearch.gui.window;//TODO i18n
+package pubsearch.gui.window;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -20,7 +20,7 @@ import pubsearch.gui.GuiTools;
 public class AboutWindow extends AWindow {
 
     public AboutWindow() {
-        super("About PubSearch", false, true);
+        super("aboutWindowTitle", false, true);
         setScene(buildScene());
         setCSS();
     }
@@ -40,13 +40,13 @@ public class AboutWindow extends AWindow {
         myName.setStyle("-fx-font-size:18px;");
         myName.setEffect(GuiTools.reflAndShadow);
 
-        Text ver1 = new Text("Version");
+        Text ver1 = new Text(texts.getString("version"));
         ver1.setFill(Color.WHITE);
         ver1.setEffect(GuiTools.shadow);
         Text ver2 = new Text("1.0");
         ver2.setFill(Color.WHITE);
         ver2.setEffect(GuiTools.shadow);
-        Text rel1 = new Text("Release date");
+        Text rel1 = new Text(texts.getString("releaseDate"));
         rel1.setFill(Color.WHITE);
         rel1.setEffect(GuiTools.shadow);
         Text rel2 = new Text("15/05/2012");

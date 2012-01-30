@@ -44,9 +44,9 @@ public class Crawler extends ACrawler {
          */
         List<PDatabase> pdbs = PDatabase.getAll();
         for (PDatabase pdb : pdbs) {
-            if (!pdb.getName().equals("CiteSeerX")) { //XXX just for testing
+            /*if (!pdb.getName().equals("CiteSeerX")) { //XXX just for testing
                 continue;
-            }
+            }*/
 
             String url = pdb.getBaseUrl() + pdb.getSubmitUrl();
             String qs = pdb.getSubmitParamsFormat().replaceFirst("%s", authorFilter);

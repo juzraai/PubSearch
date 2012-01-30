@@ -9,7 +9,7 @@ import pubsearch.data.PDatabase;
  *
  * @author Zsolt
  */
-public class ResultListPage {
+public class ResultListPage { // TODO MÉG NINCS HASZNÁLATBAN
 
     // in
     private PDatabase pDatabase;
@@ -20,6 +20,13 @@ public class ResultListPage {
     public ResultListPage(PDatabase pubdb, String html) {
         this.pDatabase = pubdb;
         this.html = html;
+    }
+
+    /**
+     * @return A talált publikációk adataihoz vezető URL-lek listája.
+     */
+    public List<String> getResultURLs() {
+        return resultURLs;
     }
 
     /**
@@ -42,10 +49,12 @@ public class ResultListPage {
 
     }
 
-    /**
-     * @return A talált publikációk adataihoz vezető URL-lek listája.
+    // TODO kellenének ilyen függvények:
+    /* - cropListBlock(pattern)
+     * - extractURL(pattern)
+     * - extractURLs(pattern)
+     * - DE HOGY CSINÁLJUK A LISTITEMBLOCKOKAT ?! akkor itt kéne indítani a crawlt is...
      */
-    public List<String> getResultURLs() {
-        return resultURLs;
-    }
+
+
 }

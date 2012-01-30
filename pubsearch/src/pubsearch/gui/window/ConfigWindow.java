@@ -1,4 +1,4 @@
-package pubsearch.gui.window;//TODO i18n
+package pubsearch.gui.window;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -34,7 +34,7 @@ public class ConfigWindow extends AWindow {
     private boolean configIsOK;
 
     public ConfigWindow(MainWindow mainWindow) {
-        super("Setup local database connection", false, true);
+        super("configWindowTitle", false, true);
         this.mainWindow = mainWindow;
         setScene(buildScene());
         setCSS();
@@ -63,17 +63,17 @@ public class ConfigWindow extends AWindow {
      * @return A felépített ablaktartalom.
      */
     private Scene buildScene() {
-        LabelEx plzLabel = new LabelEx("PubSearch needs a MySQL database to store the gathered informations. Please specify the parameters.", true, false, false, GuiTools.shadow);
+        LabelEx plzLabel = new LabelEx(texts.getString("databaseDescription"), true, false, false, GuiTools.shadow);
         plzLabel.setTextAlignment(TextAlignment.JUSTIFY);
         plzLabel.setWrapText(true);
-        LabelEx urlLabel1 = new LabelEx("Database (server) URL:", true, true, false, GuiTools.shadow);
+        LabelEx urlLabel1 = new LabelEx(texts.getString("dbServer"), true, true, false, GuiTools.shadow);
         LabelEx urlLabel2 = new LabelEx("\tmysql://", true, false, true, GuiTools.shadow);
         LabelEx urlLabel3 = new LabelEx("/pubsearch", true, false, true, GuiTools.shadow);
-        LabelEx urlLabel4 = new LabelEx("(default: 'localhost:3306')", true, false, false, GuiTools.shadow);
-        LabelEx userLabel1 = new LabelEx("Username:", true, true, false, GuiTools.shadow);
-        LabelEx userLabel2 = new LabelEx("(default: 'root')", true, false, false, GuiTools.shadow);
-        LabelEx passwordLabel1 = new LabelEx("Password:", true, true, false, GuiTools.shadow);
-        LabelEx passwordLabel2 = new LabelEx("(default: empty)", true, false, false, GuiTools.shadow);
+        LabelEx urlLabel4 = new LabelEx("(" + texts.getString("default") + " 'localhost:3306')", true, false, false, GuiTools.shadow);
+        LabelEx userLabel1 = new LabelEx(texts.getString("dbUsername"), true, true, false, GuiTools.shadow);
+        LabelEx userLabel2 = new LabelEx("(" + texts.getString("default") + " 'root')", true, false, false, GuiTools.shadow);
+        LabelEx passwordLabel1 = new LabelEx(texts.getString("dbPassword"), true, true, false, GuiTools.shadow);
+        LabelEx passwordLabel2 = new LabelEx("(" + texts.getString("default") + " " + texts.getString("empty") + ")", true, false, false, GuiTools.shadow);
 
         EventHandler<ActionEvent> reInitAction = new EventHandler<ActionEvent>() {
 
@@ -82,7 +82,7 @@ public class ConfigWindow extends AWindow {
             }
         };
 
-        Button okButton = new Button("Connect & save");
+        Button okButton = new Button(texts.getString("connectAndSave"));
         okButton.setPrefWidth(150);
         okButton.setPrefHeight(32);
         okButton.setOnAction(reInitAction);
@@ -136,7 +136,7 @@ public class ConfigWindow extends AWindow {
             if (configIsOK) {
                 Config.saveMySQLConfig();
             } else {
-                msgLabel.setText("Can't connect to database.");
+                msgLabel.setText(texts.getString("cantConnect"));
             }
         }
 

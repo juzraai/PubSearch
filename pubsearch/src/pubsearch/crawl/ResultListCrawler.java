@@ -103,7 +103,7 @@ public class ResultListCrawler extends ACrawler {
             }
 
             startIndex += resultsPerPage;
-        } while (newResultCount == resultsPerPage && resultPageNo <= 2); // XXX resulPageNo limit is just for testing!
+        } while (newResultCount == resultsPerPage); // XXX resulPageNo limit is just for testing!
 
         /*
          * Wait for threads to finish

@@ -41,9 +41,8 @@ public class Connection {
         try {
             init();
             return true;
-        } catch (Throwable t) {
-            t.printStackTrace();
-            lastError = (t instanceof SQLException) ? SQL_ERROR : JPA_ERROR;
+        } catch (Exception e) {
+            lastError = (e instanceof SQLException) ? SQL_ERROR : JPA_ERROR;
             return false;
         }
     }

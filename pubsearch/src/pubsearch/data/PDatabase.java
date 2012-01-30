@@ -32,7 +32,7 @@ public class PDatabase implements Serializable {
     private String startField = "start";
     private Byte firstIndex = 0;                // 0 / 1
     private Byte resultsPerPage = 10;
-    private String noResultsTextPattern;        // regex // TODO NOT NEEDED ! REMOVE IT !
+    private String noResultsTextPattern;        // regex // TODO BEÉPÍTENI RLC-BE !
     // pub page
     private String bibtexLinkPattern;           // regex
     private String bibtexPattern;               // regex
