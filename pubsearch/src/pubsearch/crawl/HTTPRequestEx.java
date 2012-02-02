@@ -30,12 +30,12 @@ public class HTTPRequestEx extends HTTPRequest {
     }
 
     /**
-     * Meghívja a submit(5)-öt.
+     * Meghívja a submit(10)-öt.
      * @return Sikerült-e HTML oldalt visszakapni.
      */
     @Override
     public boolean submit() {
-        return submit(5); // 5 retries
+        return submit(10); // 10 retries
     }
 
     /**
@@ -49,8 +49,9 @@ public class HTTPRequestEx extends HTTPRequest {
      * @return Sikerült-e HTML oldalt visszakapni.
      */
     public boolean submit(int tries) {
-        if (null != (html = getHTMLFromCache(url + "?" + queryString))) {
-            System.out.println("Used cache for " + url + "?" + queryString);
+        String toCache = url + (!queryString.equals("") ? "?" + queryString : "");
+        if (null != (html = getHTMLFromCache(toCache))) {
+            //System.out.println("Used cache for " + url + "?" + queryString);
             return true;
         }
 
@@ -76,7 +77,9 @@ public class HTTPRequestEx extends HTTPRequest {
         } while (!success && tries > 0);
 
         if (success) {
-            addToCache(url + "?" + queryString, html);
+            addToCache(toCache, html);
+        } else {
+            System.err.println("Download failed: " + toCache);
         }
 
         return success;

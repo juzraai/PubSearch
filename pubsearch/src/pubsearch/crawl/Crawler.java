@@ -2,6 +2,7 @@ package pubsearch.crawl;
 
 import com.sun.glass.ui.Application;
 import java.util.List;
+import pubsearch.Config;
 import pubsearch.StringTools;
 import pubsearch.data.PDatabase;
 import pubsearch.gui.tab.MainTab;
@@ -44,9 +45,16 @@ public class Crawler extends ACrawler {
          */
         List<PDatabase> pdbs = PDatabase.getAll();
         for (PDatabase pdb : pdbs) {
-            /*if (!pdb.getName().equals("CiteSeerX")) { //XXX just for testing
-                continue;
-            }*/
+
+            if (isInterrupted()) {
+                break;
+            }
+
+            /*
+             * if (!pdb.getName().equals("CiteSeerX")) { //XXX just for testing
+             * continue;
+             * }
+             */
 
             String url = pdb.getBaseUrl() + pdb.getSubmitUrl();
             String qs = pdb.getSubmitParamsFormat().replaceFirst("%s", authorFilter);
@@ -57,15 +65,15 @@ public class Crawler extends ACrawler {
             ResultListCrawler rlc = new ResultListCrawler(pdb, url, qs, pdb.getSubmitMethod(), transLev);
             crawlers.add((ACrawler) rlc);
             rlc.start();
-            //TODO az egész RLC a submitMethod-dal megy... szóval ha a form POST-os, akkor a RL-nek is POST-osnak kell lennie...
-            //lehet ezt át kéne alakítani, általánosabbá
+            //rlc.crawl(); System.out.println(pdb.getName() + " DONE"); // iterálunk az adatbázisokon
+
         }
 
         /*
          * Wait for threads to finish
          */
         waitForCrawlers("Crawler thread interrupted.");
-
+        Config.saveProxyList();
         notifyCaller();
     }
 

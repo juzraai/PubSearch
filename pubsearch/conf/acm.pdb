@@ -3,7 +3,7 @@ baseurl				http://dl.acm.org/
 submiturl			results.cfm
 submitparamsformat		adv=1&COLL=DL&DL=ACM&peoplezone=Author&people="%s"&peoplehow=and&short=1
 submitparamswithtitleformat	%s&termzone=Title&allofem="%s"
-pubpagelinkpattern		<a href="(citation.cfm\?.*?)"
+pubpagelinkpattern		<a href="(citation.cfm\?.*?)&.*?"
 pubpagelinkmodformat		%s&preflayout=flat
 resultsperpage			50
 firstindex			1

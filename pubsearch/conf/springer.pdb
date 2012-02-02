@@ -9,7 +9,7 @@ firstindex			1
 startfield			o
 authorspattern			<p class="authors">(.*?)</p>
 titlepattern			<div class="text">.*?<h1.*?>(.*?)</h1>
-yearpattern			(?:<div class="secondary">.*?, |<dt>Copyright Year.*?)([0-9]{4})
+yearpattern			(?:<dt>Copyright Year.*?|<dt>SpringerLink Date.*?, )([0-9]{4})</dd>
 refpublistpagelinkpattern	<li><a href="/(content/.{16}/referrers/)"
 refpublistblockpattern		<ol class="citations">(.*?)</ol>
 refpubblockpattern		<li>(.*?)(?:<ul>.*?</ul>)?</li>

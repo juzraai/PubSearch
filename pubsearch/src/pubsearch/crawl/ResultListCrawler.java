@@ -30,7 +30,9 @@ public class ResultListCrawler extends ACrawler {
         this.queryString = (null != queryString) ? queryString : "";
         this.method = method;
         this.transLev = transLev;
+        setPriority(6);
     }
+
 
     public List<Publication> getPublications() {
         return publications;
@@ -62,7 +64,7 @@ public class ResultListCrawler extends ACrawler {
              * Download result list page
              */
             String startModifier = String.format("&%s=%d", pdb.getStartField(), startIndex);
-            System.out.println(pdb.getName() + " RLC page=" + resultPageNo);
+            //System.out.println(pdb.getName() + " RLC page=" + resultPageNo);
             HTTPRequestEx req = new HTTPRequestEx(url, queryString + startModifier, method);
             if (req.submit()) {
                 String html = req.getHtml();
@@ -72,7 +74,7 @@ public class ResultListCrawler extends ACrawler {
                 }
 
                 /*
-                 * Start crawler threads
+                 * Start crawler threads for this result page
                  */
                 List<String> current = new Parser(html, pdb).extractPubPageURLs();
                 for (String u : current) {
@@ -87,10 +89,11 @@ public class ResultListCrawler extends ACrawler {
                         //XXX (multi-single threaded switch)
                     }
                 }
+                //waitForCrawlers(null); // wait for threads to finish
 
                 // <liinwww.ira.uka.de fix>
                 if (pdb.getBaseUrl().equals("http://liinwww.ira.uka.de/") && 0 < newResultCount) {
-                    System.out.println(pdb.getName() + " " + "Force page advance.");
+                    //System.out.println(pdb.getName() + " " + "Force page advance.");
                     newResultCount = resultsPerPage;
                     /*
                      * Azért kell, mert a liinwww.ira.uka.de összevonja a linkeket, nem mindig pont rpp
@@ -103,7 +106,7 @@ public class ResultListCrawler extends ACrawler {
             }
 
             startIndex += resultsPerPage;
-        } while (newResultCount == resultsPerPage); // XXX resulPageNo limit is just for testing!
+        } while (newResultCount == resultsPerPage);
 
         /*
          * Wait for threads to finish

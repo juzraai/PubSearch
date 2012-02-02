@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import pubsearch.Config;
 
@@ -74,7 +73,7 @@ public class Connection {
         props.put("javax.persistence.jdbc.url", "jdbc:mysql://" + Config.getJdbcUrl() + "/pubsearch");
         props.put("javax.persistence.jdbc.user", Config.getJdbcUser());
         props.put("javax.persistence.jdbc.password", Config.getJdbcPass());
-        //props.put("eclipselink.logging.level", "OFF");
+        props.put("eclipselink.logging.level", "OFF"); //XXX teszteléshez kommentezd ki!
         emf = Persistence.createEntityManagerFactory("pubsearch", props);
         em = emf.createEntityManager();
         System.out.println("JPA CONNECTION BUILT.");

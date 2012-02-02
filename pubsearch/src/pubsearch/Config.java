@@ -60,20 +60,23 @@ public class Config {
         if (proxyList.isEmpty()) {
             setProxyList(GetProxyList.getProxyList());
         }
-        return proxyList.get((int) (Math.random() * proxyList.size()));
+        try {
+            return proxyList.get((int) (Math.random() * proxyList.size()));
+        } catch (Exception e) {
+            // ha nem sikerül letölteni
+            return "";
+        }
     }
-
 
     /**
      * Törli a megadott proxy-t a listáról, és a változást rögzíti a konfig. fájlban is.
      * Ez a metódus érvénytelen proxy esetén (hibás kapcsolódás) hívódik meg.
      * @param proxy A törlendő proxy (IP:PORT).
      */
-    public static void delProxy(String proxy) {
+    public static synchronized void delProxy(String proxy) {
         if (proxyList.remove(proxy)) {
-            System.err.println("Proxy " + proxy + " removed from the list.");
+            //System.err.println("Proxy " + proxy + " removed from the list.");
         }
-        saveProxyList();
     }
 
     /**

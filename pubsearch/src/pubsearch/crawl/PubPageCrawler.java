@@ -1,5 +1,8 @@
 package pubsearch.crawl;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +29,8 @@ public class PubPageCrawler extends ACrawler {
         this.pdb = pdb;
         this.url = url;
         this.transLev = transLev;
+        setName(getName() + " " + pdb.getName());
+        setPriority(7);
     }
 
     public Publication getPublication() {
@@ -37,7 +42,6 @@ public class PubPageCrawler extends ACrawler {
      */
     protected void crawl() {
         try {
-            System.out.println(pdb.getName() + " " + url);
             HTTPRequestEx req = new HTTPRequestEx(url);
             if (req.submit()) {
                 String html = req.getHtml();
@@ -159,6 +163,10 @@ public class PubPageCrawler extends ACrawler {
                 }
             }
         } catch (InterruptedException e) {
+        } finally {
+            if (null == publication) {
+                System.err.println("Parse failed: " + url);
+            }
         }
     }
 
