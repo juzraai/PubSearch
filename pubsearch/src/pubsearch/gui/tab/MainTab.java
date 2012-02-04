@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.DepthTest;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -42,7 +43,8 @@ public class MainTab extends Tab {
     private final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
     private final TextField authorField = new TextField();
     private final TextField titleField = new TextField();
-    private final ChoiceBox transLevCombo = new ChoiceBox(FXCollections.observableArrayList("0", "1", "2"));
+    private final ChoiceBox transLevCombo = new ChoiceBox(FXCollections.observableArrayList(texts.getString("transitivityLevel0"), texts.getString("transitivityLevel1"), texts.getString("transitivityLevel2")));
+    private final CheckBox multithreadCheckBox = new CheckBox(texts.getString("multithreadedSearch"));
     private final CheckBox onlyLocalCheckBox = new CheckBox(texts.getString("onlyLocalSearch"));
     private final Button searchButton = new Button(texts.getString("searchButton"));
     private final PubTable resultsView;
@@ -86,15 +88,18 @@ public class MainTab extends Tab {
         titleField.setOnAction(startSearchAction);
         titleField.setDisable(true);
         titleField.setTooltip(new Tooltip(texts.getString("titleFieldTooltip")));
+        
+        transLevCombo.getSelectionModel().select(1);
 
-        //transLevCombo.getSelectionModel().selectFirst();
-        transLevCombo.getSelectionModel().select(1); // TODO
+        multithreadCheckBox.setStyle("-fx-text-fill: #FAF");
+        multithreadCheckBox.selectedProperty().set(true);
 
         onlyLocalCheckBox.setStyle("-fx-text-fill: #AFA");
         onlyLocalCheckBox.setOnAction(new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent arg0) {
                 transLevCombo.setDisable(onlyLocalCheckBox.selectedProperty().get());
+                multithreadCheckBox.setDisable(onlyLocalCheckBox.selectedProperty().get());
             }
         });
 
@@ -145,7 +150,8 @@ public class MainTab extends Tab {
         top.add(titleField, 1, 1);
         top.add(transLevLabel, 0, 2);
         top.add(transLevCombo, 1, 2);
-        top.add(onlyLocalCheckBox, 1, 3);
+        top.add(multithreadCheckBox, 1, 3);
+        top.add(onlyLocalCheckBox, 1, 4);
         top.add(searchButton, 2, 0, 1, 2);
         top.add(aboutButton, 3, 0);
         top.add(editProxiesButton, 3, 1);
@@ -208,11 +214,11 @@ public class MainTab extends Tab {
             if (Config.getProxyList().isEmpty()) {
                 // nincs proxy, hibajelzés
                 proxyWindow.show();
-                AlertWindow.show(texts.getString("proxyListNeeded"));
+                AlertWindow.show(texts.getString("proxyListNeeded")); // TODO rethink: do we need this? we have an auto-downloader
             } else {
                 // van proxy, indul a crawl, külön szálon, majd ő értesít az eredmények megjelenítéséről
                 switchScene(false);
-                crawler = new Crawler(this, authorField.getText(), titleField.getText(), transLevCombo.getSelectionModel().getSelectedIndex());
+                crawler = new Crawler(this, authorField.getText(), titleField.getText(), multithreadCheckBox.selectedProperty().get(), transLevCombo.getSelectionModel().getSelectedIndex());
                 crawler.start();
             }
         } else {
@@ -261,7 +267,7 @@ public class MainTab extends Tab {
         if (null != crawler) {
             System.err.println("Killing crawler thread.");
             crawler.interrupt(); // SLOW
-            while (crawler.isAlive()); // WAIT (FREEZE) UNTIL CRAWLER HALTS
+            while (crawler.isAlive()); // FREEZE GUI
         }
     }
 }

@@ -1,9 +1,11 @@
 package pubsearch.gui.tab;
 
+import java.awt.Desktop;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -15,6 +17,7 @@ import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -62,7 +65,18 @@ public class PubTab extends Tab {
         Label yearLabel2 = new Label(ys);
 
         Label dbLabel2 = new Label(p.getDbName());
-        Label urlLabel2 = new Label(p.getUrl());
+        final Hyperlink urlLabel2 = new Hyperlink(p.getUrl());
+        urlLabel2.setOnMouseClicked(new EventHandler<MouseEvent>(){
+
+            public void handle(MouseEvent arg0) {
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(new URI(urlLabel2.getText())); // TODO TEST THIS METHOD ON LINUX (lovi), MAC (lizik)
+                    } catch (Exception ex) {
+                    }
+                }
+            }
+        });
 
         GuiTools.addStyleClassToNodes("bold-text", authorsLabel1, titleLabel1, yearLabel1, dbLabel1, urlLabel1);
         GuiTools.addStyleClassToNodes("italic-text", authorsLabel2, titleLabel2, yearLabel2, dbLabel2, urlLabel2);

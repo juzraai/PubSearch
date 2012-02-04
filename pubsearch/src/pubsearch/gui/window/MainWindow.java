@@ -1,6 +1,5 @@
 package pubsearch.gui.window;
 
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
 import javafx.stage.WindowEvent;
@@ -25,7 +24,7 @@ public class MainWindow extends AWindow {
         tabs.setTabMaxWidth(200);
         tabs.getTabs().add(mainTab);
 
-        Scene scene = new Scene(tabs, 600, 400);
+        Scene scene = new Scene(tabs, 640, 450);
         setScene(scene);
         setCSS();
     }

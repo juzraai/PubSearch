@@ -1,4 +1,4 @@
-/* 
+/*
     Document   : style
     Created on : 2012.01.03., 21:43:43
     Author     : Zsolt
@@ -41,11 +41,21 @@
 }
 
 .tab-content-area {
-    /*-fx-background-color: linear-gradient(to bottom, #484860, #333344);*/
     -fx-background-color: #484860;
     -fx-text-fill: white;
 }
 
-.pubtabs .tab-header-background  {    
+.pubtabs .tab-header-background  {
     -fx-background-color: transparent;
+}
+
+.hyperlink, .hyperlink:visited {
+    -fx-text-fill: #E0EEFF;
+    -fx-underline: false;
+    -fx-border-width: 0;
+}
+
+.hyperlink:hover {
+    -fx-text-fill: #ACF;
+    -fx-underline: true;
 }

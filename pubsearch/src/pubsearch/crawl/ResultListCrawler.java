@@ -85,11 +85,9 @@ public class ResultListCrawler extends ACrawler {
                         PubPageCrawler ppc = new PubPageCrawler(pdb, u, transLev);
                         crawlers.add((ACrawler) ppc);
                         ppc.start();
-                        //ppc.crawl();
-                        //XXX (multi-single threaded switch)
                     }
                 }
-                //waitForCrawlers(null); // wait for threads to finish
+                waitForCrawlers(null); // wait for threads to finish
 
                 // <liinwww.ira.uka.de fix>
                 if (pdb.getBaseUrl().equals("http://liinwww.ira.uka.de/") && 0 < newResultCount) {

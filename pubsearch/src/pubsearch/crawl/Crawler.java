@@ -18,12 +18,14 @@ public class Crawler extends ACrawler {
     private final MainTab caller;
     private String authorFilter;
     private String titleFilter;
+    private boolean multithreaded;
     private int transLev;
 
-    public Crawler(MainTab caller, String authorFilter, String titleFilter, int transLev) {
+    public Crawler(MainTab caller, String authorFilter, String titleFilter, boolean multithreaded, int transLev) {
         this.caller = caller;
         this.authorFilter = authorFilter;
         this.titleFilter = (titleFilter != null && titleFilter.trim().length() > 0) ? titleFilter : null;
+        this.multithreaded = multithreaded;
         this.transLev = transLev;
         setName("Crawler");
     }
@@ -31,18 +33,15 @@ public class Crawler extends ACrawler {
     @Override
     public void run() {
         super.run();
-        System.out.println("Crawler thread ended. time = " + StringTools.formatNanoTime(time, true, true) + ", bytes = " + HTTPRequest.getBytes() + " B (= " + StringTools.formatDataSize(HTTPRequest.getBytes()) + ")\n~~~\n");
+        System.out.println("Crawler thread ended. time = " + StringTools.formatNanoTime(time, true, true) + ", bytes = " + HTTPRequest.getBytes() + " B (= " + StringTools.formatDataSize(HTTPRequest.getBytes()) + ")\n\n");
     }
 
     protected void crawl() {
-        System.out.println("~~~\nCrawler thread started. (au:" + authorFilter + "; ti:" + titleFilter + ")");
+        System.out.println("\nCrawler thread started. (au:" + authorFilter + "; ti:" + titleFilter + ")");
 
         HTTPRequest.zeroBytes();
         crawlers.clear();
 
-        /*
-         * Start threads
-         */
         List<PDatabase> pdbs = PDatabase.getAll();
         for (PDatabase pdb : pdbs) {
 
@@ -64,15 +63,19 @@ public class Crawler extends ACrawler {
 
             ResultListCrawler rlc = new ResultListCrawler(pdb, url, qs, pdb.getSubmitMethod(), transLev);
             crawlers.add((ACrawler) rlc);
-            rlc.start();
-            //rlc.crawl(); System.out.println(pdb.getName() + " DONE"); // iterálunk az adatbázisokon
+            if (multithreaded) {
+                rlc.start();
+            } else {
+                rlc.crawl();
+                System.out.println(pdb.getName() + " DONE");
+            }
 
         }
 
-        /*
-         * Wait for threads to finish
-         */
-        waitForCrawlers("Crawler thread interrupted.");
+        if (multithreaded) {
+            waitForCrawlers("Crawler thread interrupted.");
+        }
+
         Config.saveProxyList();
         notifyCaller();
     }
