@@ -49,11 +49,18 @@ public class Crawler extends ACrawler {
                 break;
             }
 
-            /*
-             * if (!pdb.getName().equals("CiteSeerX")) { //XXX just for testing
-             * continue;
-             * }
-             */
+            //XXX To test only one database:
+
+            if (!pdb.getName().equals("Google Scholar")) {
+                continue;
+            }
+
+
+            //XXX To skip a database (Springer server is down nowadays)
+            if (pdb.getName().equals("SpringerLink")) {
+                continue;
+            }
+
 
             String url = pdb.getBaseUrl() + pdb.getSubmitUrl();
             String qs = pdb.getSubmitParamsFormat().replaceFirst("%s", authorFilter);

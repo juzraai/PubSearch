@@ -1,8 +1,5 @@
 package pubsearch.crawl;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,7 +43,9 @@ public class PubPageCrawler extends ACrawler {
             if (req.submit()) {
                 String html = req.getHtml();
 
-                // bibtex
+                /*
+                 * Get BibTeX if can
+                 */
                 String bibtex = null;
                 String bibtexLink = StringTools.findFirstMatch(html, pdb.getBibtexLinkPattern(), 1);
                 if (null != bibtexLink) {
@@ -64,7 +63,9 @@ public class PubPageCrawler extends ACrawler {
                     bibtex = StringTools.findFirstMatch(html, pdb.getBibtexPattern(), 1);
                 }
 
-                // author, title, year
+                /*
+                 * Extract basic info
+                 */
                 String authors;
                 String title;
                 int year = -1;
@@ -72,23 +73,26 @@ public class PubPageCrawler extends ACrawler {
                     bibtex = bibtex.replaceAll("<br />|<br/>|<br>", "\n");
                     bibtex = StringTools.clean(bibtex);
                     //bibtex = bibtex.replaceFirst("abstract =.*?(\"|\\{).*?(\"|\\}),", ""); // TODO FIX (remove abstract field)
-
-                    authors = extractAuthors(bibtex, "author.*?=[^{]*?\"(.*?)\"");
+                    Extract extract = new Extract(bibtex);
+                    authors = extract.authors("author.*?=[^{]*?\"(.*?)\"");
                     if (null == authors) {
-                        authors = extractAuthors(bibtex, "author.*?=.*?\\{([^=]*)\\}");
+                        authors = extract.authors("author.*?=.*?\\{([^=]*)\\}");
                     }
-                    title = extractTitle(bibtex, "[^k]title.*?=[^{]*?\"(.*?)\"");
+                    title = extract.title("[^k]title.*?=[^{]*?\"(.*?)\"");
                     if (null == title) {
-                        title = extractTitle(bibtex, "[^k]title.*?=.*?\\{(.*?)\\}");
+                        title = extract.title("[^k]title.*?=.*?\\{(.*?)\\}");
                     }
-                    year = extractYear(bibtex, "year.*?=.*?([0-9]{4})");
+                    year = extract.year("year[^=]*?=[^=]*?([0-9]{4})");
                 } else {
-                    authors = extractAuthors(html, pdb.getAuthorsPattern());
-                    title = extractTitle(html, pdb.getTitlePattern());
-                    year = extractYear(html, pdb.getYearPattern());
+                    Extract extract = new Extract(html);
+                    authors = extract.authors(pdb.getAuthorsPattern());
+                    title = extract.title(pdb.getTitlePattern());
+                    year = extract.year(pdb.getYearPattern());
                 }
 
-                // cited by
+                /*
+                 * Crawl cited by list
+                 */
                 Set<Publication> citedBy = new HashSet<Publication>();
                 if (transLev > 0 && !isInterrupted()) {
 
@@ -97,7 +101,7 @@ public class PubPageCrawler extends ACrawler {
                         refPubListURL = pdb.getBaseUrl() + refPubListURL;
                     }
 
-                    if (null != refPubListURL && null == pdb.getRefPubListBlockPattern()) {
+                    if (null != refPubListURL && null == pdb.getRefPubListPattern()) {
                         // külső oldal, formailag egyezik a ResultList-tel (CiteSeerX)
                         String[] up = refPubListURL.split("\\?");
                         refPubListURL = up[0];
@@ -106,11 +110,10 @@ public class PubPageCrawler extends ACrawler {
                             qs = up[1];
                         }
                         ResultListCrawler rlc = new ResultListCrawler(pdb, refPubListURL, qs, "GET", transLev - 1);
-                        crawlers.add(rlc);
                         rlc.crawl();
                         citedBy.addAll(rlc.getPublications());
 
-                    } else if (null != pdb.getRefPubListBlockPattern()) {
+                    } else if (null != pdb.getRefPubListPattern()) {
                         // lista formailag nem egyezik a ResultList-tel (ACM, Springer, MetaPress)
 
                         // külső oldal? (Springer)
@@ -123,10 +126,10 @@ public class PubPageCrawler extends ACrawler {
                         }
 
                         // listablokk (ACM, Springer, MetaPress)
-                        String refPubListBlock = StringTools.findFirstMatch(refPubHTML, pdb.getRefPubListBlockPattern(), 1);
-                        if (null != refPubListBlock) {
+                        String refPubList = StringTools.findFirstMatch(refPubHTML, pdb.getRefPubListPattern(), 1);
+                        if (null != refPubList) {
                             // linkek bejárása, ha lehetséges (ACM)
-                            List<String> refPubURLs = new Parser(refPubListBlock, pdb).extractPubPageURLs();
+                            List<String> refPubURLs = new Extract(refPubList).URLs(pdb.getPubPageLinkPattern(), pdb.getBaseUrl(), pdb.getPubPageLinkModFormat());
                             if (refPubURLs.size() > 0) {
                                 for (String refPubURL : refPubURLs) {
                                     PubPageCrawler ppc = new PubPageCrawler(pdb, refPubURL, transLev - 1);
@@ -135,12 +138,13 @@ public class PubPageCrawler extends ACrawler {
                                 }
                             } else {
                                 // nincsenek linkek, listaelemblokkonkénti parszolás (Springer, MetaPress)
-                                List<String> refPubBlocks = StringTools.findAllMatch(refPubListBlock, pdb.getRefPubBlockPattern(), 1);
-                                if (null != refPubBlocks) {
-                                    for (String refPubBlock : refPubBlocks) {
-                                        String refPubAuthor = extractAuthors(refPubBlock, pdb.getRefPubAuthorsPattern());
-                                        String refPubTitle = extractAuthors(refPubBlock, pdb.getRefPubTitlePattern());
-                                        int refPubYear = extractYear(refPubBlock, pdb.getRefPubYearPattern());
+                                List<String> refPubListItems = StringTools.findAllMatch(refPubList, pdb.getRefPubListItemPattern(), 1);
+                                if (null != refPubListItems) {
+                                    for (String refPubListItem : refPubListItems) {
+                                        Extract extract = new Extract(refPubListItem);
+                                        String refPubAuthor = extract.authors(pdb.getRefPubAuthorsPattern());
+                                        String refPubTitle = extract.title(pdb.getRefPubTitlePattern());
+                                        int refPubYear = extract.year(pdb.getRefPubYearPattern());
                                         if (null != refPubAuthor && null != refPubTitle) {
                                             Publication rp = Publication.getReferenceFor(refPubAuthor, refPubTitle, refPubYear, pdb);
                                             Publication.store(rp);
@@ -153,7 +157,9 @@ public class PubPageCrawler extends ACrawler {
                     }
                 }
 
-                // build object
+                /*
+                 * Build and store Publication object
+                 */
                 if (null != authors && null != title) {
                     publication = Publication.getReferenceFor(authors, title, year, pdb);
                     publication.setBibtex(bibtex);
@@ -168,35 +174,5 @@ public class PubPageCrawler extends ACrawler {
                 System.err.println("Parse failed: " + url);
             }
         }
-    }
-
-    private String extractAuthors(String html, String pattern) {
-        String authors = StringTools.findFirstMatch(html, pattern, 1);
-        if (null != authors) {
-            authors = authors.replaceAll("\\\\('|\")\\{", "").replaceAll("\\{\\\\('|\")", "").replaceAll("\\}", "").replaceAll("\\\\", "");
-            authors = authors.replaceAll("[0-9]{1,2}", "");
-            authors = authors.replaceAll("\n", " ").replaceAll("\t", " ").replaceAll("\"", "\\\"");
-            authors = StringTools.clean(authors).trim();
-            authors = authors.replaceAll(" , ", " and ").trim();
-        }
-        return authors;
-    }
-
-    private String extractTitle(String html, String pattern) {
-        String title = StringTools.findFirstMatch(html, pattern, 1);
-        if (null != title) {
-            title = title.replaceAll("\n", " ").replaceAll("\t", " ").replaceAll("\"", "\\\"");
-            title = StringTools.clean(title).trim();
-        }
-        return title;
-    }
-
-    private int extractYear(String html, String pattern) {
-        int year = -1;
-        try {
-            year = Integer.parseInt(StringTools.findFirstMatch(html, pattern, 1));
-        } catch (NumberFormatException nfe) {
-        }
-        return year;
     }
 }

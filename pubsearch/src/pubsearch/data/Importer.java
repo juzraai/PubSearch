@@ -68,8 +68,6 @@ public class Importer {
             pdb.setSubmitMethod(fields.get("submitmethod"));
             pdb.setSubmitParamsFormat(fields.get("submitparamsformat"));
             pdb.setSubmitParamsWithTitleFormat(fields.get("submitparamswithtitleformat"));
-            pdb.setPubPageLinkPattern(fields.get("pubpagelinkpattern"));
-            pdb.setPubPageLinkModFormat(fields.get("pubpagelinkmodformat"));
 
             String s = fields.get("resultsperpage");
             if (null != s) {
@@ -89,14 +87,20 @@ public class Importer {
 
             pdb.setStartField(fields.get("startfield"));
             pdb.setNoResultsTextPattern(fields.get("noresultstextpattern"));
+            pdb.setResultListPattern(fields.get("resultlistpattern"));
+            pdb.setResultListItemPattern(fields.get("resultlistitempattern"));
+            pdb.setPubPageLinkPattern(fields.get("pubpagelinkpattern"));
+            pdb.setPubPageLinkModFormat(fields.get("pubpagelinkmodformat"));
+
             pdb.setBibtexLinkPattern(fields.get("bibtexlinkpattern"));
             pdb.setBibtexPattern(fields.get("bibtexpattern"));
             pdb.setAuthorsPattern(fields.get("authorspattern"));
             pdb.setTitlePattern(fields.get("titlepattern"));
             pdb.setYearPattern(fields.get("yearpattern"));
             pdb.setRefPubListPageLinkPattern(fields.get("refpublistpagelinkpattern"));
-            pdb.setRefPubListBlockPattern(fields.get("refpublistblockpattern"));
-            pdb.setRefPubBlockPattern(fields.get("refpubblockpattern"));
+
+            pdb.setRefPubListPattern(fields.get("refpublistpattern"));
+            pdb.setRefPubListItemPattern(fields.get("refpublistitempattern"));
             pdb.setRefPubAuthorsPattern(fields.get("refpubauthorspattern"));
             pdb.setRefPubTitlePattern(fields.get("refpubtitlepattern"));
             pdb.setRefPubYearPattern(fields.get("refpubyearpattern"));

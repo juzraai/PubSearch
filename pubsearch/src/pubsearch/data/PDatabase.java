@@ -27,25 +27,27 @@ public class PDatabase implements Serializable {
     private String submitParamsFormat;          // formatstring, %s:author
     private String submitParamsWithTitleFormat = "%s"; // formatstring, %s:querystring, %s:title
     // result list
-    private String pubPageLinkPattern;          // regex
-    private String pubPageLinkModFormat = "%s"; // formatstring, %s:link before mod
     private String startField = "start";
     private Byte firstIndex = 0;                // 0 / 1
     private Byte resultsPerPage = 10;
-    private String noResultsTextPattern;        // regex // TODO BEÉPÍTENI RLC-BE !
+    private String noResultsTextPattern;
+    private String resultListPattern;
+    private String resultListItemPattern;
+    private String pubPageLinkPattern;
+    private String pubPageLinkModFormat = "%s"; // formatstring, %s:link before mod
     // pub page
-    private String bibtexLinkPattern;           // regex
-    private String bibtexPattern;               // regex
-    private String authorsPattern;              // regex
-    private String titlePattern;                // regex
-    private String yearPattern;                 // regex
-    private String refPubListPageLinkPattern;   // regex
+    private String bibtexLinkPattern;
+    private String bibtexPattern;
+    private String authorsPattern;
+    private String titlePattern;
+    private String yearPattern;
+    private String refPubListPageLinkPattern;
     // ref pub list
-    private String refPubListBlockPattern;      // regex
-    private String refPubBlockPattern;          // regex
-    private String refPubAuthorsPattern;        // regex
-    private String refPubTitlePattern;          // regex
-    private String refPubYearPattern;           // regex
+    private String refPubListPattern;
+    private String refPubListItemPattern;
+    private String refPubAuthorsPattern;
+    private String refPubTitlePattern;
+    private String refPubYearPattern;
 
     protected PDatabase() {
     }
@@ -161,20 +163,20 @@ public class PDatabase implements Serializable {
         this.refPubAuthorsPattern = refPubAuthorsPattern;
     }
 
-    public String getRefPubBlockPattern() {
-        return refPubBlockPattern;
+    public String getRefPubListItemPattern() {
+        return refPubListItemPattern;
     }
 
-    public void setRefPubBlockPattern(String refPubBlockPattern) {
-        this.refPubBlockPattern = refPubBlockPattern;
+    public void setRefPubListItemPattern(String refPubListItemPattern) {
+        this.refPubListItemPattern = refPubListItemPattern;
     }
 
-    public String getRefPubListBlockPattern() {
-        return refPubListBlockPattern;
+    public String getRefPubListPattern() {
+        return refPubListPattern;
     }
 
-    public void setRefPubListBlockPattern(String refPubListBlockPattern) {
-        this.refPubListBlockPattern = refPubListBlockPattern;
+    public void setRefPubListPattern(String refPubListPattern) {
+        this.refPubListPattern = refPubListPattern;
     }
 
     public String getRefPubListPageLinkPattern() {
@@ -199,6 +201,22 @@ public class PDatabase implements Serializable {
 
     public void setRefPubYearPattern(String refPubYearPattern) {
         this.refPubYearPattern = refPubYearPattern;
+    }
+
+    public String getResultListItemPattern() {
+        return resultListItemPattern;
+    }
+
+    public void setResultListItemPattern(String resultListItemPattern) {
+        this.resultListItemPattern = resultListItemPattern;
+    }
+
+    public String getResultListPattern() {
+        return resultListPattern;
+    }
+
+    public void setResultListPattern(String resultListPattern) {
+        this.resultListPattern = resultListPattern;
     }
 
     public Byte getResultsPerPage() {

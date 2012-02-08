@@ -9,4 +9,4 @@ resultsperpage			50
 firstindex			1
 bibtexlinkpattern		ColdFusion.navigate\('(exportformats.cfm.*?bibtex.*?)'
 bibtexpattern			<pre .*?>(.*?)</pre>
-refpublistblockpattern		<a name="?citedby"?(.*?)<a name="?indexterms"?
+refpublistpattern		<a name="?citedby"?(.*?)<a name="?indexterms"?

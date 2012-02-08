@@ -3,6 +3,7 @@ package pubsearch.crawl;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -91,6 +92,7 @@ public class HTTPRequest {
         if (null != proxyIP) {
             client.getHostConfiguration().setProxy(proxyIP, proxyPort);
         }
+        client.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
 
         HttpMethodBase methodModel = buildMethod();
         try {

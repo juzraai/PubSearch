@@ -11,8 +11,8 @@ authorspattern			<p class="authors">(.*?)</p>
 titlepattern			<div class="text">.*?<h1.*?>(.*?)</h1>
 yearpattern			(?:<dt>Copyright Year.*?|<dt>SpringerLink Date.*?, )([0-9]{4})</dd>
 refpublistpagelinkpattern	<li><a href="/(content/.{16}/referrers/)"
-refpublistblockpattern		<ol class="citations">(.*?)</ol>
-refpubblockpattern		<li>(.*?)(?:<ul>.*?</ul>)?</li>
+refpublistpattern		<ol class="citations">(.*?)</ol>
+refpublistitempattern		<li>(.*?)(?:<ul>.*?</ul>)?</li>
 refpubauthorspattern		^(.*?)\(
 refpubtitlepattern		\([0-9]{4}\)(.*?)\.
 refpubyearpattern		\(([0-9]{4})\)
