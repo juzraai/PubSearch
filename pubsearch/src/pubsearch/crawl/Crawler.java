@@ -51,16 +51,9 @@ public class Crawler extends ACrawler {
 
             //XXX To test only one database:
 
-            if (!pdb.getName().equals("Google Scholar")) {
+            if (pdb.getName().equals("Google Scholar")) {
                 continue;
             }
-
-
-            //XXX To skip a database (Springer server is down nowadays)
-            if (pdb.getName().equals("SpringerLink")) {
-                continue;
-            }
-
 
             String url = pdb.getBaseUrl() + pdb.getSubmitUrl();
             String qs = pdb.getSubmitParamsFormat().replaceFirst("%s", authorFilter);
@@ -70,10 +63,8 @@ public class Crawler extends ACrawler {
 
             ResultListCrawler rlc = new ResultListCrawler(pdb, url, qs, pdb.getSubmitMethod(), transLev);
             crawlers.add((ACrawler) rlc);
-            if (multithreaded) {
-                rlc.start();
-            } else {
-                rlc.crawl();
+            rlc.launch(multithreaded);
+            if (!multithreaded) {
                 System.out.println(pdb.getName() + " DONE");
             }
 

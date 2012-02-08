@@ -30,12 +30,12 @@ public class HTTPRequestEx extends HTTPRequest {
     }
 
     /**
-     * Meghívja a submit(10)-öt.
+     * Meghívja a submit(5)-öt.
      * @return Sikerült-e HTML oldalt visszakapni.
      */
     @Override
     public boolean submit() {
-        return submit(10); // 10 retries
+        return submit(5); // 5 retries
     }
 
     /**

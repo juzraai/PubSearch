@@ -66,7 +66,7 @@ public class Extract {
             authors = authors.replaceAll("\n", " ").replaceAll("\t", " ").replaceAll("\"", "\\\"");
             authors = authors.replaceAll("&hellip;,?", " ");
             authors = StringTools.clean(authors).trim();
-            authors = authors.replaceAll(" , ", " and ").trim();
+            authors = authors.replaceAll(" ,", ",").replace(" and",",").trim();
         }
         return authors;
     }

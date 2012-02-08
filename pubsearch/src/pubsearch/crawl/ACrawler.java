@@ -20,6 +20,14 @@ public abstract class ACrawler extends Thread {
         setName(getClass().getSimpleName() + " " + getId());
     }
 
+    public void launch(boolean asNewThread) {
+        if (asNewThread) {
+            start();
+        } else {
+            run();
+        }
+    }
+
     @Override
     public void run() {
         time = System.nanoTime();

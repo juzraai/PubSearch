@@ -119,7 +119,7 @@ public class ResultListCrawler extends ACrawler {
                                         String refPubListURL = extract.URL(pdb.getRefPubListPageLinkPattern(), pdb.getBaseUrl(), "");
                                         if (null != refPubListURL) {
                                             ResultListCrawler rlc = new ResultListCrawler(pdb, refPubListURL, "", pdb.getSubmitMethod(), transLev - 1);
-                                            rlc.crawl();
+                                            rlc.launch(false);
                                             citedBy.addAll(rlc.getPublications());
                                         }
                                     }
@@ -180,7 +180,7 @@ public class ResultListCrawler extends ACrawler {
 
             PubPageCrawler ppc = new PubPageCrawler(pdb, url, transLev);
             crawlers.add((ACrawler) ppc);
-            ppc.start();
+            ppc.launch(true);
             return true;
         }
         return false;
