@@ -88,7 +88,7 @@ public class MainTab extends Tab {
         titleField.setOnAction(startSearchAction);
         titleField.setDisable(true);
         titleField.setTooltip(new Tooltip(texts.getString("titleFieldTooltip")));
-        
+
         transLevCombo.getSelectionModel().select(1);
 
         multithreadCheckBox.setStyle("-fx-text-fill: #FAF");
@@ -249,7 +249,7 @@ public class MainTab extends Tab {
                     au = p;
                 }
             }
-            resultsView.getSelectionModel().clearSelection(); //TODO teszt, megoldja-e az xception áradatot...
+            resultsView.getSelectionModel().clearSelection();
             resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(au, titleField.getText())));
         } catch (Throwable t) {
             AlertWindow.show(texts.getString("errorWhileQueryingResults"));

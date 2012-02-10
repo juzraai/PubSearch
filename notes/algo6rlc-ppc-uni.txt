@@ -1,0 +1,78 @@
+LIST URL CRAWL:
+~~~~~~~~~~~~~~~
+bemenet: URL, transLev, PDatabase
+kimenet: Publications
+
+do
+	hozzáadja a megfelelõ start=X-et
+	letölt
+	LIST HTML CRAWL (tr, refPubMode=false)
+	ciklussal hozzáadja a this.publications-höz a crawler publication-jeit
+		1) legyártja az azonosító String-et: ha van URL, akkor azt, ha nincs, akkor AU+TI+YEAR
+		2) ha nincs benne a "feldolgozottak" listájában
+			beleteszi
+			this.pubs.add(pub)
+			newResultCount++
+	ha liinwww és nRC > 0
+		nRC = RPP
+	
+while (nRC==RPP)
+
+(A DUPLIKÁTOKRA CSAK EZEKNÉL KELL ÜGYELNI: liinwww, springer)
+
+LIST HTML CRAWL:
+~~~~~~~~~~~~~~~~~~~~~~
+bemenet: HTML, transLev, PDatabase és refPubMode:boolean
+kimenet: Publications
+
+ha refPubMode és nincs refPub*Pattern, akkor sima listás *Pattern-t használ!
+
+ha tud, szûkít ListPattern
+ha van ListItemPattern
+	blokkonként:
+		ha NOFOLLOW vagy nincs linkPattern
+			PUBPAGE HTML CRAWL (refPubMode=this.refPubMode)
+		különben
+			PUBPAGE URL CRAWL
+	this.publications <- eredmény Publication-ök
+különben
+	kiszedi az összes linket
+	mindegyikre:
+		PUBPAGE URL CRAWL
+	this.publications <- eredmény Publication-ök
+
++lehetne azt, hogy ha RefPubMode, akkor iterált, ha nem, akkor multithread
+VAGY: URL-nél multithread, HTML-nél iterált
+VAGY: fordítva :D
+
+PUBPAGE URL CRAWL:
+~~~~~~~~~~~~~~~~~~
+
+letölti a HTML-t
+PUBPAGE HTML CRAWL
+	
+
+PUBPAGE HTML CRAWL:
+~~~~~~~~~~~~~~~~~~~
+
+bemenet: HTML, tr, PDB, refPubMode
+kimenet: Publication
+
+ha refPubMode és nincs refPub*Pattern, akkor sima listás *Pattern-t használ!
+
+ha van BibTeX link, letölti
+ha nincs, kiszedi
+ha van BibTex
+	abból szedi ki AU/TI/Y
+különben
+	a fõ HTML-bõl
+
+ha van AU és TI
+	ha van RefPubLink és nincs RefPubListPattern (formailag egyezik a ResultListPattern-nel)
+		LIST URL CRAWL (transLev-1)
+	különben van RefPubListPattern
+		letölti a RefPubLink-rõl amit a lapot (ha van link)
+		LIST HTML CRAWL (transLev-1, refPubMode=true)
+	eredmény Pub.-okat a CBlistába
+
+	Publication build, store

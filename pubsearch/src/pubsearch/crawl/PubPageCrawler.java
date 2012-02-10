@@ -72,6 +72,7 @@ public class PubPageCrawler extends ACrawler {
                 if (null != bibtex) {
                     bibtex = bibtex.replaceAll("<br />|<br/>|<br>", "\n");
                     bibtex = StringTools.clean(bibtex);
+                    bibtex = bibtex.replace("\\\"", "");
                     //bibtex = bibtex.replaceFirst("abstract =.*?(\"|\\{).*?(\"|\\}),", ""); // TODO FIX (remove abstract field)
                     Extract extract = new Extract(bibtex);
                     authors = extract.authors("author.*?=[^{]*?\"(.*?)\"");
@@ -90,77 +91,76 @@ public class PubPageCrawler extends ACrawler {
                     year = extract.year(pdb.getYearPattern());
                 }
 
-                /*
-                 * Crawl cited by list
-                 */
-                Set<Publication> citedBy = new HashSet<Publication>();
-                if (transLev > 0 && !isInterrupted()) {
+                if (null != authors && null != title) {
 
-                    String refPubListURL = StringTools.findFirstMatch(html, pdb.getRefPubListPageLinkPattern(), 1);
-                    if (null != refPubListURL && !refPubListURL.startsWith("http:")) {
-                        refPubListURL = pdb.getBaseUrl() + refPubListURL;
-                    }
+                    /*
+                     * Crawl cited by list
+                     */
+                    Set<Publication> citedBy = new HashSet<Publication>();
+                    if (transLev > 0 && !isInterrupted()) {
 
-                    if (null != refPubListURL && null == pdb.getRefPubListPattern()) {
-                        // külső oldal, formailag egyezik a ResultList-tel (CiteSeerX)
-                        String[] up = refPubListURL.split("\\?");
-                        refPubListURL = up[0];
-                        String qs = null;
-                        if (up.length > 1) {
-                            qs = up[1];
-                        }
-                        ResultListCrawler rlc = new ResultListCrawler(pdb, refPubListURL, qs, "GET", transLev - 1);
-                        rlc.crawl();
-                        citedBy.addAll(rlc.getPublications());
+                        String refPubListURL = new Extract(html).URL(pdb.getRefPubListPageLinkPattern(), pdb.getBaseUrl(), "");
 
-                    } else if (null != pdb.getRefPubListPattern()) {
-                        // lista formailag nem egyezik a ResultList-tel (ACM, Springer, MetaPress)
-
-                        // külső oldal? (Springer)
-                        String refPubHTML = html;
-                        if (null != refPubListURL) {
-                            HTTPRequestEx refPubReq = new HTTPRequestEx(refPubListURL);
-                            if (refPubReq.submit()) {
-                                refPubHTML = refPubReq.getHtml();
+                        if (null != refPubListURL && null == pdb.getRefPubListPattern()) {
+                            // külső oldal, formailag egyezik a ResultList-tel (CiteSeerX)
+                            String[] up = refPubListURL.split("\\?");
+                            refPubListURL = up[0];
+                            String qs = null;
+                            if (up.length > 1) {
+                                qs = up[1];
                             }
-                        }
+                            ResultListCrawler rlc = new ResultListCrawler(pdb, refPubListURL, qs, "GET", transLev - 1);
+                            rlc.launch(false);
+                            citedBy.addAll(rlc.getPublications());
 
-                        // listablokk (ACM, Springer, MetaPress)
-                        String refPubList = StringTools.findFirstMatch(refPubHTML, pdb.getRefPubListPattern(), 1);
-                        if (null != refPubList) {
-                            // linkek bejárása, ha lehetséges (ACM)
-                            List<String> refPubURLs = new Extract(refPubList).URLs(pdb.getPubPageLinkPattern(), pdb.getBaseUrl(), pdb.getPubPageLinkModFormat());
-                            if (refPubURLs.size() > 0) {
-                                for (String refPubURL : refPubURLs) {
-                                    PubPageCrawler ppc = new PubPageCrawler(pdb, refPubURL, transLev - 1);
-                                    ppc.crawl();
-                                    citedBy.add(ppc.getPublication());
+                        } else if (null != pdb.getRefPubListPattern()) {
+                            // lista formailag nem egyezik a ResultList-tel (ACM, Springer, MetaPress)
+
+                            // külső oldal? (Springer)
+                            String refPubHTML = html;
+                            if (null != refPubListURL) {
+                                HTTPRequestEx refPubReq = new HTTPRequestEx(refPubListURL);
+                                if (refPubReq.submit()) {
+                                    refPubHTML = refPubReq.getHtml();
                                 }
-                            } else {
-                                // nincsenek linkek, listaelemblokkonkénti parszolás (Springer, MetaPress)
-                                List<String> refPubListItems = StringTools.findAllMatch(refPubList, pdb.getRefPubListItemPattern(), 1);
-                                if (null != refPubListItems) {
-                                    for (String refPubListItem : refPubListItems) {
-                                        Extract extract = new Extract(refPubListItem);
-                                        String refPubAuthor = extract.authors(pdb.getRefPubAuthorsPattern());
-                                        String refPubTitle = extract.title(pdb.getRefPubTitlePattern());
-                                        int refPubYear = extract.year(pdb.getRefPubYearPattern());
-                                        if (null != refPubAuthor && null != refPubTitle) {
-                                            Publication rp = Publication.getReferenceFor(refPubAuthor, refPubTitle, refPubYear, pdb);
-                                            Publication.store(rp);
-                                            citedBy.add(rp);
+                            }
+
+                            // listablokk (ACM, Springer, MetaPress)
+                            String refPubList = StringTools.findFirstMatch(refPubHTML, pdb.getRefPubListPattern(), 1);
+                            if (null != refPubList) {
+                                // linkek bejárása, ha lehetséges (ACM)
+                                List<String> refPubURLs = new Extract(refPubList).URLs(pdb.getPubPageLinkPattern(), pdb.getBaseUrl(), pdb.getPubPageLinkModFormat());
+                                if (refPubURLs.size() > 0) {
+                                    for (String refPubURL : refPubURLs) {
+                                        PubPageCrawler ppc = new PubPageCrawler(pdb, refPubURL, transLev - 1);
+                                        ppc.launch(false);
+                                        citedBy.add(ppc.getPublication());
+                                    }
+                                } else {
+                                    // nincsenek linkek, listaelemblokkonkénti parszolás (Springer, MetaPress)
+                                    List<String> refPubListItems = StringTools.findAllMatch(refPubList, pdb.getRefPubListItemPattern(), 1);
+                                    if (null != refPubListItems) {
+                                        for (String refPubListItem : refPubListItems) {
+                                            Extract extract = new Extract(refPubListItem);
+                                            String refPubAuthor = extract.authors(pdb.getRefPubAuthorsPattern());
+                                            String refPubTitle = extract.title(pdb.getRefPubTitlePattern());
+                                            int refPubYear = extract.year(pdb.getRefPubYearPattern());
+                                            if (null != refPubAuthor && null != refPubTitle) {
+                                                Publication rp = Publication.getReferenceFor(refPubAuthor, refPubTitle, refPubYear, pdb);
+                                                Publication.store(rp);
+                                                citedBy.add(rp);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                /*
-                 * Build and store Publication object
-                 */
-                if (null != authors && null != title) {
+                    /*
+                     * Build and store Publication object
+                     */
+
                     publication = Publication.getReferenceFor(authors, title, year, pdb);
                     publication.setBibtex(bibtex);
                     publication.setUrl(url);

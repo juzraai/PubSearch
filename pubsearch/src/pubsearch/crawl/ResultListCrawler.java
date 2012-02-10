@@ -1,8 +1,5 @@
 package pubsearch.crawl;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -97,17 +94,16 @@ public class ResultListCrawler extends ACrawler {
                 if (null != html) {
                     if (null != listItemPattern) {
                         List<String> listItems = StringTools.findAllMatch(html, listItemPattern, 1);
-                        newResultCount += listItems.size();
+
                         for (String listItem : listItems) {
                             Extract extract = new Extract(listItem);
-                            String u = null;
-                            List<String> urls = extract.URLs(pdb.getPubPageLinkPattern(), pdb.getBaseUrl(), pdb.getPubPageLinkModFormat());
-                            if (urls.size() > 0) {
-                                u = urls.get(0);
-                            }
+                            String u = extract.URL(pdb.getPubPageLinkPattern(), pdb.getBaseUrl(), pdb.getPubPageLinkModFormat());
                             if (!pdb.getPubPageLinkModFormat().equals("NOFOLLOW")) {
-                                startPPCfor(u);
+                                if (startPPCfor(u)) {
+                                    newResultCount++;
+                                }
                             } else {
+                                newResultCount++; // TODO ebben a blokkban is kéne valahogy ellenőrizni a duplikátokat...
                                 String authors = extract.authors(pdb.getAuthorsPattern());
                                 String title = extract.title(pdb.getTitlePattern());
                                 int year = extract.year(pdb.getYearPattern());

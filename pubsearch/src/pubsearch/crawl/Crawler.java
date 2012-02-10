@@ -51,9 +51,9 @@ public class Crawler extends ACrawler {
 
             //XXX To test only one database:
 
-            if (pdb.getName().equals("Google Scholar")) {
+            /*if (!pdb.getName().equals("liinwww.ira.uka.de")) {
                 continue;
-            }
+            }*/
 
             String url = pdb.getBaseUrl() + pdb.getSubmitUrl();
             String qs = pdb.getSubmitParamsFormat().replaceFirst("%s", authorFilter);

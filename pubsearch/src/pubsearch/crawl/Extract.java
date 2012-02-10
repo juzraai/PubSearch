@@ -61,7 +61,7 @@ public class Extract {
     public String authors(String pattern) {
         String authors = StringTools.findFirstMatch(html, pattern, 1);
         if (null != authors) {
-            authors = authors.replaceAll("\\\\('|\")\\{", "").replaceAll("\\{\\\\('|\")", "").replaceAll("\\}", "").replaceAll("\\\\", "");
+            authors = authors.replaceAll("\\\\('|\")\\{", "").replaceAll("\\{\\\\('|\")", "").replaceAll("\\{","").replaceAll("\\}", "").replaceAll("\\\\", "");
             authors = authors.replaceAll("[0-9]{1,2}", "");
             authors = authors.replaceAll("\n", " ").replaceAll("\t", " ").replaceAll("\"", "\\\"");
             authors = authors.replaceAll("&hellip;,?", " ");

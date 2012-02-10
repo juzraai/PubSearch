@@ -66,12 +66,15 @@ public class PubTab extends Tab {
 
         Label dbLabel2 = new Label(p.getDbName());
         final Hyperlink urlLabel2 = new Hyperlink(p.getUrl());
-        urlLabel2.setOnMouseClicked(new EventHandler<MouseEvent>(){
+        urlLabel2.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
             public void handle(MouseEvent arg0) {
                 if (Desktop.isDesktopSupported()) {
                     try {
-                        Desktop.getDesktop().browse(new URI(urlLabel2.getText())); // TODO TEST THIS METHOD ON LINUX (lovi), MAC (lizik)
+                        Desktop d = Desktop.getDesktop();
+                        if (d.isSupported(Desktop.Action.BROWSE)) {
+                            d.browse(new URI(urlLabel2.getText()));
+                        }
                     } catch (Exception ex) {
                     }
                 }
