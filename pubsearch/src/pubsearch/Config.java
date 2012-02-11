@@ -76,6 +76,7 @@ public class Config {
     public static synchronized void delProxy(String proxy) {
         if (proxyList.remove(proxy)) {
             //System.err.println("Proxy " + proxy + " removed from the list.");
+            saveProxyList();
         }
     }
 

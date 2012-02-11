@@ -1,3 +1,9 @@
+TODO
+	össze kéne dolgozni a PP URL és PP HTML crawlereket egybe
+
++++++++++++++++++++++++++++++++++++++
+
+
 LIST URL CRAWL:
 ~~~~~~~~~~~~~~~
 bemenet: URL, transLev, PDatabase
@@ -6,7 +12,7 @@ kimenet: Publications
 do
 	hozzáadja a megfelelõ start=X-et
 	letölt
-	LIST HTML CRAWL (tr, refPubMode=false)
+	LIST HTML CRAWL (tr, refPubMode=false) CURRENT THREAD
 	ciklussal hozzáadja a this.publications-höz a crawler publication-jeit
 		1) legyártja az azonosító String-et: ha van URL, akkor azt, ha nincs, akkor AU+TI+YEAR
 		2) ha nincs benne a "feldolgozottak" listájában
@@ -30,10 +36,10 @@ ha refPubMode és nincs refPub*Pattern, akkor sima listás *Pattern-t használ!
 ha tud, szûkít ListPattern
 ha van ListItemPattern
 	blokkonként:
-		ha NOFOLLOW vagy nincs linkPattern
-			PUBPAGE HTML CRAWL (refPubMode=this.refPubMode)
+		ha NOFOLLOW
+			PUBPAGE HTML CRAWL (refPubMode=this.refPubMode), NEW THREAD
 		különben
-			PUBPAGE URL CRAWL
+			PUBPAGE URL CRAWL, NEW THREAD
 	this.publications <- eredmény Publication-ök
 különben
 	kiszedi az összes linket
@@ -42,8 +48,7 @@ különben
 	this.publications <- eredmény Publication-ök
 
 +lehetne azt, hogy ha RefPubMode, akkor iterált, ha nem, akkor multithread
-VAGY: URL-nél multithread, HTML-nél iterált
-VAGY: fordítva :D
+
 
 PUBPAGE URL CRAWL:
 ~~~~~~~~~~~~~~~~~~
@@ -69,10 +74,24 @@ különben
 
 ha van AU és TI
 	ha van RefPubLink és nincs RefPubListPattern (formailag egyezik a ResultListPattern-nel)
-		LIST URL CRAWL (transLev-1)
+		LIST URL CRAWL (transLev-1) <-- lapozás miatt kell az URL CRAWLER !!!
 	különben van RefPubListPattern
-		letölti a RefPubLink-rõl amit a lapot (ha van link)
+		letölti a RefPubLink-rõl a lapot (ha van link)
 		LIST HTML CRAWL (transLev-1, refPubMode=true)
 	eredmény Pub.-okat a CBlistába
 
 	Publication build, store
+
+
+
+
+
+
+refPub kezelés:
+
+ha van RefPubListPattern (ACM, MP, SPR)
+	ha van RefPubListPageLinkPattern
+		
+különben (CS, GS)
+	kiszedi a linket
+	ha van, akkor LIST URL CRAWL

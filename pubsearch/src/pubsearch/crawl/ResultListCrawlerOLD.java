@@ -14,7 +14,7 @@ import pubsearch.data.Publication;
  *
  * @author Zsolt
  */
-public class ResultListCrawler extends ACrawler {
+public class ResultListCrawlerOLD extends ACrawler {
 
     //in
     private PDatabase pdb;
@@ -27,7 +27,7 @@ public class ResultListCrawler extends ACrawler {
     //out
     private List<Publication> publications = new ArrayList<Publication>();
 
-    public ResultListCrawler(PDatabase pdb, String url, String queryString, String method, int transLev) {
+    public ResultListCrawlerOLD(PDatabase pdb, String url, String queryString, String method, int transLev) {
         this.pdb = pdb;
         this.url = url;
         this.queryString = (null != queryString) ? queryString : "";
@@ -41,7 +41,7 @@ public class ResultListCrawler extends ACrawler {
     }
 
     /**
-     * Bejárja a találati lista oldalakat, kinyeri a linkeket, és PubPageCrawler
+     * Bejárja a találati lista oldalakat, kinyeri a linkeket, és PubPageCrawlerOLD
      * szálakat indít, melyek feldolgozzák a találatok adatait. Ezután megvárja
      * azok befejeződését, majd lekéri az eredményeket.
      */
@@ -114,7 +114,7 @@ public class ResultListCrawler extends ACrawler {
                                     if (transLev > 0) {
                                         String refPubListURL = extract.URL(pdb.getRefPubListPageLinkPattern(), pdb.getBaseUrl(), "");
                                         if (null != refPubListURL) {
-                                            ResultListCrawler rlc = new ResultListCrawler(pdb, refPubListURL, "", pdb.getSubmitMethod(), transLev - 1);
+                                            ResultListCrawlerOLD rlc = new ResultListCrawlerOLD(pdb, refPubListURL, "", pdb.getSubmitMethod(), transLev - 1);
                                             rlc.launch(false);
                                             citedBy.addAll(rlc.getPublications());
                                         }
@@ -144,8 +144,8 @@ public class ResultListCrawler extends ACrawler {
                 waitForCrawlers(null);
 
                 for (ACrawler c : crawlers) {
-                    if (c instanceof PubPageCrawler) {
-                        PubPageCrawler ppc = (PubPageCrawler) c;
+                    if (c instanceof PubPageCrawlerOLD) {
+                        PubPageCrawlerOLD ppc = (PubPageCrawlerOLD) c;
                         if (null != ppc.getPublication()) {
                             publications.add(ppc.getPublication());
                         }
@@ -174,7 +174,7 @@ public class ResultListCrawler extends ACrawler {
         if (!alreadyCrawled.contains(url)) {
             alreadyCrawled.add(url);
 
-            PubPageCrawler ppc = new PubPageCrawler(pdb, url, transLev);
+            PubPageCrawlerOLD ppc = new PubPageCrawlerOLD(pdb, url, transLev);
             crawlers.add((ACrawler) ppc);
             ppc.launch(true);
             return true;

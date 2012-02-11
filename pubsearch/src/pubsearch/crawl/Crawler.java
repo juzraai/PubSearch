@@ -51,7 +51,7 @@ public class Crawler extends ACrawler {
 
             //XXX To test only one database:
 
-            /*if (!pdb.getName().equals("liinwww.ira.uka.de")) {
+            /*if (!pdb.getName().equals("MetaPress")) {
                 continue;
             }*/
 
@@ -61,8 +61,11 @@ public class Crawler extends ACrawler {
                 qs = pdb.getSubmitParamsWithTitleFormat().replaceFirst("%s", qs).replaceFirst("%s", titleFilter);
             }
 
-            ResultListCrawler rlc = new ResultListCrawler(pdb, url, qs, pdb.getSubmitMethod(), transLev);
-            crawlers.add((ACrawler) rlc);
+            url += "?" + qs;
+
+            //ResultListCrawlerOLD rlc = new ResultListCrawlerOLD(pdb, url, qs, pdb.getSubmitMethod(), transLev);
+            PubListCrawler rlc = new PubListCrawler(pdb, url, transLev, false);
+            crawlers.add(rlc);
             rlc.launch(multithreaded);
             if (!multithreaded) {
                 System.out.println(pdb.getName() + " DONE");
