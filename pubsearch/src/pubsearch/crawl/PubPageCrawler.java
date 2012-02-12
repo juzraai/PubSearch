@@ -1,5 +1,8 @@
 package pubsearch.crawl;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import pubsearch.StringTools;
@@ -65,6 +68,10 @@ public class PubPageCrawler extends ACrawler {
             String bibtexLink = StringTools.findFirstMatch(html, pdb.getBibtexLinkPattern(), 1);
             if (null != bibtexLink) {
 
+                if (isInterrupted()) {
+                    return;
+                }
+
                 HTTPRequestEx bibreq = new HTTPRequestEx(pdb.getBaseUrl() + bibtexLink);
                 if (bibreq.submit()) {
                     String bibhtml = bibreq.getHtml();
@@ -102,11 +109,25 @@ public class PubPageCrawler extends ACrawler {
             } else {
                 Extract extract = new Extract(html);
 
-                // TODO refPubMode based au/ti/y patterns!!!! --------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                String authorsPattern = pdb.getAuthorsPattern();
+                String titlePattern = pdb.getTitlePattern();
+                String yearPattern = pdb.getYearPattern();
 
-                authors = extract.authors(pdb.getAuthorsPattern());
-                title = extract.title(pdb.getTitlePattern());
-                year = extract.year(pdb.getYearPattern());
+                if (refPubMode) {
+                    if (null != pdb.getRefPubAuthorsPattern()) {
+                        authorsPattern = pdb.getRefPubAuthorsPattern();
+                    }
+                    if (null != pdb.getRefPubTitlePattern()) {
+                        titlePattern = pdb.getRefPubTitlePattern();
+                    }
+                    if (null != pdb.getRefPubYearPattern()) {
+                        yearPattern = pdb.getRefPubYearPattern();
+                    }
+                }
+
+                authors = extract.authors(authorsPattern);
+                title = extract.title(titlePattern);
+                year = extract.year(yearPattern);
             }
 
             if (null != authors && null != title) {
@@ -116,16 +137,24 @@ public class PubPageCrawler extends ACrawler {
                     String refPubListURL = new Extract(html).URL(pdb.getRefPubListPageLinkPattern(), pdb.getBaseUrl(), "");
 
                     if (null != refPubListURL && null == pdb.getRefPubListPattern()) { // CiteSeerX, Google Scholar
-                        PubListCrawler plc = new PubListCrawler(pdb, refPubListURL, transLev - 1, true);
-                        plc.launch(false);
-                        citedBy.addAll(plc.getPublications());
+
+                        if (!isInterrupted()) {
+                            PubListCrawler plc = new PubListCrawler(pdb, refPubListURL, transLev - 1, true);
+                            plc.launch(false);
+                            citedBy.addAll(plc.getPublications());
+                        }
+
                     } else if (null != pdb.getRefPubListPattern()) { // ACM, MetaPress, Springer
                         String refPubListHTML = null;
                         if (null != refPubListURL) { // Springer
-                            HTTPRequestEx req = new HTTPRequestEx(refPubListURL);
-                            if (req.submit()) {
-                                refPubListHTML = req.getHtml();
+
+                            if (!isInterrupted()) {
+                                HTTPRequestEx req = new HTTPRequestEx(refPubListURL);
+                                if (req.submit()) {
+                                    refPubListHTML = req.getHtml();
+                                }
                             }
+
                         } else if (null == pdb.getRefPubListPageLinkPattern()) { // ACM, MetaPress
                             refPubListHTML = html;
                         }

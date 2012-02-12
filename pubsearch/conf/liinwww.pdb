@@ -6,4 +6,4 @@ submitparamswithtitleformat	%s%2bti:"%s"
 pubpagelinkpattern		biblinks.*?"/(.*?bibshow.*?)"
 resultsperpage			100
 firstindex			1
-bibtexpattern			<pre class="bibtex">(.*?)</pre>
+bibtexpattern			<pre class="?bibtex"?>(.*?)</pre>

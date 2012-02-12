@@ -1,8 +1,8 @@
 name				Google Scholar
 baseurl				http://scholar.google.com/
 submiturl			scholar
-submitparamsformat		hl=en&num=50&btnG=Search&as_sdt=0%2C5&as_vis=1&q=author:"%s"
-submitparamswithtitleformat	%s+allintitle:(%s)
+submitparamsformat		btnG=Search+Scholar&num=50&as_vis=1&as_sauthors=%22%s%22&as_occt=title&as_q=
+submitparamswithtitleformat	%s%22%s%22
 resultsperpage			50
 firstindex			0
 resultlistitempattern		<div class="?gs_r"?>((.*?</div>.*?)*?)</div>
@@ -11,4 +11,4 @@ pubpagelinkmodformat		NOFOLLOW
 authorspattern			<div class="?gs_a"?>(.*?)-
 titlepattern			<a.*?>(.*?)</a>.*?</h3>
 yearpattern			<div class="?gs_a"?>.*?([0-9]{4}) -
-refpublistpagelinkpattern	<div class="?gs_fl"?><a href="/(.*?)">Cited by
+refpublistpagelinkpattern	<div class="?gs_fl"?><a href="/(.*?)"[^>]*>Cited by
