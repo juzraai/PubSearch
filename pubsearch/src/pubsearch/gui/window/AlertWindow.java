@@ -29,7 +29,7 @@ public class AlertWindow extends AWindow {
      * statikus show(msg), így nem kell mindig felépíteni egy ablakot.
      */
     private static AlertWindow alertWindow = new AlertWindow("");
-    private Label messageLabel = new LabelEx("", true, true, false, GuiTools.shadow);
+    private Label messageLabel = new LabelEx("").bold().shadow().white();
 
     /**
      * Létrehoz egy új hibaüzenet ablakot,

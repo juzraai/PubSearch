@@ -1,8 +1,5 @@
 package pubsearch.crawl;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import pubsearch.StringTools;
@@ -65,14 +62,14 @@ public class PubPageCrawler extends ACrawler {
              * Get BibTeX if can
              */
             String bibtex = null;
-            String bibtexLink = StringTools.findFirstMatch(html, pdb.getBibtexLinkPattern(), 1);
-            if (null != bibtexLink) {
+            String bibtexURL = new Extract(html).URL(pdb.getBibtexLinkPattern(), pdb.getBaseUrl(), "");
+            if (null != bibtexURL) {
 
                 if (isInterrupted()) {
                     return;
                 }
 
-                HTTPRequestEx bibreq = new HTTPRequestEx(pdb.getBaseUrl() + bibtexLink);
+                HTTPRequestEx bibreq = new HTTPRequestEx(bibtexURL);
                 if (bibreq.submit()) {
                     String bibhtml = bibreq.getHtml();
                     bibtex = StringTools.findFirstMatch(bibhtml, pdb.getBibtexPattern(), 1);
@@ -91,7 +88,6 @@ public class PubPageCrawler extends ACrawler {
                 bibtex = bibtex.replaceAll("<br />|<br/>|<br>", "\n");
                 bibtex = StringTools.clean(bibtex);
                 bibtex = bibtex.replace("\\\"", "");
-                //bibtex = bibtex.replaceFirst("abstract =.*?(\"|\\{).*?(\"|\\}),", ""); // TODO FIX (remove abstract field)
 
                 Extract extract = new Extract(bibtex);
 

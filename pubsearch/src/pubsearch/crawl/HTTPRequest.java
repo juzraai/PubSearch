@@ -7,7 +7,6 @@ import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import pubsearch.StringTools;
 
 /**
  * HTTP kérést végrehajtó osztály. Használható egy oldal letöltésére, GET/POST
@@ -94,13 +93,18 @@ public class HTTPRequest {
         }
         client.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
 
+
         HttpMethodBase methodModel = buildMethod();
+
+        int timeout = 20 * 1000;
+        client.getParams().setParameter("http.socket.timeout", timeout);
+        client.getParams().setParameter("http.connection.timeout", timeout);
+
         try {
             if (client.executeMethod(methodModel) != HttpStatus.SC_OK) {
                 throw new Exception("Method failed: " + methodModel.getStatusLine());
             }
 
-            // TODO should detect if content-length header is present or not - if not, throw new Exception("Unknown content length.")
             InputStream instream = methodModel.getResponseBodyAsStream();
             byte[] buffer = new byte[4096];
             byte[] htmlBytes = new byte[0];
@@ -112,12 +116,7 @@ public class HTTPRequest {
                 htmlBytes = b;
             }
             html = new String(htmlBytes, Charset.forName("UTF-8"));
-            bytes += htmlBytes.length;
-
-            if (null == StringTools.findFirstMatch(html, "<.*?>", 0)) { // a bit buggy detection :-)
-                System.err.println("not a HTML");
-                throw new Exception("Not a HTML file.");
-            }
+            addBytes(htmlBytes.length);
 
             success = true;
 
@@ -140,7 +139,7 @@ public class HTTPRequest {
     /**
      * @return A statikus bájtszámláló értéke.
      */
-    public static long getBytes() {
+    public static synchronized long getBytes() {
         return bytes;
     }
 
@@ -168,7 +167,7 @@ public class HTTPRequest {
         m.getParams().setParameter(HttpMethodParams.USER_AGENT, "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
         m.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0, false));
         m.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 10 * 1000);
-        m.setFollowRedirects(false); //TODO tesztelni true-val is, új proxykkal, hogy csak proxy függő-e a hiba!!! (SEVERE: Narrowly avoided infinite loop)
+        m.setFollowRedirects(false);
         return m;
     }
 }

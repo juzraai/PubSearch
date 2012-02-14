@@ -1,7 +1,6 @@
 package pubsearch.gui;
 
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.effect.Blend;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
@@ -20,7 +19,7 @@ public class GuiTools {
     public static final Reflection reflection = new Reflection();
     public static final DropShadow shadow = new DropShadow();
     public static final Blend reflAndShadow = new Blend();
-    
+
     static {
         reflection.setFraction(0.75);
         shadow.setOffsetX(3.0f);
@@ -29,17 +28,6 @@ public class GuiTools {
         reflAndShadow.setMode(BlendMode.OVERLAY);
         reflAndShadow.setBottomInput(reflection);
         reflAndShadow.setTopInput(shadow);
-    }
-    /**
-     * Hozzáad egy stílusosztályt egy/több Node-hoz.
-     *
-     * @param styleClass A stílusosztály neve.
-     * @param nodes Node(-ok).
-     */
-    public static void addStyleClassToNodes(String styleClass, Node... nodes) {
-        for (Node n : nodes) {
-            n.getStyleClass().add(styleClass);
-        }
     }
 
     /**

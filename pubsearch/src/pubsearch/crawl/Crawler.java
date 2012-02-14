@@ -50,33 +50,22 @@ public class Crawler extends ACrawler {
             }
 
             //XXX To test only one database:
-            if (!pdb.getName().equals("Google Scholar")) {
+            /*if (!pdb.getName().equals("ACM")) {
                 continue;
-            }
+            }*/
 
             String url = pdb.getBaseUrl() + pdb.getSubmitUrl();
             String qs = pdb.getSubmitParamsFormat().replaceFirst("%s", authorFilter);
             if (null != titleFilter) {
                 qs = pdb.getSubmitParamsWithTitleFormat().replaceFirst("%s", qs).replaceFirst("%s", titleFilter);
             }
-
-
-            // <use old crawlers>
-            //ResultListCrawlerOLD rlc = new ResultListCrawlerOLD(pdb, url, qs, pdb.getSubmitMethod(), transLev);
-            // </use old crawlers>
-
-            // <use NEW crawlers>
             url += "?" + qs;
             PubListCrawler rlc = new PubListCrawler(pdb, url, transLev, false);
-            // </use NEW crawlers>
-
-
             crawlers.add(rlc);
             rlc.launch(multithreaded);
             if (!multithreaded) {
                 System.out.println(pdb.getName() + " DONE");
             }
-
         }
 
         if (multithreaded) {

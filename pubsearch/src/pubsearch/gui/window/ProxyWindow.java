@@ -15,7 +15,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.WindowEvent;
 import pubsearch.Config;
 import pubsearch.GetProxyList;
-import pubsearch.gui.GuiTools;
 import pubsearch.gui.control.LabelEx;
 
 /**
@@ -53,9 +52,8 @@ public class ProxyWindow extends AWindow {
      * @return A felépített ablaktartalom.
      */
     private Scene buildScene() {
-        LabelEx plzLabel = new LabelEx(texts.getString("proxyListDescription"), true, false, false, GuiTools.shadow);
+        LabelEx plzLabel = new LabelEx(texts.getString("proxyListDescription")).shadow().white().wrap();
         plzLabel.setTextAlignment(TextAlignment.JUSTIFY);
-        plzLabel.setWrapText(true);
 
         proxyTA.setStyle("-fx-font-family:monospace;");
         proxyTA.setPrefWidth(200);

@@ -63,14 +63,7 @@ public class HTTPRequestEx extends HTTPRequest {
             success = super.submit();
 
             if (!success) {
-                if (null != StringTools.findFirstMatch(error, "Circular", 0)) {
-                    // ACM fix: ha nincs találat, akkor circular redirect-be megy,
-                    // ez nem a proxy hibája, ezért ezesetben nem töröljük.
-                    System.err.println("Circular redirect detected.");
-                    return false;
-                } else {
-                    Config.delProxy(proxy);
-                }
+                Config.delProxy(proxy);
             }
 
             tries--;
@@ -79,7 +72,7 @@ public class HTTPRequestEx extends HTTPRequest {
         if (success) {
             addToCache(toCache, html);
         } else {
-            System.err.println("Download failed: " + toCache);
+            System.out.println("Download failed: " + toCache);
         }
 
         return success;

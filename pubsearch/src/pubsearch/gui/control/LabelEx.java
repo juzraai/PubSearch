@@ -2,41 +2,46 @@ package pubsearch.gui.control;
 
 import javafx.scene.control.Label;
 import javafx.scene.effect.Effect;
+import pubsearch.gui.GuiTools;
 
 /**
- * Egy kényelmesebb konstruktorok a Label objektumhoz, hogy csökkentsem a programsorokat.
+ * A Label objektum kényelmesebb paraméterezéséhez.
  *
  * @author Zsolt
  */
 public class LabelEx extends Label {
 
-    public LabelEx(String text, Effect effect) {
-        this(text, false, false, false, effect);
-    }
-
-    public LabelEx(String text, boolean bold, boolean italic) {
-        this(text, false, bold, italic, null);
-    }
-
-    public LabelEx(String text, boolean white, boolean bold, boolean italic) {
-        this(text, white, bold, italic, null);
-    }
-
-    public LabelEx(String text, boolean bold, boolean italic, Effect effect) {
-        this(text, false, bold, italic, effect);
-    }
-
-    public LabelEx(String text, boolean white, boolean bold, boolean italic, Effect effect) {
+    public LabelEx(String text) {
         super(text);
-        if (white) {
-            getStyleClass().add("white-text");
-        }
-        if (bold) {
-            getStyleClass().add("bold-text");
-        }
-        if (italic) {
-            getStyleClass().add("italic-text");
-        }
-        setEffect(effect);
+    }
+
+    public LabelEx bold() {
+        getStyleClass().add("bold-text");
+        return this;
+    }
+
+    public LabelEx effect(Effect e) {
+        setEffect(e);
+        return this;
+    }
+
+    public LabelEx italic() {
+        getStyleClass().add("italic-text");
+        return this;
+    }
+
+    public LabelEx shadow() {
+        setEffect(GuiTools.shadow);
+        return this;
+    }
+
+    public LabelEx white() {
+        getStyleClass().add("white-text");
+        return this;
+    }
+
+    public LabelEx wrap() {
+        setWrapText(true);
+        return this;
     }
 }

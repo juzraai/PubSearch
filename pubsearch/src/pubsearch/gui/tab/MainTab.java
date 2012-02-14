@@ -7,7 +7,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.DepthTest;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -71,9 +70,9 @@ public class MainTab extends Tab {
         /*
          * Top
          */
-        Label authorLabel = new LabelEx(texts.getString("searchForAuthor"), true, false, GuiTools.shadow);
-        Label titleLabel = new LabelEx(texts.getString("filterByTitle"), false, false, GuiTools.shadow);
-        Label transLevLabel = new LabelEx(texts.getString("transitivityLevel"), false, false, GuiTools.shadow);
+        Label authorLabel = new LabelEx(texts.getString("searchForAuthor")).bold().shadow().white();
+        Label titleLabel = new LabelEx(texts.getString("filterByTitle")).shadow().white();
+        Label transLevLabel = new LabelEx(texts.getString("transitivityLevel")).shadow().white();
 
         authorField.setOnAction(startSearchAction);
         authorField.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -214,7 +213,7 @@ public class MainTab extends Tab {
             if (Config.getProxyList().isEmpty()) {
                 // nincs proxy, hibajelzés
                 proxyWindow.show();
-                AlertWindow.show(texts.getString("proxyListNeeded")); // TODO rethink: do we need this? we have an auto-downloader
+                AlertWindow.show(texts.getString("proxyListNeeded"));
             } else {
                 // van proxy, indul a crawl, külön szálon, majd ő értesít az eredmények megjelenítéséről
                 switchScene(false);

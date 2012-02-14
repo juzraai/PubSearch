@@ -23,7 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import pubsearch.data.Publication;
-import pubsearch.gui.GuiTools;
+import pubsearch.gui.control.LabelEx;
 import pubsearch.gui.control.PubTable;
 import pubsearch.gui.window.MainWindow;
 
@@ -46,25 +46,25 @@ public class PubTab extends Tab {
         /*
          * Details
          */
-        Label authorsLabel1 = new Label(texts.getString("authorsLabel"));
-        Label titleLabel1 = new Label(texts.getString("titleLabel"));
-        Label yearLabel1 = new Label(texts.getString("yearLabel"));
-        Label dbLabel1 = new Label(texts.getString("databaseLabel"));
-        Label urlLabel1 = new Label(texts.getString("urlLabel"));
+        Label authorsLabel1 = new LabelEx(texts.getString("authorsLabel")).bold();
+        Label titleLabel1 = new LabelEx(texts.getString("titleLabel")).bold();
+        Label yearLabel1 = new LabelEx(texts.getString("yearLabel")).bold();
+        Label dbLabel1 = new LabelEx(texts.getString("databaseLabel")).bold();
+        Label urlLabel1 = new LabelEx(texts.getString("urlLabel")).bold();
 
         dbLabel1.setMinWidth(75);
 
-        Label authorsLabel2 = new Label(p.getAuthors());
+        Label authorsLabel2 = new LabelEx(p.getAuthors()).italic();
         authorsLabel2.setWrapText(true);
 
-        Label titleLabel2 = new Label(p.getTitle());
+        Label titleLabel2 = new LabelEx(p.getTitle()).italic();
         titleLabel2.setWrapText(true);
 
         Integer y = p.getYear();
         String ys = (null == y || -1 == y) ? texts.getString("unknownYear") : y.toString();
-        Label yearLabel2 = new Label(ys);
+        Label yearLabel2 = new LabelEx(ys).italic();
 
-        Label dbLabel2 = new Label(p.getDbName());
+        Label dbLabel2 = new LabelEx(p.getDbName()).italic();
         final Hyperlink urlLabel2 = new Hyperlink(p.getUrl());
         urlLabel2.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
@@ -80,9 +80,6 @@ public class PubTab extends Tab {
                 }
             }
         });
-
-        GuiTools.addStyleClassToNodes("bold-text", authorsLabel1, titleLabel1, yearLabel1, dbLabel1, urlLabel1);
-        GuiTools.addStyleClassToNodes("italic-text", authorsLabel2, titleLabel2, yearLabel2, dbLabel2, urlLabel2);
 
         GridPane details = new GridPane();
         details.setPadding(new Insets(12));

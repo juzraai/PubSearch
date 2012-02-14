@@ -14,7 +14,7 @@ public class Config {
     private static final String PROXY_FILE = CONF_DIR + "/proxy.lst";
     private static String jdbcUrl = "localhost:3306";
     private static String jdbcUser = "root";
-    private static String jdbcPass = "root";
+    private static String jdbcPass = "";
     private static List<String> proxyList = new ArrayList<String>();
 
     public static String getJdbcPass() {
@@ -47,7 +47,6 @@ public class Config {
 
     public static void setProxyList(List<String> proxyList) {
         Config.proxyList = new LinkedList<String>(new HashSet<String>(proxyList));
-        // a Set-tel kiszűrjük a duplikátokat.
     }
 
     public static void setProxyList(String[] proxies) {
@@ -56,7 +55,7 @@ public class Config {
         setProxyList(pl); // meghívjuk a List-es verziót, az kiszűri a duplikátokat
     }
 
-    public static synchronized String getRandomProxy() {
+    public static synchronized String getRandomProxy() { // TODO újra átgondolni, szépíteni még!
         if (proxyList.isEmpty()) {
             setProxyList(GetProxyList.getProxyList());
         }
@@ -75,8 +74,7 @@ public class Config {
      */
     public static synchronized void delProxy(String proxy) {
         if (proxyList.remove(proxy)) {
-            //System.err.println("Proxy " + proxy + " removed from the list.");
-            saveProxyList();
+            //System.out.println("Proxy removed: " + proxy);
         }
     }
 
@@ -90,7 +88,6 @@ public class Config {
             setJdbcUrl(r.readLine());
             setJdbcUser(r.readLine());
             setJdbcPass(r.readLine());
-        } catch (FileNotFoundException ex) {
         } catch (IOException ex) {
         } finally {
             if (null != r) {
@@ -140,7 +137,6 @@ public class Config {
                 proxies.add(r.readLine());
             }
             setProxyList(proxies);
-        } catch (FileNotFoundException ex) {
         } catch (IOException ex) {
         } finally {
             if (null != r) {

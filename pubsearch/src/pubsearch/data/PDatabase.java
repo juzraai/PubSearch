@@ -22,7 +22,6 @@ public class PDatabase implements Serializable {
     private String baseUrl;
     // form submit
     private String submitUrl = "";
-    private String submitMethod;                // "GET" / "POST"
     @Column(nullable = false)
     private String submitParamsFormat;          // formatstring, %s:author
     private String submitParamsWithTitleFormat = "%s"; // formatstring, %s:querystring, %s:title
@@ -237,14 +236,6 @@ public class PDatabase implements Serializable {
         if (null != startField) {
             this.startField = startField;
         }
-    }
-
-    public String getSubmitMethod() {
-        return submitMethod;
-    }
-
-    public void setSubmitMethod(String submitMethod) {
-        this.submitMethod = submitMethod;
     }
 
     public String getSubmitParamsFormat() {

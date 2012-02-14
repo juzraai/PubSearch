@@ -65,7 +65,6 @@ public class Importer {
 
             pdb.setBaseUrl(fields.get("baseurl"));
             pdb.setSubmitUrl(fields.get("submiturl"));
-            pdb.setSubmitMethod(fields.get("submitmethod"));
             pdb.setSubmitParamsFormat(fields.get("submitparamsformat"));
             pdb.setSubmitParamsWithTitleFormat(fields.get("submitparamswithtitleformat"));
 

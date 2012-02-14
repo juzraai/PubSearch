@@ -16,7 +16,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.WindowEvent;
 import pubsearch.Config;
 import pubsearch.data.Connection;
-import pubsearch.gui.GuiTools;
 import pubsearch.gui.control.LabelEx;
 
 /**
@@ -30,7 +29,7 @@ public class ConfigWindow extends AWindow {
     private TextField urlField = new TextField();
     private TextField userField = new TextField();
     private PasswordField passwordField = new PasswordField();
-    private Label msgLabel = new LabelEx("", true, true, false);
+    private Label msgLabel = new LabelEx("").bold().white();
     private boolean configIsOK;
 
     public ConfigWindow(MainWindow mainWindow) {
@@ -63,17 +62,17 @@ public class ConfigWindow extends AWindow {
      * @return A felépített ablaktartalom.
      */
     private Scene buildScene() {
-        LabelEx plzLabel = new LabelEx(texts.getString("databaseDescription"), true, false, false, GuiTools.shadow);
+        LabelEx plzLabel = new LabelEx(texts.getString("databaseDescription")).shadow().white();
         plzLabel.setTextAlignment(TextAlignment.JUSTIFY);
         plzLabel.setWrapText(true);
-        LabelEx urlLabel1 = new LabelEx(texts.getString("dbServer"), true, true, false, GuiTools.shadow);
-        LabelEx urlLabel2 = new LabelEx("\tmysql://", true, false, true, GuiTools.shadow);
-        LabelEx urlLabel3 = new LabelEx("/pubsearch", true, false, true, GuiTools.shadow);
-        LabelEx urlLabel4 = new LabelEx("(" + texts.getString("default") + " 'localhost:3306')", true, false, false, GuiTools.shadow);
-        LabelEx userLabel1 = new LabelEx(texts.getString("dbUsername"), true, true, false, GuiTools.shadow);
-        LabelEx userLabel2 = new LabelEx("(" + texts.getString("default") + " 'root')", true, false, false, GuiTools.shadow);
-        LabelEx passwordLabel1 = new LabelEx(texts.getString("dbPassword"), true, true, false, GuiTools.shadow);
-        LabelEx passwordLabel2 = new LabelEx("(" + texts.getString("default") + " " + texts.getString("empty") + ")", true, false, false, GuiTools.shadow);
+        LabelEx urlLabel1 = new LabelEx(texts.getString("dbServer")).bold().shadow().white();
+        LabelEx urlLabel2 = new LabelEx("\tmysql://").italic().shadow().white();
+        LabelEx urlLabel3 = new LabelEx("/pubsearch").italic().shadow().white();
+        LabelEx urlLabel4 = new LabelEx("(" + texts.getString("default") + " 'localhost:3306')").shadow().white();
+        LabelEx userLabel1 = new LabelEx(texts.getString("dbUsername")).bold().shadow().white();
+        LabelEx userLabel2 = new LabelEx("(" + texts.getString("default") + " 'root')").shadow().white();
+        LabelEx passwordLabel1 = new LabelEx(texts.getString("dbPassword")).bold().shadow().white();
+        LabelEx passwordLabel2 = new LabelEx("(" + texts.getString("default") + " " + texts.getString("empty") + ")").shadow().white();
 
         EventHandler<ActionEvent> reInitAction = new EventHandler<ActionEvent>() {
 
