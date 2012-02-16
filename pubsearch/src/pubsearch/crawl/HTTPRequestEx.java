@@ -3,7 +3,6 @@ package pubsearch.crawl;
 import java.util.HashMap;
 import java.util.Map;
 import pubsearch.Config;
-import pubsearch.StringTools;
 
 /**
  * HTTPRequest osztály kiegészítése a program követelményeihez.

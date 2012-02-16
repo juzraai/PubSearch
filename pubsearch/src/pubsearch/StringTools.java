@@ -1,5 +1,6 @@
 package pubsearch;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -94,6 +95,9 @@ public class StringTools {
             // tört számunk van, 2 tizedesre kerekítünk, majd levágjuk a fölös 0-kat a végéről
             bs = String.format("%.2f", b);
             while (bs.endsWith("0")) {
+                bs = bs.substring(0, bs.length() - 1);
+            }
+            if (bs.endsWith(Character.toString(new DecimalFormat().getDecimalFormatSymbols().getDecimalSeparator()))) {
                 bs = bs.substring(0, bs.length() - 1);
             }
         }
