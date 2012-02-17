@@ -88,18 +88,12 @@ public class StringTools {
         }
 
         String bs;
-        if (b % 1 == 0) {
-            // egész számról van szó, egészként írjuk ki (így nem lesz .0 a végén)
-            bs = Integer.toString((int) b);
-        } else {
-            // tört számunk van, 2 tizedesre kerekítünk, majd levágjuk a fölös 0-kat a végéről
-            bs = String.format("%.2f", b);
-            while (bs.endsWith("0")) {
-                bs = bs.substring(0, bs.length() - 1);
-            }
-            if (bs.endsWith(Character.toString(new DecimalFormat().getDecimalFormatSymbols().getDecimalSeparator()))) {
-                bs = bs.substring(0, bs.length() - 1);
-            }
+        bs = String.format("%.2f", b);
+        while (bs.endsWith("0")) {
+            bs = bs.substring(0, bs.length() - 1);
+        }
+        if (bs.endsWith(Character.toString(new DecimalFormat().getDecimalFormatSymbols().getDecimalSeparator()))) {
+            bs = bs.substring(0, bs.length() - 1);
         }
         return bs + " " + units[i];
     }
