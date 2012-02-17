@@ -1,0 +1,5 @@
+#if ($year)
+$authors, $title. $year. $!url
+#else
+$authors, $title. $!url
+#end

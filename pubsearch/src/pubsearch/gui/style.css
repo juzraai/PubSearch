@@ -59,3 +59,8 @@
     -fx-text-fill: #ACF;
     -fx-underline: true;
 }
+
+.text-area {
+    -fx-font-family: monospace;
+    -fx-font-size: 14px;
+}

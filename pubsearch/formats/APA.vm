@@ -1,0 +1,5 @@
+#if ($year)
+$authors ($year). $title.
+#else
+$authors. $title.
+#end

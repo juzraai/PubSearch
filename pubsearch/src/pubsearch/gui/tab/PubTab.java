@@ -1,13 +1,13 @@
 package pubsearch.gui.tab;
 
 import java.awt.Desktop;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,6 +22,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import pubsearch.data.Publication;
 import pubsearch.gui.control.LabelEx;
 import pubsearch.gui.control.PubTable;
@@ -37,6 +40,10 @@ public class PubTab extends Tab {
     private MainWindow mainWindow;
     private Publication p;
     private final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
+
+    static {
+        Velocity.init();
+    }
 
     public PubTab(MainWindow mainWindow, Publication p) {
         super(p.getTitle());
@@ -113,19 +120,15 @@ public class PubTab extends Tab {
         /*
          * BibTeX tab
          */
-        // TODO uniformize somehow...
         if (null != p.getBibtex()) {
             final TextArea bibtexTA = new TextArea(p.getBibtex());
             bibtexTA.setEditable(false);
-            bibtexTA.setStyle("-fx-font-family:monospace;-fx-font-size:14px;");
 
             Button copyButton = new Button(texts.getString("copyToClipboard"));
             copyButton.setOnAction(new EventHandler<ActionEvent>() {
 
                 public void handle(ActionEvent event) {
-                    bibtexTA.selectAll();
-                    bibtexTA.copy();
-                    bibtexTA.deselect();
+                    copyTextAreaContent(bibtexTA);
                 }
             });
 
@@ -133,33 +136,13 @@ public class PubTab extends Tab {
             saveButton.setOnAction(new EventHandler<ActionEvent>() {
 
                 public void handle(ActionEvent event) {
-                    FileChooser fc = new FileChooser();
-                    fc.setTitle(texts.getString("saveDialogTitle"));
-                    fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(texts.getString("allFiles") + " (*.*)", "*.*"));
-
-                    File f = fc.showSaveDialog(PubTab.this.mainWindow);
-
-                    BufferedWriter w = null;
-                    try {
-                        w = new BufferedWriter(new FileWriter(f));
-                        w.write(bibtexTA.getText());
-                        w.newLine();
-                    } catch (IOException e) {
-                    } finally {
-                        System.out.println("BIBTEX EXPORTED.");
-                        if (w != null) {
-                            try {
-                                w.close();
-                            } catch (IOException e) {
-                            }
-                        }
-                    }
+                    saveTextAreaContent(bibtexTA);
                 }
             });
 
             HBox buttons = new HBox(10);
             buttons.setAlignment(Pos.CENTER_RIGHT);
-            buttons.setPadding(new Insets(12));
+            buttons.setPadding(new Insets(10));
             buttons.getChildren().addAll(copyButton, saveButton);
 
             BorderPane bibtexTabLayout = new BorderPane();
@@ -190,6 +173,89 @@ public class PubTab extends Tab {
         }
 
         /*
+         * Export citation
+         */
+        final List<String> vmFiles = new ArrayList<String>();
+        File confDir = new File("formats");
+        String[] confFiles = confDir.list();
+        if (null != confFiles) {
+            for (String f : confFiles) {
+                if (f.endsWith(".vm")) {
+                    vmFiles.add("formats/" + f);
+                }
+            }
+        }
+        if (!vmFiles.isEmpty()) {
+
+            final VelocityContext context = new VelocityContext();
+            context.put("authors", p.getAuthors());
+            context.put("title", p.getTitle());
+            if (-1 < p.getYear()) {
+                context.put("year", p.getYear());
+            }
+            if (null != p.getUrl()) {
+                context.put("url", p.getUrl());
+            }
+
+            final TextArea exportTA = new TextArea();
+            exportTA.setEditable(false);
+
+            ChoiceBox<String> formatCB = new ChoiceBox<String>();
+            for (String t : vmFiles) {
+                t = t.replaceFirst("formats/", "");
+                t = t.substring(0, t.length() - 3);
+                formatCB.getItems().add(t);
+            }
+            formatCB.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+
+                public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+                    exportTA.setText("");
+                    try {
+                        Template template = Velocity.getTemplate(vmFiles.get(newValue.intValue()));
+                        StringWriter sw = new StringWriter();
+                        template.merge(context, sw);
+                        exportTA.setText(sw.toString());
+                    } catch (Exception e) {
+                    }
+                }
+            });
+
+            Button copyButton = new Button(texts.getString("copyToClipboard"));
+            copyButton.setOnAction(new EventHandler<ActionEvent>() {
+
+                public void handle(ActionEvent event) {
+                    copyTextAreaContent(exportTA);
+                }
+            });
+
+            Button saveButton = new Button(texts.getString("exportToFile"));
+            saveButton.setOnAction(new EventHandler<ActionEvent>() {
+
+                public void handle(ActionEvent event) {
+                    saveTextAreaContent(exportTA);
+                }
+            });
+
+            HBox buttons = new HBox(10);
+            buttons.setAlignment(Pos.CENTER_RIGHT);
+            buttons.getChildren().addAll(copyButton, saveButton);
+
+            BorderPane selectorAndButtons = new BorderPane();
+            selectorAndButtons.setLeft(formatCB);
+            selectorAndButtons.setRight(buttons);
+            selectorAndButtons.setPadding(new Insets(10));
+
+            BorderPane exportTabLayout = new BorderPane();
+            exportTabLayout.setTop(selectorAndButtons);
+            exportTabLayout.setCenter(exportTA);
+            BorderPane.setMargin(exportTA, new Insets(0, 10, 10, 10));
+
+            Tab exportTab = new Tab(texts.getString("exportTab"));
+            exportTab.setContent(exportTabLayout);
+            tabs.getTabs().add(exportTab);
+        }
+
+        /*
          * Build
          */
         BorderPane layout = new BorderPane();
@@ -197,5 +263,34 @@ public class PubTab extends Tab {
         layout.setCenter(tabs);
         BorderPane.setMargin(tabs, new Insets(10));
         setContent(layout);
+    }
+
+    private void copyTextAreaContent(TextArea textArea) {
+        textArea.selectAll();
+        textArea.copy();
+        textArea.deselect();
+    }
+
+    private void saveTextAreaContent(TextArea textArea) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle(texts.getString("saveDialogTitle"));
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(texts.getString("allFiles") + " (*.*)", "*.*"));
+
+        File f = fc.showSaveDialog(PubTab.this.mainWindow);
+
+        BufferedWriter w = null;
+        try {
+            w = new BufferedWriter(new FileWriter(f));
+            w.write(textArea.getText());
+            w.newLine();
+        } catch (IOException e) {
+        } finally {
+            if (w != null) {
+                try {
+                    w.close();
+                } catch (IOException e) {
+                }
+            }
+        }
     }
 }

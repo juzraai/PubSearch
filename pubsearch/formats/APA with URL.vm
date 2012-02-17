@@ -1,0 +1,13 @@
+#if ($url)
+#if ($year)
+$authors ($year). $title. Retrieved from $url
+#else
+$authors. $title. Retrieved from $url
+#end
+#else
+#if ($year)
+$authors ($year). $title.
+#else
+$authors. $title.
+#end
+#end

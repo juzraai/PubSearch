@@ -1,0 +1,13 @@
+#if ($url)
+#if ($year)
+$authors. $title. $year. <$url>
+#else
+$authors. $title. <$url>
+#end
+#else
+#if ($year)
+$authors. $title. $year.
+#else
+$authors. $title.
+#end
+#end
