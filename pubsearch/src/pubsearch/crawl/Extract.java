@@ -4,18 +4,28 @@ import java.util.List;
 import pubsearch.StringTools;
 
 /**
- * Adatok kinyerése, megtisztítva - találati lista és publikáció adatainak elemzéséhez.
+ * Specific tool for extracting basic data of a publication from text block.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class Extract {
 
     private String html;
 
+    /**
+     * @param from The input text, can be HTML code.
+     */
     public Extract(String from) {
         this.html = from;
     }
 
+    /**
+     * Extracts one URL.
+     * @param pattern Pattern for the URL.
+     * @param baseUrl Base URL - used when matching URL is relative.
+     * @param modFormat Modification, for example an additional suffix.
+     * @return The extracted and modified URL.  If there's no match, returns null.
+     */
     public String URL(String pattern, String baseUrl, String modFormat) {
         String u = StringTools.findFirstMatch(html, pattern, 1);
         if (null != u) {
@@ -33,9 +43,11 @@ public class Extract {
     }
 
     /**
-     * Kiszedi a HTML kódból a találatokra mutató URL-eket.
-     * @param html A feldolgozandó HTML.
-     * @return A kinyert linkek listája.
+     * Extracts all URLs.
+     * @param pattern Pattern for one URL.
+     * @param baseUrl Base URL - used when matching URL is relative.
+     * @param modFormat Modification, for example an additional suffix.
+     * @return The extracted and modified URLs.
      */
     public List<String> URLs(String pattern, String baseUrl, String modFormat) {
         List<String> resultURLs = StringTools.findAllMatch(html, pattern, 1);
@@ -58,19 +70,29 @@ public class Extract {
         return resultURLs;
     }
 
+    /**
+     * Extracts the authors list and cleans it.
+     * @param pattern Pattern for authors list.
+     * @return Extracted and cleaned authors list. If there's no match, returns null.
+     */
     public String authors(String pattern) {
         String authors = StringTools.findFirstMatch(html, pattern, 1);
         if (null != authors) {
-            authors = authors.replaceAll("\\\\('|\")\\{", "").replaceAll("\\{\\\\('|\")", "").replaceAll("\\{","").replaceAll("\\}", "").replaceAll("\\\\", "");
+            authors = authors.replaceAll("\\\\('|\")\\{", "").replaceAll("\\{\\\\('|\")", "").replaceAll("\\{", "").replaceAll("\\}", "").replaceAll("\\\\", "");
             authors = authors.replaceAll("[0-9]{1,2}", "");
             authors = authors.replaceAll("\n", " ").replaceAll("\t", " ").replaceAll("\"", "\\\"");
             authors = authors.replaceAll("&hellip;,?", " ");
             authors = StringTools.clean(authors).trim();
-            authors = authors.replaceAll(" ,", ",").replace(" and",",").trim();
+            authors = authors.replaceAll(" ,", ",").replace(" and", ",").trim();
         }
         return authors;
     }
 
+    /**
+     * Extracts the title and cleans it.
+     * @param pattern Pattern for title
+     * @return Extracted and cleaned title. If there's no match, returns null.
+     */
     public String title(String pattern) {
         String title = StringTools.findFirstMatch(html, pattern, 1);
         if (null != title) {
@@ -80,6 +102,11 @@ public class Extract {
         return title;
     }
 
+    /**
+     * Extracts the year.
+     * @param pattern Pattern for year.
+     * @return Extracted year. If there's no match, returns -1.
+     */
     public int year(String pattern) {
         int year = -1;
         try {

@@ -4,8 +4,11 @@ import java.io.*;
 import java.util.*;
 
 /**
+ * This class handles the configuration.
+ * Contains static methods for getting/setting, loading/saving MySQL connection
+ * parameters and the proxy list.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class Config {
 
@@ -45,32 +48,44 @@ public class Config {
         return proxyList;
     }
 
+    /**
+     * Sets the proxy list. Deletes duplications.
+     * @param proxyList The new proxy list.
+     */
     public static void setProxyList(List<String> proxyList) {
         Config.proxyList = new LinkedList<String>(new HashSet<String>(proxyList));
     }
 
+    /**
+     * Sets the proxy list. Deletes duplications.
+     * @param proxyList The new proxy list.
+     */
     public static void setProxyList(String[] proxies) {
         List<String> pl = new ArrayList<String>();
         Collections.addAll(pl, proxies);
-        setProxyList(pl); // meghívjuk a List-es verziót, az kiszűri a duplikátokat
+        setProxyList(pl);
     }
 
-    public static synchronized String getRandomProxy() { // TODO újra átgondolni, szépíteni még!
+    /**
+     * Returns a random proxy from the proxy list.
+     * If the list is empty, tries to download a new one.
+     * @return A random choosed proxy string or null if download failed.
+     */
+    public static synchronized String getRandomProxy() {
         if (proxyList.isEmpty()) {
             setProxyList(GetProxyList.getProxyList());
         }
-        try {
+        if (proxyList.isEmpty()) {
             return proxyList.get((int) (Math.random() * proxyList.size()));
-        } catch (Exception e) {
-            // ha nem sikerül letölteni
-            return "";
+        } else {
+            return null; // TODO TEST !
         }
     }
 
     /**
-     * Törli a megadott proxy-t a listáról, és a változást rögzíti a konfig. fájlban is.
-     * Ez a metódus érvénytelen proxy esetén (hibás kapcsolódás) hívódik meg.
-     * @param proxy A törlendő proxy (IP:PORT).
+     * Removes a proxy from the list.
+     * Proxy list file won't be updated.
+     * @param proxy Proxy to remove.
      */
     public static synchronized void delProxy(String proxy) {
         if (proxyList.remove(proxy)) {
@@ -79,7 +94,7 @@ public class Config {
     }
 
     /**
-     * Betölti a MySQL kapcsolódási beállításokat.
+     * Loads MySQL connection parameters from the config file.
      */
     public static void loadMySQLConfig() {
         BufferedReader r = null;
@@ -100,7 +115,8 @@ public class Config {
     }
 
     /**
-     * Kimenti a MySQL kapcsolódási beállításokat.
+     * Saves MySQL connection parameters to the config file.
+     * If configuration directory doesn't exist, it will be created.
      */
     public static void saveMySQLConfig() {
         new File(CONF_DIR).mkdir();
@@ -126,7 +142,7 @@ public class Config {
     }
 
     /**
-     * Betölti a proxy listát.
+     * Loads proxy list from the proxy list file.
      */
     public static void loadProxyList() {
         BufferedReader r = null;
@@ -149,7 +165,8 @@ public class Config {
     }
 
     /**
-     * Kimenti a proxy listát.
+     * Saves the proxy list to the proxy list file.
+     * If configuration directory doesn't exist, it will be created.
      */
     public static void saveProxyList() {
         new File(CONF_DIR).mkdir();

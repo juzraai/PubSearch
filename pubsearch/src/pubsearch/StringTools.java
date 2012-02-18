@@ -7,36 +7,31 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Segédfüggvények. Javarészt String függvények: keresés, formázás.
+ * Tools for advanced string handling.
+ * It contains regular expression related methods, cleaners and formatters.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class StringTools {
 
     /**
-     * Megtisztít egy szöveget a HTML kódoktól, a többszörös szóközöket szimplára
-     * cseréli, és a szöveg végéről levágja a whitespace-eket.
+     * Cuts out HTML tags, reduces repeating spaces, and trims the input string.
      *
-     * @param s A bemeneti szöveg.
-     * @return A megtisztított szöveg.
+     * @param s Input text.
+     * @return Cleaned text.
      */
     public static String clean(String s) {
-        return (null != s) ? s.trim().replaceAll("<.*?>", " ").replaceAll("&nbsp;", " ").replaceAll(" +", " ") : null;
+        return (null != s) ? s.replaceAll("<.*?>", " ").replaceAll("&nbsp;", " ").replaceAll(" +", " ").trim() : null;
     }
 
     /**
-     * Megkeresi a megadott reguláris kifejezésre illeszkedő szövegrészt,
-     * és visszatér az 1-es számú csoporttal.
-     * @param in Amiben keresni kell.
-     * @param pattern A minta, reguláris kifejezés, mely tartalmaz legalább 1 csoportot.
-     * @return Az illeszkedő szövegrészletből az 1-es csoport, vagy null, ha nincs találat.
-     */
-    /**
-     * Megkeresi az illeszkedő szövegrészt és visszaaindja annak egy csoportját.
-     * @param in Amiben keresni kell.
-     * @param pattern A minta (reguláris kifejezés), amit keresni kell.
-     * @param group A reguláris kifejezésben szereplő csoport száma, amire szükség van.
-     * @return Az illesztett szöveg megadott csoportja.
+     * Finds the first matching part of a pattern in a string and returns the
+     * specified group.
+     * @param in Input text.
+     * @param pattern Pattern.
+     * @param group Needed group.
+     * @return Specified group of the matching part or null if there's no match or
+     * if one of the first two parameters is null or empty, or group is negative.
      */
     public static String findFirstMatch(String in, String pattern, int group) {
         if (null == in || null == pattern || 0 == in.length() || 0 == pattern.length() || group < 0) {
@@ -48,12 +43,13 @@ public class StringTools {
     }
 
     /**
-     * Megkeresi a szövegben egy adott minta összes előfordulását, és visszatér
-     * azok megadott csoportjainak listájával.
-     * @param in Amiben keresni kell.
-     * @param pattern A minta (reguláris kifejezés), amit keresni kell.
-     * @param group A reguláris kifejezésben szereplő csoport száma, amire szükség van.
-     * @return Az illeszkedő szövegrészletek megfelelő csoportjai, listába szervezve.
+     * Finds all matching part of a pattern in a string, then returns their one
+     * group in a list.
+     * @param in Input text.
+     * @param pattern Pattern.
+     * @param group Needed group.
+     * @return List of the matching parts specified group or null if one of the
+     * first two parameters is null or empty, or group is negative.
      */
     public static List<String> findAllMatch(String in, String pattern, int group) {
         if (null == in || null == pattern || 0 == in.length() || 0 == pattern.length() || group < 0) {
@@ -69,10 +65,15 @@ public class StringTools {
     }
 
     /**
-     * Egy bájtokban megadott adatmennyiséget konvertál szöveggé, úgy hogy közben
-     * a mértékegységet is váltja B-tól GB-ig. Két tizedesjegyre kerekít.
-     * @param bytes A formázandó adatmennyiség.
-     * @return A megformázott adatmennyiség.
+     * Transforms a data size in bytes to a readable text which includes the unit.
+     * Uses 1024 for division, divides when value is above 900 and rounds to 2 digits.
+     * <br />For example:
+     * <ul><li>300 will be "300 B"</li>
+     * <li>1024 will be "1 KB"</li>
+     * <li>1250 will be "1,22 KB"</li>
+     * <li>1535450808 will be "1,43 GB"<li></ul>
+     * @param bytes Number to format.
+     * @return Formatted number.
      */
     public static String formatDataSize(long bytes) {
         String[] units = new String[]{"B",
@@ -99,10 +100,13 @@ public class StringTools {
     }
 
     /**
-     * Megformáz egy nanoszekundumban megadott időt.
-     *
-     * @param time
-     * @return Az idő szövegként: MM:SS.MLSC,MCSC
+     * Transforms a time in nanoseconsds to a readable text.
+     * <br />Output format: MM:SS.MS,mS'nS
+     * <br />1 second = 1000 millisecond = 1000*1000 microsecond = 1000*1000*1000 nanosecond
+     * @param time Time to format.
+     * @param showMicro Include microseconds in the text?
+     * @param showNano Include nanoseconds in the text?
+     * @return
      */
     public static String formatNanoTime(long time, boolean showMicro, boolean showNano) {
         long nanosec = time % 1000;
@@ -117,19 +121,19 @@ public class StringTools {
         if (showMicro) {
             r += "," + lpad(Long.toString(microsec), 3, '0');
         }
-        if (showNano) {
+        if (showMicro && showNano) {
             r += "'" + lpad(Long.toString(nanosec), 3, '0');
         }
         return r;
     }
 
     /**
-     * Balról kiegészít egy szöveget a megadott hosszúságra, a megadott karakterrel.
-     * Ha a szöveg hosszabb, akkor nem módosít rajta.
-     * @param s A kiindulási szöveg.
-     * @param n A célhossz.
-     * @param c A kitöltő karakter.
-     * @return A kiegészített szöveg.
+     * Pads a text from left to the specified length with the specified character.
+     * If input length > needed length, it returns the input text.
+     * @param s Input text.
+     * @param n Needed length.
+     * @param c Fill character.
+     * @return Padded text.
      */
     public static String lpad(String s, int n, char c) {
         while (s.length() < n) {
@@ -139,12 +143,12 @@ public class StringTools {
     }
 
     /**
-     * Jobbról kiegészít egy szöveget a megadott hosszúságúra, a megadott karakterrel.
-     * Ha a szöveg hosszabb, akkor nem módosít rajta.
-     * @param s A kiindulási szöveg.
-     * @param n A célhossz.
-     * @param c A kitöltő karakter.
-     * @return A kiegészített szöveg.
+     * Pads a text from right to the specified length with the specified character.
+     * If input length > needed length, it returns the input text.
+     * @param s Input text.
+     * @param n Needed length.
+     * @param c Fill character.
+     * @return Padded text.
      */
     public static String rpad(String s, int n, char c) {
         while (s.length() < n) {

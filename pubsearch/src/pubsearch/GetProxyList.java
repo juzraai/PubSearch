@@ -7,12 +7,21 @@ import java.util.List;
 import pubsearch.crawl.HTTPRequest;
 
 /**
- * Tool proxy lista beszerzéséhez.
+ * Tool for downloading a proxy list.
+ * It has main() method, so it can be runned as a standalone program.
+ * It downloads the following pages, and extracts the IPs and ports:
+ * <ul><li>http://www.ip-adress.com/proxy_list/?k=type</li>
+ * <li>http://www.xroxy.com/proxylist.php?port=&type=&ssl=&country=HU&latency=1000&reliability=9000</li></ul>
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class GetProxyList {
 
+    /**
+     * Calls getProxyList() method then prints out the list to the console.
+     *
+     * @param args Command line parameters - has no effect.
+     */
     public static void main(String[] args) {
         List<String> proxies = getProxyList();
         for (String p : proxies) {
@@ -20,10 +29,18 @@ public class GetProxyList {
         }
     }
 
+    private GetProxyList() {
+    }
+
+    /**
+     * Grabs 2 webpage providing a mostly reliable proxy list, then extracts
+     * IP:PORT strings and returns them in a list.
+     * @return The grabbed IP:PORT list.
+     */
     public static List<String> getProxyList() {
         List<String> pl = new ArrayList<String>();
-        pl.addAll(getFromXROXYdotCOM()); // ~6 fast HUN proxy
-        pl.addAll(getFromIPADRESSdotCOM()); // ~10 valid elite proxy
+        pl.addAll(getFromXROXYdotCOM());
+        pl.addAll(getFromIPADRESSdotCOM());
         System.out.println("Proxy lists downloaded.");
         return pl;
     }
