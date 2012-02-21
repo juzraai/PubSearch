@@ -5,32 +5,45 @@ import java.util.Map;
 import pubsearch.Config;
 
 /**
- * HTTPRequest osztály kiegészítése a program követelményeihez.
- * Beállítja a proxy-t, és az újrapróbálkozásokat is egy véletlenszerű proxy-n
- * keresztül végzi. Emellett egy cache-ben tárolja az (URL,HTML) párokat, hogy
- * egy oldalt csak egyszer töltsön le.
+ * Extends HTTPRequest to fit the programs requirements: retries download on error,
+ * sets up random proxy for every try, and stores downloaded pages in a cache.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class HTTPRequestEx extends HTTPRequest {
 
     private static Map<String, String> cache = new HashMap<String, String>();
 
+    /**
+     * Sets up the HTTPRequestEx object.
+     * @param url Request will be sent to this address.
+     * @param queryString GET/POST parameters in querystring syntax.
+     * @param method "GET" or "POST"
+     */
     public HTTPRequestEx(String url, String queryString, String method) {
         super(url, queryString, method);
     }
 
+    /**
+     * Sets up the HTTPRequestEx object. Method will be GET.
+     * @param url Request will be sent to this address.
+     * @param queryString GET/POST parameters in querystring syntax.
+     */
     public HTTPRequestEx(String url, String queryString) {
         super(url, queryString);
     }
 
+    /**
+     * Sets up the HTTPRequestEx object. Querystring will be empty and method will be GET.
+     * @param url Request will be sent to this address.
+     */
     public HTTPRequestEx(String url) {
         super(url);
     }
 
     /**
-     * Meghívja a submit(5)-öt.
-     * @return Sikerült-e HTML oldalt visszakapni.
+     * Calls submit(5).
+     * @return True if succeded, false on error.
      */
     @Override
     public boolean submit() {
@@ -38,14 +51,10 @@ public class HTTPRequestEx extends HTTPRequest {
     }
 
     /**
-     * Elküldi a beállított kérést, majd letölti a válasz HTML oldalt és növeli
-     * a statikus bájtszámlálót. Újrapróbálkozik, mindig más, proxy-val, melyet
-     * véletlenszerűen választ a listából. Ha egy proxy-n keresztül nem sikerült
-     * csatlakozni, azt törli a listából. Ezen felül a már letöltött oldalakat
-     * elmenti, így egy későbbi kérésnél már a memóriából olvassa ki ismételt
-     * letöltés helyett.
-     * @param tries Újrapróbálkozások száma.
-     * @return Sikerült-e HTML oldalt visszakapni.
+     * Calls HTTPRequest's submit() but tries again if it fails. Downloaded pages
+     * will be stored in the cache.
+     * @param tries Count of tryings.
+     * @return True if succeded, false on error.
      */
     public boolean submit(int tries) {
         String toCache = url + (!queryString.equals("") ? "?" + queryString : "");
@@ -54,8 +63,12 @@ public class HTTPRequestEx extends HTTPRequest {
             return true;
         }
 
-        boolean success;
+        boolean success = false;
         do {
+            if (Thread.interrupted()) {
+                break;
+            }
+            
             String proxy = Config.getRandomProxy();
             super.setProxy(proxy);
 
@@ -77,11 +90,11 @@ public class HTTPRequestEx extends HTTPRequest {
         return success;
     }
 
-    private static synchronized String getHTMLFromCache(String url) {
-        return cache.get(url);
-    }
-
     private static synchronized void addToCache(String url, String html) {
         cache.put(url, html);
+    }
+
+    private static synchronized String getHTMLFromCache(String url) {
+        return cache.get(url);
     }
 }

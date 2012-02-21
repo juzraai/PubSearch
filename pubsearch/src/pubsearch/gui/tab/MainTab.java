@@ -50,7 +50,6 @@ public class MainTab extends Tab {
     private final Label resultCountLabel = new Label();
     // Variables
     private Crawler crawler;
-    private long startTime;
 
     public MainTab(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
@@ -207,7 +206,6 @@ public class MainTab extends Tab {
      * kereső algoritmust, és elérhetetlenné teszi a GUI-t (beviteli mező, keresés gomb).
      */
     private void startSearch() {
-        startTime = System.nanoTime();
         if (!onlyLocalCheckBox.selectedProperty().get()) {
             // crawl eset
             if (Config.getProxyList().isEmpty()) {
@@ -240,6 +238,7 @@ public class MainTab extends Tab {
      * @param bytes Ennyi bájt adatforgalmat vett igénybe a keresés, a crawler motor jegyzi és adja át.
      */
     public void showResults(long bytes) {
+        long queryStartTime = System.nanoTime();
         try {
             String aup[] = authorField.getText().split(" ");
             String au = "";
@@ -253,7 +252,10 @@ public class MainTab extends Tab {
         } catch (Throwable t) {
             AlertWindow.show(texts.getString("errorWhileQueryingResults"));
         }
-        long time = System.nanoTime() - startTime;
+        long time = System.nanoTime() - queryStartTime;
+        if (!onlyLocalCheckBox.selectedProperty().get()) {
+            time += crawler.getTime();
+        }
         resultCountLabel.setText(String.format(texts.getString("resultInfos"), resultsView.getItems().size(), StringTools.formatNanoTime(time, false, false), StringTools.formatDataSize(bytes)));
         switchScene(true);
     }

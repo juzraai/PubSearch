@@ -25,6 +25,26 @@ public abstract class ACrawler extends Thread {
     }
 
     /**
+     * This method should implement the crawler algorhytm.
+     */
+    protected abstract void crawl();
+
+    public long getTime() {
+        return time;
+    }
+
+    /**
+     * Interrupts all child threads too.
+     */
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        for (ACrawler c : crawlers) {
+            c.interrupt();
+        }
+    }
+
+    /**
      * Starts the crawler algorhytm.
      * @param asNewThread if true, it calls start(), otherwise it calls run().
      */
@@ -47,38 +67,14 @@ public abstract class ACrawler extends Thread {
     }
 
     /**
-     * This method should implement the crawler algorhytm.
-     */
-    protected abstract void crawl();
-
-    /**
      * Waits for the child crawler threads (stored in 'crawlers' field) to stop.
-     * When this thread gets an interrupt, it will send it to all child.
-     * @param msgOnInterrupt Error message to be written on console when getting
-     * an interrupt. Pass null to be quiet.
      */
-    protected void waitForCrawlers(String msgOnInterrupt) {
+    protected void waitForCrawlers() {
         boolean done = false;
-        while (!done && !isInterrupted()) {
+        while (!done) {
             done = true;
             for (int i = 0; i < crawlers.size() && done; i++) {
                 done = done && !crawlers.get(i).isAlive();
-            }
-        }
-        if (isInterrupted()) {
-            if (null != msgOnInterrupt) {
-                System.err.println(msgOnInterrupt);
-            }
-            for (ACrawler c : crawlers) {
-                c.interrupt();
-            }
-
-            done = false;
-            while (!done) {
-                done = true;
-                for (int i = 0; i < crawlers.size() && done; i++) {
-                    done = done && !crawlers.get(i).isAlive();
-                }
             }
         }
     }

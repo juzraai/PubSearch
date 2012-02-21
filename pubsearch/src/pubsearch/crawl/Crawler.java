@@ -8,7 +8,8 @@ import pubsearch.data.PDatabase;
 import pubsearch.gui.tab.MainTab;
 
 /**
- * Controls the whole publication searching procedure.
+ * Controls the whole publication searching procedure. For every known publication
+ * database: builds up the search URL and starts PubListCrawler to crawl them.
  *
  * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
@@ -26,8 +27,7 @@ public class Crawler extends ACrawler {
      * @param authorFilter Search for this author.
      * @param titleFilter Filter for this title.
      * @param multithreaded If true, databases will be crawled multithreaded, otherwise iterated.
-     * @param transLev Recursive level, to start. 0: only search results,
-     * 1: referrer publications also 2: referrer of referrers also will be grabbed.
+     * @param transLev 0: only search results, 1: referrer publications also 2: referrer of referrers also will be grabbed.
      */
     public Crawler(MainTab caller, String authorFilter, String titleFilter, boolean multithreaded, int transLev) {
         this.caller = caller;
@@ -40,6 +40,7 @@ public class Crawler extends ACrawler {
 
     @Override
     public void run() {
+        System.out.println("\nCrawler thread started. (au:" + authorFilter + "; ti:" + titleFilter + ")");
         super.run();
         System.out.println("Crawler thread ended. time = " + StringTools.formatNanoTime(time, true, true) + ", bytes = " + HTTPRequest.getBytes() + " B (= " + StringTools.formatDataSize(HTTPRequest.getBytes()) + ")\n\n");
     }
@@ -49,8 +50,6 @@ public class Crawler extends ACrawler {
      * for all of them. Waits for the child threads then notifies 'caller'.
      */
     protected void crawl() {
-        System.out.println("\nCrawler thread started. (au:" + authorFilter + "; ti:" + titleFilter + ")");
-
         HTTPRequest.zeroBytes();
         crawlers.clear();
 
@@ -83,13 +82,13 @@ public class Crawler extends ACrawler {
         }
 
         if (multithreaded) {
-            waitForCrawlers("Crawler thread interrupted.");
+            waitForCrawlers();
         }
 
         Config.saveProxyList();
         notifyCaller();
     }
-    
+
     private void notifyCaller() {
         Application.invokeLater(new Runnable() {
 

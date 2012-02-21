@@ -9,10 +9,11 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 
 /**
- * HTTP kérést végrehajtó osztály. Használható egy oldal letöltésére, GET/POST
- * form elküldésére. Az Apache HTTPClient 3.0.1-re épül.
+ * Executes a HTTP request and downloads the response.
+ * Can be used to download a page or post a GET/POST form.
+ * Uses Apache HTTPClient 3.0.1
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class HTTPRequest {
 
@@ -29,14 +30,12 @@ public class HTTPRequest {
     protected String html;
     protected String error;
 
-    public HTTPRequest(String url) {
-        this(url, null, null);
-    }
-
-    public HTTPRequest(String url, String queryString) {
-        this(url, queryString, null);
-    }
-
+    /**
+     * Sets up the HTTPRequest object.
+     * @param url Request will be sent to this address.
+     * @param queryString GET/POST parameters in querystring syntax.
+     * @param method "GET" or "POST"
+     */
     public HTTPRequest(String url, String queryString, String method) {
         this.url = (null != url) ? url : "";
         this.queryString = (null != queryString) ? queryString : "";
@@ -51,9 +50,26 @@ public class HTTPRequest {
     }
 
     /**
-     * Beállítja a proxy-t a kéréshez.
-     * @param proxyIP A proxyszerver IP címe.
-     * @param proxyPort A proxyszerver portja.
+     * Sets up the HTTPRequest object. Method will be GET.
+     * @param url Request will be sent to this address.
+     * @param queryString GET/POST parameters in querystring syntax.
+     */
+    public HTTPRequest(String url, String queryString) {
+        this(url, queryString, null);
+    }
+
+    /**
+     * Sets up the HTTPRequest object. Querystring will be empty and method will be GET.
+     * @param url Request will be sent to this address.
+     */
+    public HTTPRequest(String url) {
+        this(url, null, null);
+    }
+
+    /**
+     * Sets up the proxy used by the client.
+     * @param proxyIP Proxy IP.
+     * @param proxyPort Proxy port.
      */
     public void setProxy(String proxyIP, int proxyPort) {
         this.proxyIP = proxyIP;
@@ -61,28 +77,32 @@ public class HTTPRequest {
     }
 
     /**
-     * Beállítja a proxy-t a kéréshez, egy IP:PORT formátúmú string-ből.
-     * Ha a port nincs benne a szövegben, alapértelmezésként 8080-ra állítja.
-     * @param proxyIPPORT IP:PORT formátumú string, pl. "127.0.0.1:8080"
+     * Sets up the proxy used by the client.
+     * @param proxyIPPORT Proxy IP and port, format: "IP:PORT", for example: "127.0.0.1:8080".
+     * If port is not included, sets to 8080 by default.
      */
     public void setProxy(String proxyIPPORT) {
-        String[] p = proxyIPPORT.split(":", 2);
-        if (2 != p.length) {
-            return;
+        if (null == proxyIPPORT) {
+            proxyIP = null;
+        } else {
+            String[] p = proxyIPPORT.split(":", 2);
+            if (2 != p.length) {
+                return;
+            }
+            int port = 8080;
+            try {
+                port = Integer.parseInt(p[1]);
+            } catch (NumberFormatException e) {
+            }
+            setProxy(p[0], port);
         }
-        int port = 8080;
-        try {
-            port = Integer.parseInt(p[1]);
-        } catch (NumberFormatException e) {
-        }
-        setProxy(p[0], port);
     }
 
     /**
-     * Elküldi a beállított kérést, majd letölti a válasz HTML oldalt. A méretét
-     * hozzáadja a statikus bájtszámlálóhoz. Ha a művelet nem volt sikeres, a
-     * hibaüzenetet eltárolja.
-     * @return Sikerült-e HTML oldalt visszakapni.
+     * Sends the request then downloads HTML response page. Size will be added to
+     * the static byte counter. If the process fails, stores the error message in
+     * 'error' field.
+     * @return True if succeded, false on error.
      */
     public boolean submit() {
         boolean success = false;
@@ -129,37 +149,31 @@ public class HTTPRequest {
     }
 
     /**
-     * Szinkronizáltan növeli a statikus bájtszámláló értékét.
-     * @param b Hozzáadandó érték.
+     * Increases the static byte counter by the given value.
+     * @param b Value to be added.
      */
     private static synchronized void addBytes(long b) {
         bytes += b;
     }
 
-    /**
-     * @return A statikus bájtszámláló értéke.
-     */
     public static synchronized long getBytes() {
         return bytes;
     }
 
     /**
-     * Lenullázza a statikus bájtszámlálót.
+     * Sets the static byte counter to 0.
      */
     public static void zeroBytes() {
         bytes = 0;
     }
 
-    /**
-     * @return A letöltött válasz HTML oldal.
-     */
     public String getHtml() {
         return html;
     }
 
     /**
-     * A konstruktorban kapott paraméterek alapján felépíti a kérés modelljét.
-     * @return A kérés modellje.
+     * Sets up the request model.
+     * @return The request model.
      */
     private HttpMethodBase buildMethod() { //TODO try setQueryString with POST ! :)
         HttpMethodBase m = (method.equals("POST")) ? new PostMethod(url) : new GetMethod(url);

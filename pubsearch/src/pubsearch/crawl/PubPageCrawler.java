@@ -7,6 +7,9 @@ import pubsearch.data.PDatabase;
 import pubsearch.data.Publication;
 
 /**
+ * Processes a pubpage (page which contains details of a publication): extracts
+ * basic information and starts the list crawler for referring publications if
+ * needed (if transitivity level is above 0).
  *
  * @author Zsolt
  */
@@ -21,6 +24,14 @@ public class PubPageCrawler extends ACrawler {
     //out
     private Publication publication;
 
+    /**
+     * Sets up the pubpage crawling.
+     * @param pdb PDatabase object which contains information for database specific crawling.
+     * @param page Pubpage URL or HTML content - 'download' parameter will tell.
+     * @param transLev 0: only basic information, 1: referrer publications also 2: referrer of referrers also will be grabbed.
+     * @param refPubMode If true, it handles the pubpage as pubpage of a referring publication which may need different patterns to be used.
+     * @param download If true, URL given in 'page' parameter will be used to download the page, otherwise 'page' will be used as the downloaded HTML content.
+     */
     public PubPageCrawler(PDatabase pdb, String page, int transLev, boolean refPubMode, boolean download) {
         this.pdb = pdb;
         this.page = page;
@@ -35,6 +46,10 @@ public class PubPageCrawler extends ACrawler {
         return publication;
     }
 
+    /**
+     * Downloads the page if needed, grabs BibTeX if any, extracts authors, title
+     * and year, and crawls referring publications if transitivity level is above 0.
+     */
     @Override
     protected void crawl() {
         String html = null;

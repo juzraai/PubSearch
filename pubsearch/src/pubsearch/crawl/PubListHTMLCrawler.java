@@ -7,9 +7,11 @@ import pubsearch.data.PDatabase;
 import pubsearch.data.Publication;
 
 /**
- * Feldolgoz egy találati listát tartalmazó HTML kódot.
+ * Parses a HTML block as a publication list. Extracts publication data or
+ * extracts links and starts PubPageCrawlers - depends on the PDatabase object,
+ * then stores the grabbed publications.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class PubListHTMLCrawler extends ACrawler {
 
@@ -21,6 +23,13 @@ public class PubListHTMLCrawler extends ACrawler {
     //out
     private List<Publication> publications = new ArrayList<Publication>();
 
+    /**
+     * Sets up the publication list crawling.
+     * @param pdb PDatabase object which contains information for database specific crawling.
+     * @param html The HTML block containing the publication list.
+     * @param transLev 0: only search results, 1: referrer publications also 2: referrer of referrers also will be grabbed.
+     * @param refPubMode If true, it handles the list as list of referring publications which may need different patterns to be used.
+     */
     public PubListHTMLCrawler(PDatabase pdb, String html, int transLev, boolean refPubMode) {
         this.pdb = pdb;
         this.html = html;
@@ -34,6 +43,10 @@ public class PubListHTMLCrawler extends ACrawler {
         return publications;
     }
 
+    /**
+     * Crops list block, and parses its content. Extracts data or link
+     * and starts a PubPageCrawler if needed, then stores grabbed publications.
+     */
     @Override
     protected void crawl() {
         /*
@@ -88,7 +101,9 @@ public class PubListHTMLCrawler extends ACrawler {
             for (ACrawler crawler : crawlers) {
                 crawler.launch(!refPubMode);
             }
-            waitForCrawlers(null);
+
+            waitForCrawlers();
+            
             for (ACrawler crawler : crawlers) {
                 PubPageCrawler ppc = (PubPageCrawler) crawler;
                 if (null != ppc.getPublication()) {

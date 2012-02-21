@@ -9,9 +9,10 @@ import pubsearch.data.PDatabase;
 import pubsearch.data.Publication;
 
 /**
- * Végiglapoz és feldolgoz egy találati listát.
+ * Crawls a result list. Downloads a page, starts a PubListHTMLCrawler for it,
+ * stores results and turns the page if there was any new data.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class PubListCrawler extends ACrawler {
 
@@ -21,10 +22,17 @@ public class PubListCrawler extends ACrawler {
     private int transLev;
     private boolean refPubMode;
     //inside
-    Set<String> alreadyCrawled = new HashSet<String>();
+    private Set<String> alreadyCrawled = new HashSet<String>();
     //out
-    List<Publication> publications = new ArrayList<Publication>();
+    private List<Publication> publications = new ArrayList<Publication>();
 
+    /**
+     * Sets up the publication list crawling.
+     * @param pdb PDatabase object which contains information for database specific crawling.
+     * @param url Base URL of the result list. Should not contain a "start" field.
+     * @param transLev 0: only search results, 1: referrer publications also 2: referrer of referrers also will be grabbed.
+     * @param refPubMode If true, it handles the list as list of referring publications which may need different patterns to be used.
+     */
     public PubListCrawler(PDatabase pdb, String url, int transLev, boolean refPubMode) {
         this.pdb = pdb;
         this.url = url;
@@ -38,6 +46,11 @@ public class PubListCrawler extends ACrawler {
         return publications;
     }
 
+    /**
+     * Builds up the URL now with the start field, downloads the page, starts a
+     * PubListHTMLCrawler, stores grabbed publications, then repeats this if there
+     * was any new data on the page.
+     */
     @Override
     protected void crawl() {
         int startIndex = pdb.getFirstIndex();
@@ -82,9 +95,5 @@ public class PubListCrawler extends ACrawler {
 
             startIndex += pdb.getResultsPerPage();
         } while (newResultCount > 0);
-        // liinwww és CiteSeerX: newResultCount néha < ResultsPerPage
-        // ezért használom inkább a >0 továbblapozási feltételt
-        // ezzel globálisan áthidalom a problémát, nincs site specifikus égetett kód,
-        // viszont így minden site esetén +1 oldal letöltést jelent... :S
     }
 }

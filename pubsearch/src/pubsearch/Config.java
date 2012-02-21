@@ -76,9 +76,9 @@ public class Config {
             setProxyList(GetProxyList.getProxyList());
         }
         if (proxyList.isEmpty()) {
-            return proxyList.get((int) (Math.random() * proxyList.size()));
+            return null; // TODO TEST
         } else {
-            return null; // TODO TEST !
+            return proxyList.get((int) (Math.random() * proxyList.size()));
         }
     }
 
