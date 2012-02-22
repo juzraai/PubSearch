@@ -7,9 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 /**
- * Egy publikációs adatbázis jellemzői (feldolgozáshoz).
+ * Entity for storing crawling informations for a publication database. It contains
+ * parameters, field names, URLs, and mostly regex patterns.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 @Entity
 public class PDatabase implements Serializable {
@@ -48,6 +49,9 @@ public class PDatabase implements Serializable {
     private String refPubTitlePattern;
     private String refPubYearPattern;
 
+    /**
+     * Needed by JPA.
+     */
     protected PDatabase() {
     }
 
@@ -56,14 +60,13 @@ public class PDatabase implements Serializable {
     }
 
     /**
-     * Az adatbázisokat a nevük azonosítja, ez a metódus megkeresi, hogy egy adott
-     * nevű adatbázis van-e már tárolva az adatbázisban, vagy nincs. Ha igen, lekéri
-     * az adatbázisból az objektumot, ha nem, akkor újat hoz létre a megadott névvel.
-     * @param name Adatbázist azonosító név.
-     * @return Referencia a PDatabase objektumra.
+     * A PDatabase object is identified by its name, this method finds or creates
+     * the PDatabase object having the given name.
+     * @param name Name field of the needed PDatabase object.
+     * @return Reference for the PDatabase object having the given name.
      */
     public static PDatabase getReferenceFor(String name) {
-        PDatabase pdb = Connection.getEm().find(PDatabase.class, name);
+        PDatabase pdb = Connection.getEntityManager().find(PDatabase.class, name);
         if (null == pdb) {
             return new PDatabase(name);
         } else {
@@ -72,10 +75,10 @@ public class PDatabase implements Serializable {
     }
 
     /**
-     * @return Az összes PDatabase objektum, ami az adatbázisban van.
+     * @return All PDatabase object from the database.
      */
     public static List<PDatabase> getAll() {
-        return Connection.getEm().createQuery("SELECT p FROM PDatabase p").getResultList();
+        return Connection.getEntityManager().createQuery("SELECT p FROM PDatabase p").getResultList();
     }
 
     public String getAuthorsPattern() {

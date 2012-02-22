@@ -1,7 +1,3 @@
-/*
- * To change this template, choose StringTools | Templates
- * and open the template in the editor.
- */
 package pubsearch.data;
 
 import java.io.Serializable;
@@ -11,9 +7,9 @@ import java.util.Set;
 import javax.persistence.*;
 
 /**
- * Egy publikáció alapvető adatai.
+ * Entity for storing basic information of a publication.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 @Entity
 public class Publication implements Serializable {
@@ -28,6 +24,9 @@ public class Publication implements Serializable {
     private PDatabase pdatabase;
     private Set<Publication> citedBy = new HashSet<Publication>();
 
+    /**
+     * Needed by JPA.
+     */
     protected Publication() {
     }
 
@@ -39,34 +38,31 @@ public class Publication implements Serializable {
     }
 
     /**
-     * Eltárol egy publikációt. A szinkronizáltság biztosítja, hogy a tranzakciót
-     * egyszerre csak egyetlen szál hívja.
-     * @param p
+     * Stores a publication in the database.
+     * @param p Publication object to store.
      */
     public static synchronized void store(Publication p) {
-        Connection.getEm().getTransaction().begin();
-        Connection.getEm().persist(p);
+        Connection.getEntityManager().getTransaction().begin();
+        Connection.getEntityManager().persist(p);
         try {
-            Connection.getEm().getTransaction().commit();
+            Connection.getEntityManager().getTransaction().commit();
         } catch (Exception e) {
             System.err.println("Exception on commit.");
         }
     }
 
     /**
-     * Egy publikációt a szerzők, a cím és az évszám azonosít, valamint az adatbázis,
-     * ahol a program megtalálta. Az URL azért nem, mert bizonyos adatbázisokban a
-     * hivatkozó publikációkhoz nem rendelődik URL, így azok URL=null-lal tárolódnak.
-     * A metódus megnézi, tároltuk-e már a megadott publikációt az adatbázisban. Ha
-     * igen, akkor visszaad rá egy referenciát, ha nem, akkor újat hoz létre.
-     * @param authors
-     * @param title
-     * @param year
-     * @param pdb
-     * @return Referencia a Publication objektumra.
+     * A Publication object is identified by four fields: authors, title, year and pdb
+     * (logically, not in the database!), this method finds or creates the Publication
+     * object having the given parameters.
+     * @param authors List of authors as a String.
+     * @param title Title of the publication.
+     * @param year Release year of the publication.
+     * @param pdb PDatabase object, which tells which publication database this publication was found in.
+     * @return Reference for the Publication object having the given parameters.
      */
     public static synchronized Publication getReferenceFor(String authors, String title, int year, PDatabase pdb) {
-        Query q = Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors=:au AND p.title=:ti AND p.year=" + year + " AND p.pdatabase.name=:pdbn");
+        Query q = Connection.getEntityManager().createQuery("SELECT p FROM Publication p WHERE p.authors=:au AND p.title=:ti AND p.year=" + year + " AND p.pdatabase.name=:pdbn");
         q.setParameter("au", authors);
         q.setParameter("ti", title);
         q.setParameter("pdbn", pdb.getName());
@@ -81,23 +77,18 @@ public class Publication implements Serializable {
     }
 
     /**
-     * Lekérdezi az adatbázisból azokat a publikációkat, amelyek megfelelnek a szerző és cím szűrési feltételeknek.
-     * @param filterAuthors A szerzők szűrése. (szavakat külön veszi, de a sorrend marad)
-     * @param filterTitle A cím szűráse. (szavakat külön veszi, de a sorrend marad)
-     * @return A megfelelő publikációk listája.
+     * Selects the matching publications from the database.
+     * @param filterAuthors Filter for the 'authors' field. Will be surrounded with % and spaces will be replaced with % too.
+     * @param filterTitle Filter for the 'title' field. Will be surrounded with % and spaces will be replaced with % too.
+     * @return The query result: list of the matching publications.
      */
     public static List<Publication> searchResults(String filterAuthors, String filterTitle) {
         filterAuthors = filterAuthors.replaceAll(" ", "% ");
         filterTitle = filterTitle.replaceAll(" ", "%");
-        return Connection.getEm().createQuery("SELECT p FROM Publication p WHERE p.authors LIKE '%" + filterAuthors + "%' AND p.title LIKE '%" + filterTitle + "%'").getResultList();
+        return Connection.getEntityManager().createQuery("SELECT p FROM Publication p WHERE p.authors LIKE '%" + filterAuthors + "%' AND p.title LIKE '%" + filterTitle + "%'").getResultList();
     }
 
     public void addCitedBy(Publication p) {
-        /*
-         * if (citedBy.indexOf(p) == -1) {
-         * citedBy.add(p);
-         * }
-         */
         citedBy.add(p);
     }
 
@@ -106,6 +97,9 @@ public class Publication implements Serializable {
         return citedBy.size();
     }
 
+    /**
+     * @return The release year of the publication as String, or "(N/A)" if year is -1.
+     */
     @Transient
     public String getYearAsString() {
         if (-1 == year) {
@@ -116,7 +110,7 @@ public class Publication implements Serializable {
     }
 
     /**
-     * @return Az adatbázis neve, ahol megtalálta ezt a publikációt.
+     * @return 'Name' field of the stored PDatabase object if it's not null, otherwise "(unknown)".
      */
     @Transient
     public String getDbName() {

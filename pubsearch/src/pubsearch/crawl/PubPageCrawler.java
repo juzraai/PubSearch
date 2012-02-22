@@ -11,7 +11,7 @@ import pubsearch.data.Publication;
  * basic information and starts the list crawler for referring publications if
  * needed (if transitivity level is above 0).
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class PubPageCrawler extends ACrawler {
 

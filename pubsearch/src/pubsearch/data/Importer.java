@@ -6,14 +6,16 @@ import java.util.Map;
 import javax.persistence.RollbackException;
 
 /**
+ * Imports PDatabase definitions from conf/*.pdb files, and uploads them to the
+ * database.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class Importer {
 
     /**
-     * Betölti a 'conf' mappában található *.pdb fájlokból a publikációs adatbázisok
-     * adatait.
+     * Gets the file list for the pattern 'conf/*.pdb', then calls loadPDatabase
+     * for all of them.
      */
     public static void loadPDatabases() {
         File confDir = new File("conf");
@@ -28,8 +30,8 @@ public class Importer {
     }
 
     /**
-     * Betölti egy PDatabase adatait az adatbázisba, a megadott fájlból.
-     * @param fileName Fájlnév, ajánlott: *.pdb
+     * Parses a .pdb file as a PDatabase object, then uploads it to the database.
+     * @param fileName .pdb filename.
      */
     private static void loadPDatabase(String fileName) {
 
@@ -60,7 +62,7 @@ public class Importer {
 
         String name = fields.get("name");
         if (null != name) {
-            Connection.getEm().getTransaction().begin();
+            Connection.getEntityManager().getTransaction().begin();
             PDatabase pdb = PDatabase.getReferenceFor(name);
 
             pdb.setBaseUrl(fields.get("baseurl"));
@@ -104,9 +106,9 @@ public class Importer {
             pdb.setRefPubTitlePattern(fields.get("refpubtitlepattern"));
             pdb.setRefPubYearPattern(fields.get("refpubyearpattern"));
 
-            Connection.getEm().persist(pdb);
+            Connection.getEntityManager().persist(pdb);
             try {
-                Connection.getEm().getTransaction().commit();
+                Connection.getEntityManager().getTransaction().commit();
                 System.out.println("IMPORTED DATABASE: " + name);
             } catch (RollbackException rbe) {
             }

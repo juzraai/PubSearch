@@ -40,7 +40,7 @@ public class ConfigWindow extends AWindow {
         setOnShowing(new EventHandler<WindowEvent>() {
 
             public void handle(WindowEvent event) {
-                configIsOK = (Connection.getEm() != null);
+                configIsOK = (Connection.getEntityManager() != null);
                 urlField.setText(Config.getJdbcUrl());
                 userField.setText(Config.getJdbcUser());
                 passwordField.setText(Config.getJdbcPass());
