@@ -25,8 +25,9 @@ import pubsearch.gui.window.MainWindow;
 import pubsearch.gui.window.ProxyWindow;
 
 /**
+ * A Tab which contains the search form, the result table and the buttons.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class MainTab extends Tab {
 
@@ -51,6 +52,10 @@ public class MainTab extends Tab {
     // Variables
     private Crawler crawler;
 
+    /**
+     * Sets up the Tab.
+     * @param mainWindow MainWindow objects which contains the tab.
+     */
     public MainTab(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
 
@@ -202,8 +207,7 @@ public class MainTab extends Tab {
     }
 
     /**
-     * Eseménykezelő. Esemény: keresés gomb akciója. Tevékenység: elindítja a
-     * kereső algoritmust, és elérhetetlenné teszi a GUI-t (beviteli mező, keresés gomb).
+     * Starts crawler and disables search form controls by switching the GUI.
      */
     private void startSearch() {
         if (!onlyLocalCheckBox.selectedProperty().get()) {
@@ -225,8 +229,8 @@ public class MainTab extends Tab {
     }
 
     /**
-     * Vált a keresés kétféle állapota között: keresőform; keresés folyamatban.
-     * @param toMain Keresőform állapot? Ha nem, akkor keresés folyamatban.
+     * Switches the GUI between "search form" and "search in progress" modes.
+     * @param toMain If true, "search form" mode will be restored otherwise "search in progress" will be displayed.
      */
     public void switchScene(boolean toMain) {
         setContent((toMain) ? mainLayout : searchLayout);
@@ -236,6 +240,11 @@ public class MainTab extends Tab {
     /**
      * Megjeleníti az eredményeket. A keresés befejeztével hívódik meg.
      * @param bytes Ennyi bájt adatforgalmat vett igénybe a keresés, a crawler motor jegyzi és adja át.
+     */
+    /**
+     * Shows the results in the table. Selects the longest word from author search
+     * field, then queries the database.
+     * @param bytes Count of bytes to be displayed as net traffic used by the search.
      */
     public void showResults(long bytes) {
         long queryStartTime = System.nanoTime();
@@ -260,15 +269,21 @@ public class MainTab extends Tab {
         switchScene(true);
     }
 
+    /**
+     * Sets the focus on the author search field.
+     */
     public void focusAuthorField() {
         authorField.requestFocus();
     }
 
+    /**
+     * Sends an interrupt for the crawler. Note: crawler will not stop immediately,
+     * it will finish all running downloads and process them before dying.
+     */
     public void kill() {
         if (null != crawler) {
             System.err.println("Killing crawler thread.");
-            crawler.interrupt(); // SLOW
-            while (crawler.isAlive()); // FREEZE GUI
+            crawler.interrupt();
         }
     }
 }

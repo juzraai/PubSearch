@@ -19,9 +19,9 @@ import pubsearch.data.Connection;
 import pubsearch.gui.control.LabelEx;
 
 /**
- * Az adatbáziskapcsolat beállítására szolgáló ablak.
+ * Database connection setup window.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class ConfigWindow extends AWindow {
 
@@ -58,9 +58,6 @@ public class ConfigWindow extends AWindow {
         });
     }
 
-    /**
-     * @return A felépített ablaktartalom.
-     */
     private Scene buildScene() {
         LabelEx plzLabel = new LabelEx(texts.getString("databaseDescription")).shadow().white();
         plzLabel.setTextAlignment(TextAlignment.JUSTIFY);
@@ -117,10 +114,6 @@ public class ConfigWindow extends AWindow {
         return new Scene(layout, 310, 380);
     }
 
-    /**
-     * Megpróbálja újrainicializálni az adatbáziskapcsolatot. Ha sikeres, akkor
-     * bezárja az ablakot és elmenti a beállításokat.
-     */
     private void reInit() {
         if (!Config.getJdbcUrl().equals(urlField.getText())
                 || !Config.getJdbcUser().equals(userField.getText())

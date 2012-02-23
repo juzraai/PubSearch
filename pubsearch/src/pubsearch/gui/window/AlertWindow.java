@@ -18,31 +18,27 @@ import pubsearch.gui.GuiTools;
 import pubsearch.gui.control.LabelEx;
 
 /**
- * Hibaüzenet ablak.
+ * Error message dialog.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class AlertWindow extends AWindow {
 
-    /**
-     * Eltárolunk egy objektumot, ezt fogja beállítani és megjeleníteni a
-     * statikus show(msg), így nem kell mindig felépíteni egy ablakot.
-     */
     private static AlertWindow alertWindow = new AlertWindow("");
     private Label messageLabel = new LabelEx("").bold().shadow().white();
 
     /**
-     * Létrehoz egy új hibaüzenet ablakot,
-     * @param message Hibaüzenet.
+     * Creates an error dialog.
+     * @param message Error message.
      */
     public AlertWindow(String message) {
         this(message, "PubSearch");
     }
 
     /**
-     * Létrehoz egy új hibaüzenet ablakot.
-     * @param message Hibaüzenet.
-     * @param title Ablak címsora.
+     * Creates an error dialog.
+     * @param message Error message.
+     * @param title Window title.
      */
     public AlertWindow(String message, String title) {
         super(title, false, true);
@@ -51,9 +47,6 @@ public class AlertWindow extends AWindow {
         setCSS();
     }
 
-    /**
-     * @return A felépített ablaktartalom.
-     */
     private Scene buildScene() {
         messageLabel.setTextAlignment(TextAlignment.JUSTIFY);
         messageLabel.setWrapText(true);
@@ -66,7 +59,7 @@ public class AlertWindow extends AWindow {
         icon.setEffect(GuiTools.reflection);
 
         Button okButton = new Button("OK");
-        okButton.setCancelButton(true); // így lesz kiESCelhető a dialog
+        okButton.setCancelButton(true); // dialog now can be ESCaped out :-)
         okButton.setStyle("-fx-base: #900;");
         okButton.setPrefWidth(50);
         okButton.setPrefHeight(25);
@@ -105,20 +98,19 @@ public class AlertWindow extends AWindow {
     }
 
     /**
-     * Megjelenít egy hibaüzenet ablakot.
-     * @param msg A hibaüzenet.
+     * Shows an error dialog.
+     * @param msg Error message.
      */
     public static void show(String msg) {
-        show("PubSearch", msg);
+        show(msg, "PubSearch");
     }
 
     /**
-     * Megjelenít egy hibaüzenet ablakot.
-     *
-     * @param title Ablak címsora.
-     * @param msg Hibaüzenet.
+     * Shows an error dialog
+     * @param msg Error message.
+     * @param title Window title.
      */
-    public static void show(String title, String msg) {
+    public static void show(String msg, String title) {
         alertWindow.setTitle(title);
         alertWindow.setMessage(msg);
         alertWindow.show();

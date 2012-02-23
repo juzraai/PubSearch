@@ -3,7 +3,10 @@ package pubsearch.gui.control;
 import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -14,16 +17,20 @@ import pubsearch.gui.tab.PubTab;
 import pubsearch.gui.window.MainWindow;
 
 /**
- * Egy publikációkat megjelenítő TableView, ami egy publikáció kiválasztásakor
- * (ENTER vagy dupla klikk hatására) megjeleníti a hozzá tartozó ablakot.
+ * TableView that lists publications, and shows the tab for a publication when its
+ * selected (with double click or pressing ENTER).
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class PubTable extends TableView<Publication> {
 
     private final MainWindow mainWindow;
     private final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
 
+    /**
+     * Sets up the TableView.
+     * @param mainWindow The MainWindow object which holds the tabs.
+     */
     public PubTable(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
 
@@ -88,8 +95,7 @@ public class PubTable extends TableView<Publication> {
     }
 
     /**
-     * Eseménykezelő. Esemény: duplakattintás/ENTER a találati listában.
-     * Tevékenység: megjeleníti a kiválaszott publikáció adatait.
+     * Shows the tab for the selected publication.
      */
     private void showDetails() {
         if (getSelectionModel().getSelectedIndex() > -1) {

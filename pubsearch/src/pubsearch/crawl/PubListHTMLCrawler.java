@@ -103,7 +103,7 @@ public class PubListHTMLCrawler extends ACrawler {
             }
 
             waitForCrawlers();
-            
+
             for (ACrawler crawler : crawlers) {
                 PubPageCrawler ppc = (PubPageCrawler) crawler;
                 if (null != ppc.getPublication()) {

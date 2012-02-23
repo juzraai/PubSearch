@@ -14,9 +14,9 @@ import javafx.scene.text.Text;
 import pubsearch.gui.GuiTools;
 
 /**
- * Névjegyablak.
+ * About window for PubSearch.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class AboutWindow extends AWindow {
 
@@ -34,7 +34,7 @@ public class AboutWindow extends AWindow {
         appName.setFill(textGradient);
         appName.setStyle("-fx-font-size:42px;");
         appName.setEffect(GuiTools.reflAndShadow);
-        
+
         Text myName = new Text((Locale.getDefault().getLanguage().equals("hu")) ? "Jurányi Zsolt" : "Zsolt Jurányi");
         myName.getStyleClass().addAll("bold-text", "italic-text");
         myName.setFill(textGradient);
@@ -70,17 +70,10 @@ public class AboutWindow extends AWindow {
         right.setAlignment(Pos.TOP_LEFT);
         right.getChildren().addAll(ver2, rel2, mail2);
 
-        /*
-         * Text thesis = new Text("Ez a program a Programtervező Informatikus BSc. szakdolgozatom.");
-         * thesis.setFill(Color.WHITE);
-         * thesis.setEffect(GuiTools.shadow);
-         */
-
         BorderPane center = new BorderPane();
         center.setTop(myName);
         center.setLeft(left);
         center.setRight(right);
-        //center.setBottom(thesis);
 
         Button okButton = new Button("OK");
         okButton.setStyle("-fx-base:#000033;");
@@ -100,10 +93,6 @@ public class AboutWindow extends AWindow {
         BorderPane.setMargin(myName, new Insets(30, 0, 30, 0));
         BorderPane.setAlignment(appName, Pos.CENTER);
         BorderPane.setMargin(appName, new Insets(10));
-        /*
-         * BorderPane.setAlignment(thesis, Pos.CENTER);
-         * BorderPane.setMargin(thesis, new Insets(10, 0, 10, 0));
-         */
         BorderPane.setAlignment(okButton, Pos.CENTER);
         BorderPane.setMargin(okButton, new Insets(5, 0, 15, 0));
 

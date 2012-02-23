@@ -31,9 +31,9 @@ import pubsearch.gui.control.PubTable;
 import pubsearch.gui.window.MainWindow;
 
 /**
- * Egy publikáció adatait megjelenítő tab.
+ * Tab which shows the details of a publication.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class PubTab extends Tab {
 
@@ -45,6 +45,12 @@ public class PubTab extends Tab {
         Velocity.init();
     }
 
+    /**
+     * Sets up the tab. BibTeX and cited by list will be shown only when not null/empty.
+     * Export tab will shown only if there are any *.vm files in "formats" directory.
+     * @param mainWindow MainWindow which hold the tabs.
+     * @param p Publication to be displayed.
+     */
     public PubTab(MainWindow mainWindow, Publication p) {
         super(p.getTitle());
         this.mainWindow = mainWindow;

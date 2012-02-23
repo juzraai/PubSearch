@@ -68,7 +68,7 @@ public class HTTPRequestEx extends HTTPRequest {
             if (Thread.interrupted()) {
                 break;
             }
-            
+
             String proxy = Config.getRandomProxy();
             super.setProxy(proxy);
 

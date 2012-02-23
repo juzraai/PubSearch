@@ -10,9 +10,9 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
- * Segédfüggvények JavaFX-es GUI-hoz.
+ * Some tool for JavaFX 2.0 based GUI.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class GuiTools {
 
@@ -31,9 +31,9 @@ public class GuiTools {
     }
 
     /**
-     * Középre igazít egy Stage-et (ablakot) a képernyőn.
+     * Centers a Stage (window) on screen.
      *
-     * @param stage a középre igazítandó Stage
+     * @param stage Stage to be centerized.
      */
     public static void centerizeStage(Stage stage) {
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();

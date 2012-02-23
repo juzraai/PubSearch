@@ -6,9 +6,9 @@ import javafx.stage.WindowEvent;
 import pubsearch.gui.tab.MainTab;
 
 /**
- * A program főablaka.
+ * Main window of PubSearch.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class MainWindow extends AWindow {
 
@@ -29,6 +29,10 @@ public class MainWindow extends AWindow {
         setCSS();
     }
 
+    /**
+     * Extends AWindow's onShownAction with focusing author search field.
+     * @param event Window event object which triggered this method.
+     */
     @Override
     protected void onShownAction(WindowEvent event) {
         super.onShownAction(event);

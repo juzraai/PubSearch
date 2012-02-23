@@ -18,9 +18,9 @@ import pubsearch.GetProxyList;
 import pubsearch.gui.control.LabelEx;
 
 /**
- * A proxy lista beállításához használatos ablak.
+ * Proxy list setup window.
  *
- * @author Zsolt
+ * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class ProxyWindow extends AWindow {
 
@@ -48,9 +48,6 @@ public class ProxyWindow extends AWindow {
         });
     }
 
-    /**
-     * @return A felépített ablaktartalom.
-     */
     private Scene buildScene() {
         LabelEx plzLabel = new LabelEx(texts.getString("proxyListDescription")).shadow().white().wrap();
         plzLabel.setTextAlignment(TextAlignment.JUSTIFY);
@@ -65,7 +62,9 @@ public class ProxyWindow extends AWindow {
             public void handle(ActionEvent arg0) {
                 List<String> pl = GetProxyList.getProxyList();
                 String ta = proxyTA.getText().trim();
-                if (0 != ta.length()) ta += "\n";
+                if (0 != ta.length()) {
+                    ta += "\n";
+                }
                 for (String p : pl) {
                     ta += p + "\n";
                 }
