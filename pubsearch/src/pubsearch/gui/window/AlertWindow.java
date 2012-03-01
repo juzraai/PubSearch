@@ -87,7 +87,7 @@ public class AlertWindow extends AWindow {
         RadialGradient gradient = new RadialGradient(0, 0, 38, 48, 300, false, CycleMethod.NO_CYCLE, gradientColors);
 
         Scene scene = new Scene(layout, 400, 125);
-        scene.getRoot().setStyle("-fx-background-color: transparent;"); // levesszük a CSS hátteret
+        scene.getRoot().setStyle("-fx-background-color: transparent;");
         scene.setFill(gradient);
         scene.getRoot().setCache(true);
         return scene;

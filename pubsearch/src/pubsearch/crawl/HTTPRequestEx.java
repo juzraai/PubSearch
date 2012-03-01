@@ -84,7 +84,7 @@ public class HTTPRequestEx extends HTTPRequest {
         if (success) {
             addToCache(toCache, html);
         } else {
-            System.out.println("Download failed: " + toCache);
+            System.err.println("Download failed: " + toCache);
         }
 
         return success;

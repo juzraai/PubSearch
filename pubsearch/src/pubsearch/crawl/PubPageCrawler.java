@@ -187,7 +187,7 @@ public class PubPageCrawler extends ACrawler {
                 publication.getCitedBy().addAll(citedBy);
                 Publication.store(publication);
             } else if (downloadMode) {
-                System.out.println("Parse failed: " + page);
+                System.err.println("Parse failed: " + page);
             }
         }
     }

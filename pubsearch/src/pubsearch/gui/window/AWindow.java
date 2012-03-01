@@ -1,5 +1,6 @@
 package pubsearch.gui.window;
 
+import java.io.File;
 import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.stage.Modality;
@@ -15,7 +16,7 @@ import pubsearch.gui.GuiTools;
 public abstract class AWindow extends Stage {
 
     protected final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
-    protected static final String CSS_FILE = "pubsearch/gui/style.css";
+    protected static final String CSS_FILE = "pubsearch" + File.separator + "gui" + File.separator + "style.css";
 
     /**
      * Sets up the window.

@@ -60,13 +60,6 @@ public class Crawler extends ACrawler {
                 break;
             }
 
-            //XXX To test only one database:
-            /*
-             * if (!pdb.getName().equals("ACM")) {
-             * continue;
-             * }
-             */
-
             String url = pdb.getBaseUrl() + pdb.getSubmitUrl();
             String qs = pdb.getSubmitParamsFormat().replaceFirst("%s", authorFilter);
             if (null != titleFilter) {

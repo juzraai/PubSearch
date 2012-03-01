@@ -13,8 +13,8 @@ import java.util.*;
 public class Config {
 
     private static final String CONF_DIR = "conf";
-    private static final String MYSQL_FILE = CONF_DIR + "/mysql.cfg";
-    private static final String PROXY_FILE = CONF_DIR + "/proxy.lst";
+    private static final String MYSQL_FILE = CONF_DIR + File.separator + "mysql.cfg";
+    private static final String PROXY_FILE = CONF_DIR + File.separator + "proxy.lst";
     private static String jdbcUrl = "localhost:3306";
     private static String jdbcUser = "root";
     private static String jdbcPass = "";
@@ -76,7 +76,7 @@ public class Config {
             setProxyList(GetProxyList.getProxyList());
         }
         if (proxyList.isEmpty()) {
-            return null; // TODO TEST
+            return null;
         } else {
             return proxyList.get((int) (Math.random() * proxyList.size()));
         }
@@ -103,12 +103,14 @@ public class Config {
             setJdbcUrl(r.readLine());
             setJdbcUser(r.readLine());
             setJdbcPass(r.readLine());
-        } catch (IOException ex) {
+        } catch (IOException e) {
+            System.err.println("Cannot load MySQL configuraiton.");
         } finally {
             if (null != r) {
                 try {
                     r.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -131,11 +133,13 @@ public class Config {
             w.write(getJdbcPass());
             w.newLine();
         } catch (IOException e) {
+            System.err.println("Cannot save MySQL configuraiton.");
         } finally {
             if (null != w) {
                 try {
                     w.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -153,12 +157,14 @@ public class Config {
                 proxies.add(r.readLine());
             }
             setProxyList(proxies);
-        } catch (IOException ex) {
+        } catch (IOException e) {
+            System.err.println("Cannot load proxy list.");
         } finally {
             if (null != r) {
                 try {
                     r.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -179,11 +185,13 @@ public class Config {
                 w.newLine();
             }
         } catch (IOException e) {
+            System.err.println("Cannot save proxy list.");
         } finally {
             if (null != w) {
                 try {
                     w.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }

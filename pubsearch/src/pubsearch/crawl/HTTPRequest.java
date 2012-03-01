@@ -92,9 +92,9 @@ public class HTTPRequest {
             int port = 8080;
             try {
                 port = Integer.parseInt(p[1]);
-            } catch (NumberFormatException e) {
+            } finally {
+                setProxy(p[0], port);
             }
-            setProxy(p[0], port);
         }
     }
 
@@ -175,7 +175,7 @@ public class HTTPRequest {
      * Sets up the request model.
      * @return The request model.
      */
-    private HttpMethodBase buildMethod() { //TODO try setQueryString with POST ! :)
+    private HttpMethodBase buildMethod() {
         HttpMethodBase m = (method.equals("POST")) ? new PostMethod(url) : new GetMethod(url);
         m.setQueryString(queryString);
         m.getParams().setParameter(HttpMethodParams.USER_AGENT, "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");

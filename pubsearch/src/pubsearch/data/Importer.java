@@ -23,7 +23,7 @@ public class Importer {
         if (null != confFiles) {
             for (String f : confFiles) {
                 if (f.endsWith(".pdb")) {
-                    loadPDatabase("conf/" + f);
+                    loadPDatabase("conf" + File.separator + f);
                 }
             }
         }
@@ -47,13 +47,14 @@ public class Importer {
                     fields.put(lp[0].toLowerCase(), lp[1].trim());
                 }
             }
-        } catch (FileNotFoundException ex) {
         } catch (IOException ex) {
+            System.err.println("Cannot import PDB file: " + fileName);
         } finally {
             if (null != r) {
                 try {
                     r.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -110,7 +111,8 @@ public class Importer {
             try {
                 Connection.getEntityManager().getTransaction().commit();
                 System.out.println("IMPORTED DATABASE: " + name);
-            } catch (RollbackException rbe) {
+            } catch (RollbackException e) {
+                System.err.println("Exception on commit.");
             }
         }
     }

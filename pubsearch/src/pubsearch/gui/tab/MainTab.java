@@ -258,7 +258,7 @@ public class MainTab extends Tab {
             }
             resultsView.getSelectionModel().clearSelection();
             resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(au, titleField.getText())));
-        } catch (Throwable t) {
+        } catch (Exception e) {
             AlertWindow.show(texts.getString("errorWhileQueryingResults"));
         }
         long time = System.nanoTime() - queryStartTime;

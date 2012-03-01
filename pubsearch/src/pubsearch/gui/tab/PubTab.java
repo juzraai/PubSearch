@@ -88,7 +88,8 @@ public class PubTab extends Tab {
                         if (d.isSupported(Desktop.Action.BROWSE)) {
                             d.browse(new URI(urlLabel2.getText()));
                         }
-                    } catch (Exception ex) {
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -187,7 +188,7 @@ public class PubTab extends Tab {
         if (null != confFiles) {
             for (String f : confFiles) {
                 if (f.endsWith(".vm")) {
-                    vmFiles.add("formats/" + f);
+                    vmFiles.add("formats" + File.separator + f);
                 }
             }
         }
@@ -208,7 +209,7 @@ public class PubTab extends Tab {
 
             ChoiceBox<String> formatCB = new ChoiceBox<String>();
             for (String t : vmFiles) {
-                t = t.replaceFirst("formats/", "");
+                t = t.substring("formats".length() + 1);
                 t = t.substring(0, t.length() - 3);
                 formatCB.getItems().add(t);
             }
@@ -216,12 +217,12 @@ public class PubTab extends Tab {
 
                 public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
                     exportTA.setText("");
+                    StringWriter sw = new StringWriter();
                     try {
                         Template template = Velocity.getTemplate(vmFiles.get(newValue.intValue()));
-                        StringWriter sw = new StringWriter();
                         template.merge(context, sw);
+                    } finally {
                         exportTA.setText(sw.toString());
-                    } catch (Exception e) {
                     }
                 }
             });
@@ -290,11 +291,13 @@ public class PubTab extends Tab {
             w.write(textArea.getText());
             w.newLine();
         } catch (IOException e) {
+            System.err.println("Cannot save TextArea content.");
         } finally {
             if (w != null) {
                 try {
                     w.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
