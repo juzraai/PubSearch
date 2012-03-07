@@ -16,7 +16,6 @@ import pubsearch.gui.GuiTools;
 public abstract class AWindow extends Stage {
 
     protected final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
-    protected static final String CSS_FILE = "pubsearch" + File.separator + "gui" + File.separator + "style.css";
 
     /**
      * Sets up the window.
@@ -56,6 +55,6 @@ public abstract class AWindow extends Stage {
      * Sets the CSS file for the window.
      */
     protected void setCSS() {
-        getScene().getStylesheets().add(CSS_FILE);
+        getScene().getStylesheets().add(GuiTools.class.getResource("style.css").toString());
     }
 }
