@@ -1,6 +1,5 @@
 package pubsearch.gui.window;
 
-import java.io.File;
 import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.stage.Modality;
