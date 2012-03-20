@@ -78,7 +78,7 @@ public class Connection {
         props.put("javax.persistence.jdbc.url", "jdbc:mysql://" + Config.getJdbcUrl() + "/pubsearch");
         props.put("javax.persistence.jdbc.user", Config.getJdbcUser());
         props.put("javax.persistence.jdbc.password", Config.getJdbcPass());
-        //props.put("eclipselink.logging.level", "OFF");
+        props.put("eclipselink.logging.level", "OFF");
         emf = Persistence.createEntityManagerFactory("pubsearch", props);
         em = emf.createEntityManager();
         System.out.println("JPA CONNECTION BUILT.");

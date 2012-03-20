@@ -1,12 +1,12 @@
 package hu.juranyi.zsolt.pubsearch.crawl;
 
+import hu.juranyi.zsolt.pubsearch.StringTools;
+import hu.juranyi.zsolt.pubsearch.data.PDatabase;
+import hu.juranyi.zsolt.pubsearch.data.Publication;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import hu.juranyi.zsolt.pubsearch.StringTools;
-import hu.juranyi.zsolt.pubsearch.data.PDatabase;
-import hu.juranyi.zsolt.pubsearch.data.Publication;
 
 /**
  * Crawls a result list. Downloads a page, starts a PubListHTMLCrawler for it,
