@@ -38,8 +38,7 @@ public class PubPageCrawler extends ACrawler {
         this.transLev = transLev;
         this.refPubMode = refPubMode;
         this.downloadMode = download;
-        setName("Crawler, PubPage tr=" + transLev + ", pdb=" + pdb.getName() + "; " + getName());
-        setPriority(7);
+        setName(getName() + " (" + pdb.getName() + ")");
     }
 
     public Publication getPublication() {

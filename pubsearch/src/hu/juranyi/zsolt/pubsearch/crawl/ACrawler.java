@@ -21,7 +21,7 @@ public abstract class ACrawler extends Thread {
 
     public ACrawler() {
         setDaemon(true); // if app is shot down, this thread stops too
-        setName(getClass().getSimpleName() + " " + getId());
+        setName("ACrawler, " + getClass().getSimpleName() + " " + getId());
     }
 
     /**
@@ -70,11 +70,10 @@ public abstract class ACrawler extends Thread {
      * Waits for the child crawler threads (stored in 'crawlers' field) to stop.
      */
     protected void waitForCrawlers() {
-        boolean done = false;
-        while (!done) {
-            done = true;
-            for (int i = 0; i < crawlers.size() && done; i++) {
-                done = done && !crawlers.get(i).isAlive();
+        for (ACrawler crawler : crawlers) {
+            try {
+                crawler.join();
+            } catch (InterruptedException ex) {
             }
         }
     }

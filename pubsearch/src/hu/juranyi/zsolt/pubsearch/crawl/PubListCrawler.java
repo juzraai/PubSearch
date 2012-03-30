@@ -38,8 +38,7 @@ public class PubListCrawler extends ACrawler {
         this.url = url;
         this.transLev = transLev;
         this.refPubMode = refPubMode;
-        setName("Crawler, ListURL tr=" + transLev + ", pdb=" + pdb.getName() + "; " + getName());
-        setPriority(6);
+        setName(getName() + " (" + pdb.getName() + ")");
     }
 
     public List<Publication> getPublications() {

@@ -163,7 +163,7 @@ public class HTTPRequest {
     /**
      * Sets the static byte counter to 0.
      */
-    public static void zeroBytes() {
+    public static synchronized void zeroBytes() {
         bytes = 0;
     }
 

@@ -35,8 +35,7 @@ public class PubListHTMLCrawler extends ACrawler {
         this.html = html;
         this.transLev = transLev;
         this.refPubMode = refPubMode;
-        setName("Crawler, ListHTML tr=" + transLev + ", pdb=" + pdb.getName() + "; " + getName());
-        setPriority(6);
+        setName(getName() + " (" + pdb.getName() + ")");
     }
 
     public List<Publication> getPublications() {
