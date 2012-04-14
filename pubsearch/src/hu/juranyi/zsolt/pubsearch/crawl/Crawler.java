@@ -18,24 +18,26 @@ public class Crawler extends ACrawler {
     private final MainTab caller;
     private String authorFilter;
     private String titleFilter;
-    private boolean multithreaded;
     private int transLev;
+    private static int threadLimit;
 
     /**
      * Sets up the crawler.
      * @param caller The caller MainTab object, that Crawler will notify at the end.
      * @param authorFilter Search for this author.
      * @param titleFilter Filter for this title.
-     * @param multithreaded If true, databases will be crawled multithreaded, otherwise iterated.
      * @param transLev 0: only search results, 1: referrer publications also 2: referrer of referrers also will be grabbed.
+     * @param dbThreadLimit Maximum count of PubListCrawler threads = databases crawled at the same time.
+     * @param ppThreadLimit Maximum count of PubPageCrawler threads = publication pages crawled at the same time.
      */
-    public Crawler(MainTab caller, String authorFilter, String titleFilter, boolean multithreaded, int transLev) {
+    public Crawler(MainTab caller, String authorFilter, String titleFilter, int transLev, int dbThreadLimit, int ppThreadLimit) {
         this.caller = caller;
         this.authorFilter = authorFilter;
         this.titleFilter = (titleFilter != null && titleFilter.trim().length() > 0) ? titleFilter : null;
-        this.multithreaded = multithreaded;
         this.transLev = transLev;
         setName("Crawler");
+        Crawler.threadLimit = dbThreadLimit;
+        PubListHTMLCrawler.setThreadLimit(ppThreadLimit);
     }
 
     @Override
@@ -68,14 +70,14 @@ public class Crawler extends ACrawler {
             url += "?" + qs;
             PubListCrawler rlc = new PubListCrawler(pdb, url, transLev, false);
             crawlers.add(rlc);
-            rlc.launch(multithreaded);
-            if (!multithreaded) {
+            if (1 == threadLimit) {
+                rlc.launch(false);
                 System.out.println(pdb.getName() + " DONE");
             }
         }
 
-        if (multithreaded) {
-            waitForCrawlers();
+        if (1 < threadLimit) {
+            scheduleCrawlers(threadLimit);
         }
 
         Config.saveProxyList();

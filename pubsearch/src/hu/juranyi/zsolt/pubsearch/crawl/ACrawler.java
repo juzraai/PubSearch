@@ -21,7 +21,7 @@ public abstract class ACrawler extends Thread {
 
     public ACrawler() {
         setDaemon(true); // if app is shot down, this thread stops too
-        setName("ACrawler, " + getClass().getSimpleName() + " " + getId());
+        setName(getClass().getSimpleName() + " " + getId());
     }
 
     /**
@@ -64,6 +64,19 @@ public abstract class ACrawler extends Thread {
         time = System.nanoTime();
         crawl();
         time = System.nanoTime() - time;
+    }
+
+    /**
+     * Schedules the child crawler threads: starts them in order, and provides
+     * that the maximum count of running threads will be threadLimit.
+     * @param threadLimit The maximum count of running child crawler threads.
+     */
+    protected void scheduleCrawlers(int threadLimit) {
+        ThreadScheduler sched = new ThreadScheduler(threadLimit);
+        for (ACrawler crawler : crawlers) {
+            sched.add(crawler);
+        }
+        sched.startAndWait();
     }
 
     /**

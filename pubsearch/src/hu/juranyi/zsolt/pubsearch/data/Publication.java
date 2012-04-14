@@ -47,7 +47,7 @@ public class Publication implements Serializable {
         try {
             Connection.getEntityManager().getTransaction().commit();
         } catch (RollbackException e) {
-            System.err.println("Exception on commit.");
+            System.err.println("Exception on commit. Message: " + e.getMessage());
         }
     }
 

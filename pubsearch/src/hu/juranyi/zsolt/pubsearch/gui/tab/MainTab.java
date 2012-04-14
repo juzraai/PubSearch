@@ -44,7 +44,8 @@ public class MainTab extends Tab {
     private final TextField authorField = new TextField();
     private final TextField titleField = new TextField();
     private final ChoiceBox transLevCombo = new ChoiceBox(FXCollections.observableArrayList(texts.getString("transitivityLevel0"), texts.getString("transitivityLevel1"), texts.getString("transitivityLevel2")));
-    private final CheckBox multithreadCheckBox = new CheckBox(texts.getString("multithreadedSearch"));
+    private final TextField dbThreadLimitField = new TextField();
+    private final TextField ppThreadLimitField = new TextField();
     private final CheckBox onlyLocalCheckBox = new CheckBox(texts.getString("onlyLocalSearch"));
     private final Button searchButton = new Button(texts.getString("searchButton"));
     private final PubTable resultsView;
@@ -77,6 +78,8 @@ public class MainTab extends Tab {
         Label authorLabel = new LabelEx(texts.getString("searchForAuthor")).bold().shadow().white();
         Label titleLabel = new LabelEx(texts.getString("filterByTitle")).shadow().white();
         Label transLevLabel = new LabelEx(texts.getString("transitivityLevel")).shadow().white();
+        Label dbThreadLimitLabel = new LabelEx("dbThreadLimit").shadow().white(); // TODO i18n
+        Label ppThreadLimitLabel = new LabelEx("ppThreadLimit").shadow().white(); // TODO i18n
 
         authorField.setOnAction(startSearchAction);
         authorField.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -94,15 +97,18 @@ public class MainTab extends Tab {
 
         transLevCombo.getSelectionModel().select(1);
 
-        multithreadCheckBox.setStyle("-fx-text-fill: #FAF");
-        multithreadCheckBox.selectedProperty().set(true);
+        dbThreadLimitField.setPrefWidth(30);
+        dbThreadLimitField.setText("2");
+        ppThreadLimitField.setPrefWidth(30);
+        ppThreadLimitField.setText("3");
 
         onlyLocalCheckBox.setStyle("-fx-text-fill: #AFA");
         onlyLocalCheckBox.setOnAction(new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent arg0) {
                 transLevCombo.setDisable(onlyLocalCheckBox.selectedProperty().get());
-                multithreadCheckBox.setDisable(onlyLocalCheckBox.selectedProperty().get());
+                dbThreadLimitField.setDisable(onlyLocalCheckBox.selectedProperty().get());
+                ppThreadLimitField.setDisable(onlyLocalCheckBox.selectedProperty().get());
             }
         });
 
@@ -153,8 +159,11 @@ public class MainTab extends Tab {
         top.add(titleField, 1, 1);
         top.add(transLevLabel, 0, 2);
         top.add(transLevCombo, 1, 2);
-        top.add(multithreadCheckBox, 1, 3);
-        top.add(onlyLocalCheckBox, 1, 4);
+        top.add(dbThreadLimitLabel, 0, 3, 2, 1);
+        top.add(dbThreadLimitField, 2, 3);
+        top.add(ppThreadLimitLabel, 0, 4, 2, 1);
+        top.add(ppThreadLimitField, 2, 4);
+        top.add(onlyLocalCheckBox, 1, 5);
         top.add(searchButton, 2, 0, 1, 2);
         top.add(aboutButton, 3, 0);
         top.add(editProxiesButton, 3, 1);
@@ -219,7 +228,21 @@ public class MainTab extends Tab {
             } else {
                 // van proxy, indul a crawl, külön szálon, majd ő értesít az eredmények megjelenítéséről
                 switchScene(false);
-                crawler = new Crawler(this, authorField.getText(), titleField.getText(), multithreadCheckBox.selectedProperty().get(), transLevCombo.getSelectionModel().getSelectedIndex());
+
+                int dbThreadLimit = 2;
+                int ppThreadLimit = 3;
+                try {
+                    dbThreadLimit = Integer.parseInt(dbThreadLimitField.getText());
+                } catch(NumberFormatException ex) {
+                    dbThreadLimitField.setText("2");
+                }
+                try {
+                    ppThreadLimit = Integer.parseInt(ppThreadLimitField.getText());
+                } catch(NumberFormatException ex) {
+                    ppThreadLimitField.setText("3");
+                }
+
+                crawler = new Crawler(this, authorField.getText(), titleField.getText(), transLevCombo.getSelectionModel().getSelectedIndex(), dbThreadLimit, ppThreadLimit);
                 crawler.start();
             }
         } else {

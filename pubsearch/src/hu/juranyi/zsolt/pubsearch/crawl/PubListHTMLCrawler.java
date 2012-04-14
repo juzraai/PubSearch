@@ -20,6 +20,7 @@ public class PubListHTMLCrawler extends ACrawler {
     private String html;
     private int transLev;
     private boolean refPubMode;
+    private static int threadLimit = 3;
     //out
     private List<Publication> publications = new ArrayList<Publication>();
 
@@ -36,6 +37,10 @@ public class PubListHTMLCrawler extends ACrawler {
         this.transLev = transLev;
         this.refPubMode = refPubMode;
         setName(getName() + " (" + pdb.getName() + ")");
+    }
+
+    public static void setThreadLimit(int threadLimit) {
+        PubListHTMLCrawler.threadLimit = threadLimit;
     }
 
     public List<Publication> getPublications() {
@@ -97,11 +102,13 @@ public class PubListHTMLCrawler extends ACrawler {
             /*
              * Start, wait for, and get results from crawlers
              */
-            for (ACrawler crawler : crawlers) {
-                crawler.launch(!refPubMode);
+            if (refPubMode) {
+                for (ACrawler crawler : crawlers) {
+                    crawler.launch(false);
+                }
+            } else {
+                scheduleCrawlers(threadLimit);
             }
-
-            waitForCrawlers();
 
             for (ACrawler crawler : crawlers) {
                 PubPageCrawler ppc = (PubPageCrawler) crawler;
