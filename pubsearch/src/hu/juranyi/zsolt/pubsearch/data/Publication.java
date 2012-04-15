@@ -15,6 +15,7 @@ import javax.persistence.*;
 public class Publication implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static final int BIBTEX_LENGTH = 4096;
     private Long id;
     private String authors;
     private String bibtex = "";
@@ -129,13 +130,13 @@ public class Publication implements Serializable {
         this.authors = authors;
     }
 
-    @Column(length = 4096)
+    @Column(length = BIBTEX_LENGTH)
     public String getBibtex() {
         return bibtex;
     }
 
     public void setBibtex(String bibtex) {
-        this.bibtex = bibtex;
+        this.bibtex = bibtex.substring(0, BIBTEX_LENGTH - 1);
     }
 
     @ManyToMany(cascade = CascadeType.ALL)

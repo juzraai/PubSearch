@@ -15,6 +15,10 @@ public abstract class ACrawler extends Thread {
      */
     protected List<ACrawler> crawlers = new ArrayList<ACrawler>();
     /**
+     * Thread count limiter, used by scheduleCrawlers().
+     */
+    protected ThreadScheduler sched;
+    /**
      * Crawl time in nanoseconds. Measured in run().
      */
     protected long time;
@@ -34,13 +38,16 @@ public abstract class ACrawler extends Thread {
     }
 
     /**
-     * Interrupts all child threads too.
+     * Interrupts all child threads and the scheduler too.
      */
     @Override
     public void interrupt() {
         super.interrupt();
-        for (ACrawler c : crawlers) {
-            c.interrupt();
+        if (null != sched) {
+            sched.interrupt();
+        }
+        for (ACrawler crawler : crawlers) {
+            crawler.interrupt();
         }
     }
 
@@ -72,7 +79,7 @@ public abstract class ACrawler extends Thread {
      * @param threadLimit The maximum count of running child crawler threads.
      */
     protected void scheduleCrawlers(int threadLimit) {
-        ThreadScheduler sched = new ThreadScheduler(threadLimit);
+        sched = new ThreadScheduler(threadLimit);
         for (ACrawler crawler : crawlers) {
             sched.add(crawler);
         }

@@ -2,8 +2,6 @@ package hu.juranyi.zsolt.pubsearch.crawl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * ThreadScheduler can help you limit the count of actually running threads.
@@ -16,7 +14,6 @@ import java.util.logging.Logger;
  * gets an interrupt, sends it to all running threads, waits for them to die,
  * then clears the list and stops.
  *
- * @version 1.0
  * @author Jurányi Zsolt (JUZRAAI.ELTE)
  */
 public class ThreadScheduler extends Thread {
@@ -90,11 +87,14 @@ public class ThreadScheduler extends Thread {
         while (manage());
     }
 
-    public void startAndWait() {
+    public synchronized void startAndWait() {
         start();
         try {
             this.join();
         } catch (InterruptedException ex) {
+        }
+        for (Thread t : threads) {
+            while(t.isAlive());
         }
     }
 }

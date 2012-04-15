@@ -71,6 +71,7 @@ public class PubListCrawler extends ACrawler {
 
                 if (null == StringTools.findFirstMatch(html, pdb.getNoResultsTextPattern(), 1)) {
                     PubListHTMLCrawler plpc = new PubListHTMLCrawler(pdb, html, transLev, refPubMode);
+                    crawlers.add(plpc);
                     plpc.launch(false);
 
                     List<Publication> pubs = plpc.getPublications();

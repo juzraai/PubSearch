@@ -303,7 +303,7 @@ public class MainTab extends Tab {
      * Sends an interrupt for the crawler. Note: crawler will not stop immediately,
      * it will finish all running downloads and process them before dying.
      */
-    public void kill() {
+    public void kill() { // TODO javadoc update
         if (null != crawler) {
             System.err.println("Killing crawler thread.");
             crawler.interrupt();
