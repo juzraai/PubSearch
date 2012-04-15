@@ -97,8 +97,11 @@ public class MainTab extends Tab {
 
         transLevCombo.getSelectionModel().select(1);
 
+        dbThreadLimitField.setOnAction(startSearchAction);
         dbThreadLimitField.setPrefWidth(30);
         dbThreadLimitField.setText("2");
+
+        ppThreadLimitField.setOnAction(startSearchAction);
         ppThreadLimitField.setPrefWidth(30);
         ppThreadLimitField.setText("3");
 
@@ -232,14 +235,14 @@ public class MainTab extends Tab {
                 int dbThreadLimit = 2;
                 int ppThreadLimit = 3;
                 try {
-                    dbThreadLimit = Integer.parseInt(dbThreadLimitField.getText());
-                } catch(NumberFormatException ex) {
-                    dbThreadLimitField.setText("2");
+                    dbThreadLimit = Math.max(1, Integer.parseInt(dbThreadLimitField.getText()));
+                } catch (NumberFormatException ex) {
+                    dbThreadLimitField.setText(Integer.toString(dbThreadLimit));
                 }
                 try {
-                    ppThreadLimit = Integer.parseInt(ppThreadLimitField.getText());
-                } catch(NumberFormatException ex) {
-                    ppThreadLimitField.setText("3");
+                    ppThreadLimit = Math.max(1, Integer.parseInt(ppThreadLimitField.getText()));
+                } catch (NumberFormatException ex) {
+                    ppThreadLimitField.setText(Integer.toString(ppThreadLimit));
                 }
 
                 crawler = new Crawler(this, authorField.getText(), titleField.getText(), transLevCombo.getSelectionModel().getSelectedIndex(), dbThreadLimit, ppThreadLimit);
