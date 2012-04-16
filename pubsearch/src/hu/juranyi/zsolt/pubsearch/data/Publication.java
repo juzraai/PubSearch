@@ -136,7 +136,11 @@ public class Publication implements Serializable {
     }
 
     public void setBibtex(String bibtex) {
-        this.bibtex = bibtex.substring(0, BIBTEX_LENGTH - 1);
+        if (null != bibtex && bibtex.length() > BIBTEX_LENGTH) {
+            this.bibtex = bibtex.substring(0, BIBTEX_LENGTH - 1);
+        } else {
+            this.bibtex = bibtex;
+        }
     }
 
     @ManyToMany(cascade = CascadeType.ALL)

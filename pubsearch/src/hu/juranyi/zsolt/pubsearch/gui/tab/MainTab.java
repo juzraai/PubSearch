@@ -286,6 +286,7 @@ public class MainTab extends Tab {
             resultsView.setItems(FXCollections.observableArrayList(Publication.searchResults(au, titleField.getText())));
         } catch (Exception e) {
             AlertWindow.show(texts.getString("errorWhileQueryingResults"));
+            System.err.println(e.getMessage());
         }
         long time = System.nanoTime() - queryStartTime;
         if (!onlyLocalCheckBox.selectedProperty().get()) {

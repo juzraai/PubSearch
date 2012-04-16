@@ -43,7 +43,7 @@ public class Pubsearch extends Application {
         if (Connection.tryInit()) {
             stage.show();
         } else {
-            ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
+            ResourceBundle texts = ResourceBundle.getBundle("hu.juranyi.zsolt.pubsearch.gui.texts.texts");
             if (Connection.getLastError() == Connection.SQL_ERROR) {
                 stage.configWindow.show();
                 AlertWindow.show(texts.getString("mysqlError"));
