@@ -40,7 +40,7 @@ public class MainTab extends Tab {
     private BorderPane mainLayout;
     private BorderPane searchLayout;
     // Controls
-    private final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
+    private final ResourceBundle texts = ResourceBundle.getBundle("hu.juranyi.zsolt.pubsearch.gui.texts.texts");
     private final TextField authorField = new TextField();
     private final TextField titleField = new TextField();
     private final ChoiceBox transLevCombo = new ChoiceBox(FXCollections.observableArrayList(texts.getString("transitivityLevel0"), texts.getString("transitivityLevel1"), texts.getString("transitivityLevel2")));
@@ -78,8 +78,8 @@ public class MainTab extends Tab {
         Label authorLabel = new LabelEx(texts.getString("searchForAuthor")).bold().shadow().white();
         Label titleLabel = new LabelEx(texts.getString("filterByTitle")).shadow().white();
         Label transLevLabel = new LabelEx(texts.getString("transitivityLevel")).shadow().white();
-        Label dbThreadLimitLabel = new LabelEx("dbThreadLimit").shadow().white(); // TODO i18n
-        Label ppThreadLimitLabel = new LabelEx("ppThreadLimit").shadow().white(); // TODO i18n
+        Label dbThreadLimitLabel = new LabelEx(texts.getString("dbThreadLimit")).shadow().white();
+        Label ppThreadLimitLabel = new LabelEx(texts.getString("ppThreadLimit")).shadow().white();
 
         authorField.setOnAction(startSearchAction);
         authorField.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -223,13 +223,13 @@ public class MainTab extends Tab {
      */
     private void startSearch() {
         if (!onlyLocalCheckBox.selectedProperty().get()) {
-            // crawl eset
+            // crawl
             if (Config.getProxyList().isEmpty()) {
-                // nincs proxy, hibajelzés
+                // no proxy
                 proxyWindow.show();
                 AlertWindow.show(texts.getString("proxyListNeeded"));
             } else {
-                // van proxy, indul a crawl, külön szálon, majd ő értesít az eredmények megjelenítéséről
+                // crawl starts, crawler will notify when ready
                 switchScene(false);
 
                 int dbThreadLimit = 2;
@@ -249,7 +249,7 @@ public class MainTab extends Tab {
                 crawler.start();
             }
         } else {
-            // only local eset, csak lekérdezés
+            // only query
             showResults(0);
         }
     }

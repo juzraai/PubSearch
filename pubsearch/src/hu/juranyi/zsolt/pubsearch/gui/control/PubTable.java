@@ -25,7 +25,7 @@ import javafx.util.Callback;
 public class PubTable extends TableView<Publication> {
 
     private final MainWindow mainWindow;
-    private final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
+    private final ResourceBundle texts = ResourceBundle.getBundle("hu.juranyi.zsolt.pubsearch.gui.texts.texts");
 
     /**
      * Sets up the TableView.

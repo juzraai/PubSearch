@@ -23,18 +23,34 @@ public class ThreadScheduler extends Thread {
     private int limit;
     private List<Thread> threads = new ArrayList<Thread>();
 
+    /**
+     * Creates a ThreadScheduler with default name and thread count limit.
+     */
     public ThreadScheduler() {
         this(DEFAULT_LIMIT);
     }
 
+    /**
+     * Creates a ThreadScheduler with default name and given thread count limit.
+     * @param limit Maximum number of threads can run at the same time.
+     */
     public ThreadScheduler(int limit) {
         this("ThreadScheduler-" + schedulerID, limit);
     }
 
+    /**
+     * Creates a ThreadScheduler with given name and default thread count limit.
+     * @param name Name of the ThreadScheduler thread.
+     */
     public ThreadScheduler(String name) {
         this(name, DEFAULT_LIMIT);
     }
 
+    /**
+     * Creates a ThreadScheduler with given name and thread count limit
+     * @param name Name of the ThreadScheduler thread.
+     * @param limit  Maximum number of threads can run at the same time.
+     */
     public ThreadScheduler(String name, int limit) {
         setName(name);
         this.limit = limit;
@@ -58,6 +74,9 @@ public class ThreadScheduler extends Thread {
         return Math.max(0, threads.size() - limit);
     }
 
+    /**
+     * Interrupts all threads.
+     */
     @Override
     public synchronized void interrupt() {
         super.interrupt();
@@ -87,6 +106,10 @@ public class ThreadScheduler extends Thread {
         while (manage());
     }
 
+    /**
+     * Starts the scheduler, then waits for it to stop working. If scheduler gets
+     * an interrupt, the running threads will be waited.
+     */
     public synchronized void startAndWait() {
         start();
         try {

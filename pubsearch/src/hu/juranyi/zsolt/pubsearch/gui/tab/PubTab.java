@@ -39,7 +39,7 @@ public class PubTab extends Tab {
 
     private MainWindow mainWindow;
     private Publication p;
-    private final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
+    private final ResourceBundle texts = ResourceBundle.getBundle("hu.juranyi.zsolt.pubsearch.gui.texts.texts");
 
     static {
         Velocity.init();

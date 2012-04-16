@@ -14,7 +14,7 @@ import javafx.stage.WindowEvent;
  */
 public abstract class AWindow extends Stage {
 
-    protected final ResourceBundle texts = ResourceBundle.getBundle("pubsearch.gui.texts.texts");
+    protected final ResourceBundle texts = ResourceBundle.getBundle("hu.juranyi.zsolt.pubsearch.gui.texts.texts");
 
     /**
      * Sets up the window.
