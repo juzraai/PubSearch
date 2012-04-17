@@ -181,7 +181,7 @@ public class HTTPRequest {
         m.getParams().setParameter(HttpMethodParams.USER_AGENT, "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
         m.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0, false));
         m.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 10 * 1000);
-        m.setFollowRedirects(false);
+        //m.setFollowRedirects(false);
         return m;
     }
 }
