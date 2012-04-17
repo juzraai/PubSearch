@@ -1,11 +1,15 @@
 package hu.juranyi.zsolt.pubsearch.gui.tab;
 
+import hu.juranyi.zsolt.pubsearch.data.Exporter;
 import hu.juranyi.zsolt.pubsearch.data.Publication;
 import hu.juranyi.zsolt.pubsearch.gui.control.LabelEx;
 import hu.juranyi.zsolt.pubsearch.gui.control.PubTable;
 import hu.juranyi.zsolt.pubsearch.gui.window.MainWindow;
 import java.awt.Desktop;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +30,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
 /**
@@ -38,7 +40,7 @@ import org.apache.velocity.app.Velocity;
 public class PubTab extends Tab {
 
     private MainWindow mainWindow;
-    private Publication p;
+    private final Publication p;
     private final ResourceBundle texts = ResourceBundle.getBundle("hu.juranyi.zsolt.pubsearch.gui.texts.texts");
 
     static {
@@ -182,48 +184,20 @@ public class PubTab extends Tab {
         /*
          * Export citation
          */
-        final List<String> vmFiles = new ArrayList<String>();
-        File confDir = new File("formats");
-        String[] confFiles = confDir.list();
-        if (null != confFiles) {
-            for (String f : confFiles) {
-                if (f.endsWith(".vm")) {
-                    vmFiles.add("formats" + File.separator + f);
-                }
-            }
-        }
-        if (!vmFiles.isEmpty()) {
+        List<String> formatList = Exporter.getFormatList();
+        if (!formatList.isEmpty()) {
 
-            final VelocityContext context = new VelocityContext();
-            context.put("authors", p.getAuthors());
-            context.put("title", p.getTitle());
-            if (-1 < p.getYear()) {
-                context.put("year", p.getYear());
-            }
-            if (null != p.getUrl()) {
-                context.put("url", p.getUrl());
-            }
+            final Exporter e = new Exporter(PubTab.this.p);
 
             final TextArea exportTA = new TextArea();
             exportTA.setEditable(false);
 
             ChoiceBox<String> formatCB = new ChoiceBox<String>();
-            for (String t : vmFiles) {
-                t = t.substring("formats".length() + 1);
-                t = t.substring(0, t.length() - 3);
-                formatCB.getItems().add(t);
-            }
+            formatCB.getItems().addAll(formatList);
             formatCB.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 
                 public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
-                    exportTA.setText("");
-                    StringWriter sw = new StringWriter();
-                    try {
-                        Template template = Velocity.getTemplate(vmFiles.get(newValue.intValue()));
-                        template.merge(context, sw);
-                    } finally {
-                        exportTA.setText(sw.toString());
-                    }
+                    exportTA.setText(e.export(newValue.intValue()));
                 }
             });
 
@@ -284,20 +258,21 @@ public class PubTab extends Tab {
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(texts.getString("allFiles") + " (*.*)", "*.*"));
 
         File f = fc.showSaveDialog(PubTab.this.mainWindow);
-
-        BufferedWriter w = null;
-        try {
-            w = new BufferedWriter(new FileWriter(f));
-            w.write(textArea.getText());
-            w.newLine();
-        } catch (IOException e) {
-            System.err.println("Cannot save TextArea content.");
-        } finally {
-            if (w != null) {
-                try {
-                    w.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+        if (null != f) {
+            BufferedWriter w = null;
+            try {
+                w = new BufferedWriter(new FileWriter(f));
+                w.write(textArea.getText());
+                w.newLine();
+            } catch (IOException e) {
+                System.err.println("Cannot save TextArea content.");
+            } finally {
+                if (w != null) {
+                    try {
+                        w.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

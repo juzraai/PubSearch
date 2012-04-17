@@ -7,10 +7,7 @@ import hu.juranyi.zsolt.pubsearch.data.Publication;
 import hu.juranyi.zsolt.pubsearch.gui.GuiTools;
 import hu.juranyi.zsolt.pubsearch.gui.control.LabelEx;
 import hu.juranyi.zsolt.pubsearch.gui.control.PubTable;
-import hu.juranyi.zsolt.pubsearch.gui.window.AboutWindow;
-import hu.juranyi.zsolt.pubsearch.gui.window.AlertWindow;
-import hu.juranyi.zsolt.pubsearch.gui.window.MainWindow;
-import hu.juranyi.zsolt.pubsearch.gui.window.ProxyWindow;
+import hu.juranyi.zsolt.pubsearch.gui.window.*;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -36,6 +33,7 @@ public class MainTab extends Tab {
     // Windows
     private final ProxyWindow proxyWindow = new ProxyWindow();
     private final AboutWindow aboutWindow = new AboutWindow();
+    private final ExportWindow exportWindow = new ExportWindow();
     // MainTab states
     private BorderPane mainLayout;
     private BorderPane searchLayout;
@@ -73,6 +71,20 @@ public class MainTab extends Tab {
         };
 
         /*
+         * Center
+         */
+        resultsView = new PubTable(mainWindow);
+        resultCountLabel.getStyleClass().addAll("white-text", "bold-text");
+        resultCountLabel.setTextAlignment(TextAlignment.CENTER);
+        resultCountLabel.setWrapText(true);
+        BorderPane.setAlignment(resultCountLabel, Pos.CENTER);
+
+        BorderPane center = new BorderPane();
+        center.setPadding(new Insets(12));
+        center.setCenter(resultsView);
+        center.setTop(resultCountLabel);
+
+        /*
          * Top
          */
         Label authorLabel = new LabelEx(texts.getString("searchForAuthor")).bold().shadow().white();
@@ -91,11 +103,9 @@ public class MainTab extends Tab {
         });
         authorField.setTooltip(new Tooltip(texts.getString("authorFieldTooltip")));
 
-        titleField.setOnAction(startSearchAction);
         titleField.setDisable(true);
+        titleField.setOnAction(startSearchAction);
         titleField.setTooltip(new Tooltip(texts.getString("titleFieldTooltip")));
-
-        transLevCombo.getSelectionModel().select(1);
 
         dbThreadLimitField.setOnAction(startSearchAction);
         dbThreadLimitField.setPrefWidth(30);
@@ -104,6 +114,8 @@ public class MainTab extends Tab {
         ppThreadLimitField.setOnAction(startSearchAction);
         ppThreadLimitField.setPrefWidth(30);
         ppThreadLimitField.setText("3");
+
+        transLevCombo.getSelectionModel().select(1);
 
         onlyLocalCheckBox.setStyle("-fx-text-fill: #AFA");
         onlyLocalCheckBox.setOnAction(new EventHandler<ActionEvent>() {
@@ -152,6 +164,17 @@ public class MainTab extends Tab {
             }
         });
 
+        exportWindow.setPubTable(resultsView);
+        Button exportButton = new Button(texts.getString("exportButton"));
+        exportButton.setPrefWidth(150);
+        exportButton.setStyle("-fx-base: #E90;");
+        exportButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent event) {
+                exportWindow.show();
+            }
+        });
+
         GridPane top = new GridPane();
         top.setPadding(new Insets(12));
         top.setHgap(10);
@@ -171,20 +194,11 @@ public class MainTab extends Tab {
         top.add(aboutButton, 3, 0);
         top.add(editProxiesButton, 3, 1);
         top.add(editDBConnButton, 3, 2);
+        top.add(exportButton, 3, 3);
 
         /*
-         * Center
+         * Build up
          */
-        resultsView = new PubTable(mainWindow);
-        resultCountLabel.getStyleClass().addAll("white-text", "bold-text");
-        resultCountLabel.setTextAlignment(TextAlignment.CENTER);
-        resultCountLabel.setWrapText(true);
-        BorderPane.setAlignment(resultCountLabel, Pos.CENTER);
-
-        BorderPane center = new BorderPane();
-        center.setPadding(new Insets(12));
-        center.setCenter(resultsView);
-        center.setTop(resultCountLabel);
 
         mainLayout = new BorderPane();
         mainLayout.setPadding(new Insets(0));
@@ -307,7 +321,7 @@ public class MainTab extends Tab {
      * Sends an interrupt for the crawler. Note: crawler will not stop immediately,
      * it will finish all running downloads and process them before dying.
      */
-    public void kill() { // TODO javadoc update
+    public void kill() {
         if (null != crawler) {
             System.err.println("Killing crawler thread.");
             crawler.interrupt();

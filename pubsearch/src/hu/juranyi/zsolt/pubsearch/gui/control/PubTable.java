@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -33,6 +34,8 @@ public class PubTable extends TableView<Publication> {
      */
     public PubTable(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
+
+        getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         TableColumn dbCol = new TableColumn(texts.getString("databaseColumn"));
         dbCol.setPrefWidth(100);
