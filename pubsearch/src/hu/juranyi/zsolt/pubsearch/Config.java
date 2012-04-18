@@ -60,9 +60,9 @@ public class Config {
      * Sets the proxy list. Deletes duplications.
      * @param proxyList The new proxy list.
      */
-    public static void setProxyList(String[] proxies) {
+    public static void setProxyList(String[] proxyList) {
         List<String> pl = new ArrayList<String>();
-        Collections.addAll(pl, proxies);
+        Collections.addAll(pl, proxyList);
         setProxyList(pl);
     }
 

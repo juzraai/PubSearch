@@ -106,7 +106,7 @@ public class StringTools {
      * @param time Time to format.
      * @param showMicro Include microseconds in the text?
      * @param showNano Include nanoseconds in the text?
-     * @return
+     * @return The time as text.
      */
     public static String formatNanoTime(long time, boolean showMicro, boolean showNano) {
         long nanosec = time % 1000;
