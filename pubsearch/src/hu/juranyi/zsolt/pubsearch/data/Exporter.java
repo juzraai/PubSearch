@@ -22,6 +22,7 @@ public class Exporter {
     private final VelocityContext context = new VelocityContext();
 
     static {
+        Velocity.init();
         // get *.vm files list
 
         File confDir = new File("formats");

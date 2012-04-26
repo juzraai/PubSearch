@@ -30,7 +30,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
-import org.apache.velocity.app.Velocity;
 
 /**
  * Tab which shows the details of a publication.
@@ -42,10 +41,6 @@ public class PubTab extends Tab {
     private MainWindow mainWindow;
     private final Publication p;
     private final ResourceBundle texts = ResourceBundle.getBundle("hu.juranyi.zsolt.pubsearch.gui.texts.texts");
-
-    static {
-        Velocity.init();
-    }
 
     /**
      * Sets up the tab. BibTeX and cited by list will be shown only when not null/empty.
