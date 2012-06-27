@@ -1,0 +1,15 @@
+name				Mendeley
+baseurl				http://www.mendeley.com/
+submiturl			research-papers/search/
+submitparamsformat		author=%22%s%22&date=any&disciplines=all&results=100&title=
+submitparamswithtitleformat	%s%22%s%22
+resultsperpage			1
+firstindex			0
+startfield			page
+resultlistpattern		<ol.*?>(.*?)</ol>
+resultlistitempattern		<li>(.*?)</li>
+pubpagelinkpattern		<div class="?title"?>.*?<a href="(.*?)"
+pubpagelinkmodformat		NOFOLLOW
+authorspattern			<span class="?authors"?>(.*?)<span class="?sep"?>in
+titlepattern			<div class="?title"?>.*?>(.*?)</a>
+yearpattern			<span class="?year"?>\(([0-9]{4})\)
