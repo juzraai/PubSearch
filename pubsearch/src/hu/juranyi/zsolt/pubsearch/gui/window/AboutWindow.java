@@ -50,7 +50,7 @@ public class AboutWindow extends AWindow {
         Text rel1 = new Text(texts.getString("releaseDate"));
         rel1.setFill(Color.WHITE);
         rel1.setEffect(GuiTools.shadow);
-        Text rel2 = new Text("15/05/2012");
+        Text rel2 = new Text("27/06/2012"); // TODO Update before publish!
         rel2.setFill(Color.WHITE);
         rel2.setEffect(GuiTools.shadow);
         Text mail1 = new Text("E-mail");

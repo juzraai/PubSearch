@@ -8,7 +8,7 @@ firstindex			0
 resultlistitempattern		<div class="?gs_r"?>((.*?</div>.*?)*?)</div>
 pubpagelinkpattern		<a href="(http://.*?)".*?</h3>
 pubpagelinkmodformat		NOFOLLOW
-authorspattern			<div class="?gs_a"?>(.*?)-
+authorspattern			<div class="?gs_a"?>(.*?) -
 titlepattern			<a.*?>(.*?)</a>.*?</h3>
 yearpattern			<div class="?gs_a"?>.*?([0-9]{4}) -
 refpublistpagelinkpattern	<div class="?gs_fl"?><a href="/(.*?)"[^>]*>Cited by
