@@ -1,0 +1,10 @@
+name				DBLP
+baseurl				http://www.dblp.org/
+submiturl			search/api/
+submitparamsformat		q=%s
+submitparamswithtitleformat	%s+%s
+resultsperpage			30
+firstindex			0
+startfield			f
+pubpagelinkpattern		<url>(.*?)</url>
+bibtexpattern			</h1>(.*?)<p>
