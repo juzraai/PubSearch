@@ -67,7 +67,6 @@ public class PubPageCrawler extends ACrawler {
             }
         } else {
             html = page;
-
         }
 
         if (null != html) {
@@ -138,6 +137,10 @@ public class PubPageCrawler extends ACrawler {
                 authors = extract.authors(authorsPattern);
                 title = extract.title(titlePattern);
                 year = extract.year(yearPattern);
+
+                if (null != title && title.startsWith("[")) { // cut [PDF], [CITATION] like prefixes (Google Scholar)
+                    title = title.substring(title.indexOf("] ") + 2);
+                }
             }
 
             if (null != authors && null != title) {
