@@ -86,12 +86,12 @@ public class PubListHTMLCrawler extends ACrawler {
                     PubPageCrawler ppc;
                     if (!pdb.getPubPageLinkModFormat().equalsIgnoreCase("NOFOLLOW") && null != url) { // ACM:ref
                         ppc = new PubPageCrawler(pdb, url, transLev, refPubMode, true);
-                    } else { // Google Scholar, MetaPress:ref, Springer:ref, Mendeley
+                    } else { // Google Scholar, MetaPress:ref, Springer:ref
                         ppc = new PubPageCrawler(pdb, listItem, transLev, refPubMode, false);
                     }
                     crawlers.add(ppc);
                 }
-            } else { // ACM:search, arXiv, CiteSeerX, DBLP, liinwww, MetaPress:search, Springer:search
+            } else { // ACM:search, CiteSeerX, liinwww, MetaPress:search, Springer:search
                 List<String> urls = new Extract(html).URLs(pdb.getPubPageLinkPattern(), pdb.getBaseUrl(), pdb.getPubPageLinkModFormat());
                 for (String url : urls) {
                     PubPageCrawler ppc = new PubPageCrawler(pdb, url, transLev, refPubMode, true);
