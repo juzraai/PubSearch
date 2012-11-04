@@ -5,7 +5,7 @@ submitparamsformat		num=100&hl=en&as_vis=0&as_sdt=0&as_sauthors=%22%s%22&as_occt
 submitparamswithtitleformat	%s%22%s%22
 resultsperpage			100
 firstindex			0
-resultlistitempattern		<div class="?gs_r"?>((.*?</div>.*?)*?)</div>
+resultlistitempattern		<div class="gs_r".*?>(.*?<div class="gs_fl".*?)</div>
 pubpagelinkpattern		<h3.*?<a href="?([^>]*?)"?[ >].*?</h3>
 pubpagelinkmodformat		NOFOLLOW
 authorspattern			<div class="?gs_a"?>(.*?)(-[^<]*?)?</div>
