@@ -1,18 +1,15 @@
 name				SpringerLink
-baseurl				http://www.springerlink.com/
-submiturl			content/
-submitparamsformat		k=au:"%s"
-submitparamswithtitleformat	%s+ti:"%s"
-pubpagelinkpattern		<li class="?primitive.*?<a href="/(content/.*?/)">
-pubpagelinkmodformat		%sabout/
-firstindex			1
-startfield			o
-authorspattern			<p class="?authors"?>(.*?)</p>
-titlepattern			<div class="?text"?>.*?<h1.*?>(.*?)</h1>
-yearpattern			(?:<dt>Copyright Year.*?|<dt>SpringerLink Date.*?, )([0-9]{4})</dd>
-refpublistpagelinkpattern	<li><a href="/(content/.{16}/referrers/)"
-refpublistpattern		<ol class="?citations"?>(.*?)</ol>
-refpublistitempattern		<li>(.*?)(?:<ul>.*?</ul>)?</li>
-refpubauthorspattern		^(.*?)\(
-refpubtitlepattern		\([0-9]{4}\)(.*?)\.
-refpubyearpattern		\(([0-9]{4})\)
+baseurl				http://link.springer.com/
+submiturl			search/csv
+submitparamsformat		dc.creator="%s"
+submitparamswithtitleformat	%s&dc.title="%s"
+pubpagelinkpattern		"http://link.springer.com/(.*?)"
+authorspattern			<ul class="?authors"?>(.*?)<li class="?show-all-hide-authors"?.*?>
+titlepattern			<h1 id="?title"? itemprop="?headline"?>(.*?)</h1>
+yearpattern			<span id="?(?:copyright-year|date)"?[^>]*?>[^<]*?([0-9]{4}).*?<h1 id="?title"?
+OLD-refpublistpagelinkpattern	<li><a href="/(content/.{16}/referrers/)"
+OLD-refpublistpattern		<ol class="?citations"?>(.*?)</ol>
+OLD-refpublistitempattern	<li>(.*?)(?:<ul>.*?</ul>)?</li>
+OLD-refpubauthorspattern	^(.*?)\(
+OLD-refpubtitlepattern		\([0-9]{4}\)(.*?)\.
+OLD-refpubyearpattern		\(([0-9]{4})\)
