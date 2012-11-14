@@ -7,8 +7,3 @@ pubpagelinkpattern		"http://link.springer.com/(.*?)"
 authorspattern			<ul class="?authors"?>(.*?)<li class="?show-all-hide-authors"?.*?>
 titlepattern			<h1 id="?title"? itemprop="?headline"?>(.*?)</h1>
 yearpattern			<span id="?(?:copyright-year|date)"?[^>]*?>[^<]*?([0-9]{4}).*?<h1 id="?title"?
-refpublistpattern		<h2>References.*?<ol>(.*?)</ol>
-refpublistitempattern		<li>(.*?)</li>
-refpubauthorspattern		>(.*?)[:\(0-9]
-refpubtitlepattern		(?::|\).)(.*?)\.
-refpubyearpattern		([0-9]{4})[\):]
