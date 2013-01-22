@@ -77,7 +77,7 @@ public class AlertWindow extends AWindow {
         layout.setBottom(okButton);
         BorderPane.setMargin(icon, new Insets(0, 20, 0, 20));
         BorderPane.setAlignment(messageLabel, Pos.TOP_CENTER);
-        BorderPane.setMargin(messageLabel, new Insets(10, 10, 10, 10));
+        BorderPane.setMargin(messageLabel, new Insets(10, 10, 10, 50));
         BorderPane.setAlignment(okButton, Pos.CENTER);
 
         Stop[] gradientColors = new Stop[]{
