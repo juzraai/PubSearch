@@ -84,7 +84,7 @@ public class PubListHTMLCrawler extends ACrawler {
                 for (String listItem : listItems) {
                     String url = new Extract(listItem).URL(pdb.getPubPageLinkPattern(), pdb.getBaseUrl(), pdb.getPubPageLinkModFormat());
                     PubPageCrawler ppc;
-                    if (!pdb.getPubPageLinkModFormat().equalsIgnoreCase("NOFOLLOW") && null != url) { // ACM:ref
+                    if (!pdb.getPubPageLinkModFormat().equalsIgnoreCase("NOFOLLOW") && null != url) { // ACM:ref                        
                         ppc = new PubPageCrawler(pdb, url, transLev, refPubMode, true);
                     } else { // Google Scholar, MetaPress:ref, Springer:ref
                         ppc = new PubPageCrawler(pdb, listItem, transLev, refPubMode, false);

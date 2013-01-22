@@ -28,6 +28,10 @@
     -fx-text-fill: white;
 }
 
+.tab-label {
+    -fx-text-fill: white;
+}
+
 .tab:hover {
     -fx-background-color: linear-gradient(to bottom, #646486, #333344);
 }

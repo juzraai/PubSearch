@@ -26,11 +26,17 @@ public class PubPageCrawler extends ACrawler {
 
     /**
      * Sets up the pubpage crawling.
-     * @param pdb PDatabase object which contains information for database specific crawling.
+     *
+     * @param pdb PDatabase object which contains information for database
+     * specific crawling.
      * @param page Pubpage URL or HTML content - 'download' parameter will tell.
-     * @param transLev 0: only basic information, 1: referrer publications also 2: referrer of referrers also will be grabbed.
-     * @param refPubMode If true, it handles the pubpage as pubpage of a referring publication which may need different patterns to be used.
-     * @param download If true, URL given in 'page' parameter will be used to download the page, otherwise 'page' will be used as the downloaded HTML content.
+     * @param transLev 0: only basic information, 1: referrer publications also
+     * 2: referrer of referrers also will be grabbed.
+     * @param refPubMode If true, it handles the pubpage as pubpage of a
+     * referring publication which may need different patterns to be used.
+     * @param download If true, URL given in 'page' parameter will be used to
+     * download the page, otherwise 'page' will be used as the downloaded HTML
+     * content.
      */
     public PubPageCrawler(PDatabase pdb, String page, int transLev, boolean refPubMode, boolean download) {
         this.pdb = pdb;
@@ -46,8 +52,9 @@ public class PubPageCrawler extends ACrawler {
     }
 
     /**
-     * Downloads the page if needed, grabs BibTeX if any, extracts authors, title
-     * and year, and crawls referring publications if transitivity level is above 0.
+     * Downloads the page if needed, grabs BibTeX if any, extracts authors,
+     * title and year, and crawls referring publications if transitivity level
+     * is above 0.
      */
     @Override
     protected void crawl() {
@@ -138,8 +145,11 @@ public class PubPageCrawler extends ACrawler {
                 title = extract.title(titlePattern);
                 year = extract.year(yearPattern);
 
-                if (null != title && title.startsWith("[")) { // cut [PDF], [CITATION] like prefixes (Google Scholar)
-                    title = title.substring(title.indexOf("] ") + 2);
+                if (null != title) { // cut [PDF], [CITATION] like prefixes (Google Scholar)
+                    title = title.trim();
+                    while (title.startsWith("[")) {
+                        title = title.substring(title.indexOf("] ") + 2);
+                    }
                 }
             }
 

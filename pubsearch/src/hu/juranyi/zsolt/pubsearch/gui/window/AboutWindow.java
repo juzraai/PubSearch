@@ -44,13 +44,13 @@ public class AboutWindow extends AWindow {
         Text ver1 = new Text(texts.getString("version"));
         ver1.setFill(Color.WHITE);
         ver1.setEffect(GuiTools.shadow);
-        Text ver2 = new Text("1.0");
+        Text ver2 = new Text("1.1");
         ver2.setFill(Color.WHITE);
         ver2.setEffect(GuiTools.shadow);
         Text rel1 = new Text(texts.getString("releaseDate"));
         rel1.setFill(Color.WHITE);
         rel1.setEffect(GuiTools.shadow);
-        Text rel2 = new Text("04/07/2012"); // TODO Update before publish!
+        Text rel2 = new Text("30/01/2013"); // TODO Update before publish!
         rel2.setFill(Color.WHITE);
         rel2.setEffect(GuiTools.shadow);
         Text mail1 = new Text("E-mail");

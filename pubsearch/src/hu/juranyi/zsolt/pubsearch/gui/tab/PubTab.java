@@ -56,25 +56,25 @@ public class PubTab extends Tab {
         /*
          * Details
          */
-        Label authorsLabel1 = new LabelEx(texts.getString("authorsLabel")).bold();
-        Label titleLabel1 = new LabelEx(texts.getString("titleLabel")).bold();
-        Label yearLabel1 = new LabelEx(texts.getString("yearLabel")).bold();
-        Label dbLabel1 = new LabelEx(texts.getString("databaseLabel")).bold();
-        Label urlLabel1 = new LabelEx(texts.getString("urlLabel")).bold();
+        Label authorsLabel1 = new LabelEx(texts.getString("authorsLabel")).bold().white();
+        Label titleLabel1 = new LabelEx(texts.getString("titleLabel")).bold().white();
+        Label yearLabel1 = new LabelEx(texts.getString("yearLabel")).bold().white();
+        Label dbLabel1 = new LabelEx(texts.getString("databaseLabel")).bold().white();
+        Label urlLabel1 = new LabelEx(texts.getString("urlLabel")).bold().white();
 
         dbLabel1.setMinWidth(75);
 
-        Label authorsLabel2 = new LabelEx(p.getAuthors()).italic();
+        Label authorsLabel2 = new LabelEx(p.getAuthors()).italic().white();
         authorsLabel2.setWrapText(true);
 
-        Label titleLabel2 = new LabelEx(p.getTitle()).italic();
+        Label titleLabel2 = new LabelEx(p.getTitle()).italic().white();
         titleLabel2.setWrapText(true);
 
         Integer y = p.getYear();
         String ys = (null == y || -1 == y) ? texts.getString("unknownYear") : y.toString();
-        Label yearLabel2 = new LabelEx(ys).italic();
+        Label yearLabel2 = new LabelEx(ys).italic().white();
 
-        Label dbLabel2 = new LabelEx(p.getDbName()).italic();
+        Label dbLabel2 = new LabelEx(p.getDbName()).italic().white();
         final Hyperlink urlLabel2 = new Hyperlink(p.getUrl());
         urlLabel2.setOnMouseClicked(new EventHandler<MouseEvent>() {
 

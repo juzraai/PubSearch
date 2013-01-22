@@ -73,7 +73,7 @@ public class PubListCrawler extends ACrawler {
                     PubListHTMLCrawler plpc = new PubListHTMLCrawler(pdb, html, transLev, refPubMode);
                     crawlers.add(plpc);
                     plpc.launch(false);
-
+                    
                     List<Publication> pubs = plpc.getPublications();
                     for (Publication p : pubs) {
 
